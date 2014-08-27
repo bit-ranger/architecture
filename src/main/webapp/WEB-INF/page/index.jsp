@@ -5,7 +5,7 @@
     <title>index</title>
 </head>
 <body>
-    <form action="${pageContext.request.contextPath}/home.sx"  method="post">
+    <form action="${pageContext.request.contextPath}/user"  method="post">
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
@@ -25,7 +25,7 @@
         </table>
         <input type="submit" value="查询">
     </form>
-    <form action="${pageContext.request.contextPath}/home/get.sx"  method="post">
+    <form action="${pageContext.request.contextPath}/user/get"  method="post">
         <table>
             <tr>
                 <td>id<input type="text" name="id"/></td>
@@ -33,7 +33,7 @@
         </table>
         <input type="submit" value="获取">
     </form>
-    <form action="${pageContext.request.contextPath}/home/add.sx"  method="post" >
+    <form action="${pageContext.request.contextPath}/user/add"  method="post" >
         <table>
             <tr>
                 <td>name<input type="text" name="name"/></td>
@@ -47,7 +47,7 @@
         </table>
         <input type="submit" value="添加">
     </form>
-    <form action="${pageContext.request.contextPath}/home/edit.sx"  method="post" >
+    <form action="${pageContext.request.contextPath}/user/edit"  method="post" >
         <table>
             <tr>
                 <td>id<input type="text" name="id"/></td>

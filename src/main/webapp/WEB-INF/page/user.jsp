@@ -12,7 +12,7 @@
         function req(id){
             $.ajax({
                 type : "POST",
-                url : "${pageContext.request.contextPath}/home/getJson.sx?id="+id,
+                url : "${pageContext.request.contextPath}/user/json?id="+id,
                 success : function(json){
                     alert(json.name);
                 }
@@ -21,6 +21,7 @@
     </script>
 </head>
 <body>
+    <a href="${pageContext.request.contextPath}">首页</a>
     <table>
         <c:forEach items="${users}" var="user">
             <tr>

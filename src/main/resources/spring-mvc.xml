@@ -11,8 +11,11 @@
 
     <context:component-scan base-package="org.sllx.user.controller" />
 
+    <mvc:resources mapping="/scripts/**" location="/scripts/" />
+    <mvc:resources mapping="/styles/**" location="/styles/" />
+
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
-        <property name="prefix" value="/page/"/>
+        <property name="prefix" value="/WEB-INF/page/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
 
