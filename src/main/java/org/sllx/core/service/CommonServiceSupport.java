@@ -2,19 +2,13 @@ package org.sllx.core.service;
 
 
 import org.sllx.core.dao.Dao;
-import org.sllx.core.log.Logger;
-import org.sllx.core.log.LoggerFactory;
 import org.sllx.core.support.Page;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public abstract class CommonServiceSupport<T> implements Service<T>{
-    private static Logger logger = LoggerFactory.getLogger(CommonServiceSupport.class);
-
-    protected final static int ERROR_CODE = -1;
 
     private Dao<T> dao;
 
@@ -24,52 +18,27 @@ public abstract class CommonServiceSupport<T> implements Service<T>{
 
     @Override
     public int insert(T obj) {
-        try {
-            return dao.insert(obj);
-        } catch (Exception e) {
-            handle(e);
-            return ERROR_CODE;
-        }
+        return dao.insert(obj);
     }
 
     @Override
     public int delete(T obj) {
-        try {
-            return dao.delete(obj);
-        } catch (Exception e) {
-            handle(e);
-            return ERROR_CODE;
-        }
+        return dao.delete(obj);
     }
 
     @Override
     public int update(T obj) {
-        try {
-            return dao.update(obj);
-        } catch (Exception e) {
-            handle(e);
-            return ERROR_CODE;
-        }
+        return dao.update(obj);
     }
 
     @Override
     public T get(T obj) {
-        try {
-            return dao.get(obj);
-        } catch (Exception e) {
-            handle(e);
-            return null;
-        }
+        return dao.get(obj);
     }
 
     @Override
     public List<T> list(Map<String,String> param, Page page) {
-        try {
-            return dao.list(param,page);
-        } catch (Exception e) {
-            handle(e);
-            return  new ArrayList<T>(0);
-        }
+        return dao.list(param,page);
     }
 
     /**
@@ -90,14 +59,9 @@ public abstract class CommonServiceSupport<T> implements Service<T>{
                     field.set(recipient, pv);
                 }
             }
-        } catch (Exception e){
-            handle(e);
+        } catch (IllegalAccessException e){
+            throw new IllegalArgumentException(e.getMessage(), e);
         }
         return recipient;
-    }
-
-    private void handle(Throwable e){
-        logger.error(e.getMessage(), e);
-        throw new RuntimeException(e);
     }
 }
