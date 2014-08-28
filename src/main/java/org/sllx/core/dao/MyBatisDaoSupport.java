@@ -2,7 +2,7 @@ package org.sllx.core.dao;
 
 
 import org.apache.ibatis.session.RowBounds;
-import org.mybatis.spring.SqlSessionTemplate;
+import org.apache.ibatis.session.SqlSession;
 import org.sllx.core.log.Logger;
 import org.sllx.core.log.LoggerFactory;
 import org.sllx.core.support.Page;
@@ -25,12 +25,12 @@ public  class MyBatisDaoSupport<T>  implements Dao<T>{
     protected final static int ERROR_CODE = -1;
 
 
-    protected SqlSessionTemplate sqlSessionTemplate;
+    protected SqlSession sqlSession;
 
     private String genericClassName;
 
-    public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = sqlSessionTemplate;
+    public void setSqlSession(SqlSession sqlSession) {
+        this.sqlSession = sqlSession;
     }
 
     /**
@@ -91,7 +91,7 @@ public  class MyBatisDaoSupport<T>  implements Dao<T>{
 
     public int insert(T obj){
         try{
-            return sqlSessionTemplate.insert(getNameSpace() + "." + SQLID_INSERT, obj);
+            return sqlSession.insert(getNameSpace() + "." + SQLID_INSERT, obj);
         } catch (Exception e){
             handle(e);
             return ERROR_CODE;
@@ -100,7 +100,7 @@ public  class MyBatisDaoSupport<T>  implements Dao<T>{
 
     public int delete(T obj){
         try {
-            return sqlSessionTemplate.delete(getNameSpace() + "." + SQLID_DELETE, obj);
+            return sqlSession.delete(getNameSpace() + "." + SQLID_DELETE, obj);
         } catch (Exception e){
             handle(e);
             return ERROR_CODE;
@@ -109,7 +109,7 @@ public  class MyBatisDaoSupport<T>  implements Dao<T>{
 
     public int update(T obj){
         try{
-            return sqlSessionTemplate.update(getNameSpace() + "." + SQLID_UPDATE, obj);
+            return sqlSession.update(getNameSpace() + "." + SQLID_UPDATE, obj);
         } catch (Exception e){
             handle(e);
             return ERROR_CODE;
@@ -118,7 +118,7 @@ public  class MyBatisDaoSupport<T>  implements Dao<T>{
 
     public T get(T obj){
         try{
-            return sqlSessionTemplate.selectOne(getNameSpace() + "." + SQLID_GET, obj);
+            return sqlSession.selectOne(getNameSpace() + "." + SQLID_GET, obj);
         } catch (Exception e){
             handle(e);
             return null;
@@ -127,7 +127,7 @@ public  class MyBatisDaoSupport<T>  implements Dao<T>{
 
     public List<T> list(Map<String, String> param, Page page){
         try{
-            return sqlSessionTemplate.selectList(getNameSpace() + "." + SQLID_LIST, toWhereClause(param), new RowBounds(page.getOffset(), page.getPageSize()));
+            return sqlSession.selectList(getNameSpace() + "." + SQLID_LIST, toWhereClause(param), new RowBounds(page.getOffset(), page.getPageSize()));
         } catch (Exception e){
             handle(e);
             return new ArrayList<T>(0);

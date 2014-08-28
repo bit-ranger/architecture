@@ -6,6 +6,6 @@
 	<bean id="userDao" class="org.sllx.user.dao.impl.UserDaoImpl" parent="daoSupport"/>
 
     <bean id="daoSupport" class="org.sllx.core.dao.MyBatisDaoSupport">
-        <property name="sqlSessionTemplate" ref="sqlSessionTemplate"/>
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
     </bean>
 </beans>
