@@ -11,4 +11,9 @@ public class Index {
     public String index(){
         return "index";
     }
+
+    @RequestMapping("redirect")
+    public String redirect(){
+        return "redirect:/";
+    }
 }

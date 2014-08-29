@@ -1,11 +1,10 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>index</title>
 </head>
 <body>
-    <form action="${pageContext.request.contextPath}/user"  method="post">
+    <form action="${root}/user"  method="post">
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
@@ -25,7 +24,7 @@
         </table>
         <input type="submit" value="查询">
     </form>
-    <form action="${pageContext.request.contextPath}/user/get"  method="post">
+    <form action="${root}/user/get"  method="post">
         <table>
             <tr>
                 <td>id<input type="text" name="id"/></td>
@@ -33,7 +32,7 @@
         </table>
         <input type="submit" value="获取">
     </form>
-    <form action="${pageContext.request.contextPath}/user/add"  method="post" >
+    <form action="${root}/user/add"  method="post" >
         <table>
             <tr>
                 <td>name<input type="text" name="name"/></td>
@@ -47,7 +46,7 @@
         </table>
         <input type="submit" value="添加">
     </form>
-    <form action="${pageContext.request.contextPath}/user/edit"  method="post" >
+    <form action="${root}/user/edit"  method="post" >
         <table>
             <tr>
                 <td>id<input type="text" name="id"/></td>

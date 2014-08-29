@@ -1,10 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>hello</title>
-    <script src="${pageContext.request.contextPath}/scripts/jquery.min.js" type="text/javascript"></script>
-    <script src="${pageContext.request.contextPath}/scripts/editor/ckeditor.js" type="text/javascript"></script>
+    <script src="${root}/scripts/jquery.min.js" type="text/javascript"></script>
+    <script src="${root}/scripts/editor/ckeditor.js" type="text/javascript"></script>
     <script type="text/javascript">
         CKEDITOR.replace('editor');
     </script>
@@ -12,7 +10,7 @@
         function req(id){
             $.ajax({
                 type : "POST",
-                url : "${pageContext.request.contextPath}/user/json?id="+id,
+                url : "${base}/user/json?id="+id,
                 success : function(json){
                     alert(json.name);
                 }
@@ -21,16 +19,17 @@
     </script>
 </head>
 <body>
-    <a href="${pageContext.request.contextPath}">首页</a>
+    <a href="${root}">首页</a>
     <table>
-        <c:forEach items="${users}" var="user">
+        [#list users as user]
             <tr>
                 <td><a href="javascript:void(0);" onclick="req('${user.id}');">${user.id}</a></td>
                 <td>${user.name}</td>
                 <td>${user.role}</td>
                 <td>${user.power}</td>
+                <td><a href="${base}/user/delete?id=${user.id}">删除</a></td>
             </tr>
-        </c:forEach>
+       [/#list]
     </table>
     ${user.name}
 

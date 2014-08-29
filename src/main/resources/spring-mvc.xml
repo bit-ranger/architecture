@@ -42,10 +42,24 @@
         <property name="warnLogCategory" value="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"/>
     </bean>
 
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
-        <property name="prefix" value="/WEB-INF/page/"/>
-        <property name="suffix" value=".jsp"/>
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver" >
+        <property name="contentType" value="text/html; charset=UTF-8" />
+        <property name="suffix" value=".ftl"/>
     </bean>
 
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/page"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="tag_syntax">auto_detect</prop>
+                <prop key="classic_compatible">true</prop>
+            </props>
+        </property>
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="root" value="#{servletContext.contextPath}" />
+            </map>
+        </property>
+    </bean>
 </beans>
