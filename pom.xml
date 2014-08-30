@@ -6,14 +6,7 @@
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>sllx-site</name>
-
-    <repositories>
-        <repository>
-            <id>oschina</id>
-            <name>oschina</name>
-            <url>http://maven.oschina.net/content/groups/public/</url>
-        </repository>
-    </repositories>
+    <url>http://maven.oschina.net/content/groups/public/</url>
 
     <properties>
         <spring.version>3.0.7.RELEASE</spring.version>
@@ -76,14 +69,14 @@
 			<version>1.6.12</version>
 		</dependency>
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.20</version>
-        </dependency>
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
         </dependency>
 	</dependencies>
 	<build>
