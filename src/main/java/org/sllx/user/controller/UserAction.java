@@ -50,8 +50,10 @@ public class UserAction extends BaseController {
         return REDIRECT;
     }
 
-    @RequestMapping("/delete")
-    public String delete(User user){
+    @RequestMapping("/delete/{id}")
+    public String delete(@PathVariable String id){
+        User user = new User();
+        user.setId(id);
         userService.delete(user);
         return REDIRECT;
     }

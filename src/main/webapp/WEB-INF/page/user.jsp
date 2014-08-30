@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
 <head>
     <title>hello</title>
-    <script src="${root}/scripts/editor/ckeditor.js" type="text/javascript"></script>
+    <script src="${root}/resources/scripts/editor/ckeditor.js" type="text/javascript"></script>
     <script type="text/javascript">
         window.onload = function()
         {
@@ -33,7 +33,7 @@
                 <td>${user.name}</td>
                 <td>${user.role}</td>
                 <td>${user.power}</td>
-                <td><a href="${base}/user/delete?id=${user.id}">删除</a></td>
+                <td><a href="${root}/user/delete/${user.id}">删除</a></td>
             </tr>
         </c:forEach>
     </table>
