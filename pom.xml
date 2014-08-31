@@ -4,8 +4,8 @@
 	<groupId>sllx</groupId>
 	<artifactId>sllx-site</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>sllx-site</name>
+	<version>1.0</version>
+	<name>site</name>
     <url>http://maven.oschina.net/content/groups/public/</url>
 
     <properties>
@@ -93,5 +93,4 @@
             </resource>
         </resources>
 	</build>
-
 </project>

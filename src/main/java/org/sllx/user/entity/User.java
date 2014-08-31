@@ -1,16 +1,22 @@
 package org.sllx.user.entity;
 
 public class User {
-    private String id;
+    private int id;
     private String name;
-    private String role;
-    private String power;
+    private int role;
+    private int power;
 
-    public String getId() {
+    public User(){}
+
+    public User(int id){
+        this.id = id;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -22,19 +28,19 @@ public class User {
         this.name = name;
     }
 
-    public String getRole() {
+    public int getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(int role) {
         this.role = role;
     }
 
-    public String getPower() {
+    public int getPower() {
         return power;
     }
 
-    public void setPower(String power) {
+    public void setPower(int power) {
         this.power = power;
     }
 
@@ -45,20 +51,20 @@ public class User {
 
         User user = (User) o;
 
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (id != user.id) return false;
+        if (power != user.power) return false;
+        if (role != user.role) return false;
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (power != null ? !power.equals(user.power) : user.power != null) return false;
-        if (role != null ? !role.equals(user.role) : user.role != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id;
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (role != null ? role.hashCode() : 0);
-        result = 31 * result + (power != null ? power.hashCode() : 0);
+        result = 31 * result + role;
+        result = 31 * result + power;
         return result;
     }
 }

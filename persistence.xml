@@ -2,7 +2,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
 
     <persistence-unit name="persistenceUnit">
-        <mapping-file>entities.xml</mapping-file>
+        <mapping-file>orm.xml</mapping-file>
         <properties>
             <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/sllxsite"/>
             <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
