@@ -10,7 +10,7 @@
 	default-autowire="byName">
 
 	<aop:config>
-		<aop:advisor advice-ref="transactionAdvice" pointcut="execution(public * org.sllx.*.service..*.*(..))"/>
+		<aop:advisor advice-ref="transactionAdvice" pointcut="execution(public * org.sllx.site..service..*.*(..))"/>
 	</aop:config>
 
 	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
@@ -28,8 +28,8 @@
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:org/sllx/user/entity/*mapper.xml"/>
-        <property name="typeAliasesPackage" value="org.sllx.user.entity"/>
+        <property name="mapperLocations" value="classpath:org/sllx/site/user/entity/*mapper.xml"/>
+        <property name="typeAliasesPackage" value="org.sllx.site.user.entity"/>
     </bean>
 
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">

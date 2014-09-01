@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sllx.site.user.entity.User">
+
+    <select id="get" resultType="User" parameterType="User">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="list" resultType="User" parameterType="String">
+         select * from user ${_parameter}
+    </select>
+
+    <insert id="insert" parameterType="User">
+         insert into user(name,role,power) values(#{name},#{role},#{power})
+    </insert>
+
+    <delete id="delete" parameterType="User">
+        delete from user where id = #{id}
+    </delete>
+
+    <update id="update" parameterType="User">
+        update user set name = #{name}, role = #{role}, power = #{power} where id = #{id}
+    </update>
+</mapper>

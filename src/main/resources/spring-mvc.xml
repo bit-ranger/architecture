@@ -7,14 +7,14 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
 	default-lazy-init="true">
 
-    <context:component-scan base-package="org.sllx.user.controller" />
+    <context:component-scan base-package="org.sllx.site.user.controller" />
 
     <mvc:resources mapping="/resources/**" location="/resources/" />
 
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/user/**"/>
-            <bean class="org.sllx.overall.interceptor.LoginInterceptor"/>
+            <bean class="org.sllx.site.overall.interceptor.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 
@@ -22,7 +22,7 @@
         <!-- 该拦截器不会拦截静态资源 -->
         <property name="interceptors">
             <list>
-                <bean class="org.sllx.overall.interceptor.ValidateInterceptor" />
+                <bean class="org.sllx.site.overall.interceptor.ValidateInterceptor" />
             </list>
         </property>
     </bean>

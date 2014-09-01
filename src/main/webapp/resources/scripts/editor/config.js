@@ -9,6 +9,6 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.uiColor = '#AADC6E';
 
     // 设置宽高
-    config.width = 947;
+    config.width = 1024;
     config.height = 220;
 };
