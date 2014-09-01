@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -64,7 +66,8 @@ public class UserAction extends BaseController {
     }
 
     @RequestMapping("/upload")
-    public String upload(@RequestParam("uploadFile") MultipartFile file){
+    public String upload(@RequestParam MultipartFile uploadFile) throws IOException {
+        uploadFile.transferTo(new File("/home/sllx/tmp/" + uploadFile.getOriginalFilename()));
         return REDIRECT;
     }
 }

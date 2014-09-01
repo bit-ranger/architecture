@@ -10,12 +10,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping;
-/**
- * 说明： JUnit测试action时使用的基类
- *
- * @author  赵磊
- * @version 创建时间：2011-2-2 下午10:27:03
- */
+
 public class JUnitActionBase {
     private static HandlerMapping handlerMapping;
     private static HandlerAdapter handlerAdapter;
