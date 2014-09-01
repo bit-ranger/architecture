@@ -48,4 +48,6 @@
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
     </bean>
 
+    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+
 </beans>

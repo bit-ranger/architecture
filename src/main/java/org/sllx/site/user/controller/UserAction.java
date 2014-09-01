@@ -7,6 +7,7 @@ import org.sllx.site.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
@@ -62,4 +63,8 @@ public class UserAction extends BaseController {
         return userService.get(user);
     }
 
+    @RequestMapping("/upload")
+    public String upload(@RequestParam("uploadFile") MultipartFile file){
+        return REDIRECT;
+    }
 }

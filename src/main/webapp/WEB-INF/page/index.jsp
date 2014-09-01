@@ -65,5 +65,9 @@
         </table>
         <input type="submit" value="修改">
     </form>
+    <form action="${root}/user/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="uploadFile" />
+        <input type="submit" value="上传" />
+    </form>
 </body>
 </html>
