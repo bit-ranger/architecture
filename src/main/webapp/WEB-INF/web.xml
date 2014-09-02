@@ -70,4 +70,6 @@
         <error-code>404</error-code>
         <location>/redirect</location>
     </error-page>
+
+    <distributable/>
 </web-app>
