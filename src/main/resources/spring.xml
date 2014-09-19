@@ -38,9 +38,9 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
-        <property name="username" value="sllx" />
-        <property name="password" value="331320" />
+        <property name="url" value="jdbc:mysql://sqld.duapp.com:4050/EBwzIdGhKKjxdESTiUYS"/>
+        <property name="username" value="NS0yXwsfpooGlfKAy20dlsLV" />
+        <property name="password" value="kGwLksZKeLYqvDS7ElXS9QhdF0Rv7Zoy" />
         <property name="maxActive" value="100" />
         <property name="maxIdle" value="30" />
         <property name="maxWait" value="1000" />
