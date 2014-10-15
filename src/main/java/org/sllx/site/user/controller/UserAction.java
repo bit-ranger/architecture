@@ -1,6 +1,7 @@
 package org.sllx.site.user.controller;
 
 import org.sllx.site.core.controller.BaseController;
+import org.sllx.site.core.support.Common;
 import org.sllx.site.core.support.Page;
 import org.sllx.site.user.entity.User;
 import org.sllx.site.user.service.UserService;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -24,48 +24,47 @@ public class UserAction extends BaseController {
     @Resource(name = "userService")
     private UserService userService;
 
-    @RequestMapping
-    public String list(ServletRequest request, Page page, ModelMap model){
-        List<User> users = userService.list(makeParam(request), page);
+    @RequestMapping(method = RequestMethod.GET)
+    public String list(User user, Page page, ModelMap model) throws IllegalAccessException {
+        List<User> users = userService.list(null, page);
         model.addAttribute("users", users);
         return "user";
     }
 
-    @RequestMapping("/get")
-    public String get(User user, ModelMap model){
-        user = userService.get(user);
+    @RequestMapping(value  = "/{id}", method = RequestMethod.GET)
+    public String get(@PathVariable int id, ModelMap model){
+        User user = userService.get(new User(id));
         model.addAttribute("user", user);
         return "user";
     }
 
-
-    @RequestMapping(value = "/add")
-    public String add(User user){
+    @RequestMapping(method = RequestMethod.POST)
+    public String post(User user){
         userService.insert(user);
         return REDIRECT;
     }
 
-    @RequestMapping("/edit")
-    public String edit(User user){
+    @RequestMapping(value  = "/{id}", method = RequestMethod.PUT)
+    public String put(@PathVariable int id, User user){
+        user.setId(id);
         User dbo = userService.get(user);
         userService.copyValidProp(dbo, user);
         userService.update(dbo);
         return REDIRECT;
     }
 
-    @RequestMapping("/delete/{id}")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable int id){
         userService.delete(new User(id));
         return REDIRECT;
     }
 
-    @RequestMapping("/json")
-    public @ResponseBody
-    User json(User user){
-        return userService.get(user);
+    @RequestMapping(value  = "/{id}/json", method = RequestMethod.TRACE)
+    public @ResponseBody User json(@PathVariable int id){
+        return userService.get(new User(id));
     }
 
-    @RequestMapping("/upload")
+    @RequestMapping("/file")
     public String upload(@RequestParam MultipartFile uploadFile) throws IOException {
         uploadFile.transferTo(new File("/home/sllx/tmp/" + uploadFile.getOriginalFilename()));
         return REDIRECT;

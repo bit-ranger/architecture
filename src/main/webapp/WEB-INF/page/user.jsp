@@ -33,7 +33,7 @@
                 <td>${user.name}</td>
                 <td>${user.role}</td>
                 <td>${user.power}</td>
-                <td><a href="${root}/user/delete/${user.id}">删除</a></td>
+                <td><a href="${root}/user/${user.id}">删除</a></td>
             </tr>
         </c:forEach>
     </table>

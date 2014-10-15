@@ -40,7 +40,7 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
         <property name="username" value="sllx" />
-        <property name="password" value="mm331320ZB" />
+        <property name="password" value="331320" />
         <property name="maxActive" value="100" />
         <property name="maxIdle" value="30" />
         <property name="maxWait" value="1000" />
@@ -49,4 +49,8 @@
         <property name="removeAbandonedTimeout" value="80" />
         <property name="validationQuery" value="select 1 from dual" />
     </bean>
+
+    <!-- 解析操作交给org.springframework.web.servlet.DispatcherServlet处理时id必须为multipartResolver -->
+    <!-- 解析操作交给org.springframework.web.multipart.support.MultipartFilter处理时id必须为filterMultipartResolver -->
+    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 </beans>

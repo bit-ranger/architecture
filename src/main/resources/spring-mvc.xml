@@ -49,7 +49,4 @@
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
     </bean>
 
-    <!-- id必须为multipartResolver -->
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
-
 </beans>

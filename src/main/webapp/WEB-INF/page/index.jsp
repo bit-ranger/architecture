@@ -7,69 +7,54 @@
     <title>index</title>
 </head>
 <body>
-    <form action="${root}/user"  method="post">
+    <form  action="${root}/user"  method="get">
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
             </tr>
             <tr>
-                <td>id<input type="text" name="s_id"/></td>
-            </tr>
-            <tr>
-                <td>name<input type="text" name="s_name"/></td>
-            </tr>
-            <tr>
-                <td>role<input type="text" name="s_role"/></td>
-            </tr>
-            <tr>
-                <td>power<input type="text" name="s_power"/></td>
+                <td>id<input type="text" name="id"/></td>
             </tr>
         </table>
         <input type="submit" value="查询">
     </form>
-    <form action="${root}/user/get"  method="post">
+
+    <a href="/user/1">get</a>
+
+    <form action="${root}/user"  method="post" commandName="user">
         <table>
             <tr>
-                <td>id<input type="text" name="id"/></td>
-            </tr>
-        </table>
-        <input type="submit" value="获取">
-    </form>
-    <form action="${root}/user/add"  method="post" >
-        <table>
-            <tr>
-                <td>name<input type="text" name="name"/></td>
+                <td>name<input name="name" type="text"/></td>
             </tr>
             <tr>
-                <td>role<input type="text" name="role"/></td>
+                <td>role<input name="role" type="text"/></td>
             </tr>
             <tr>
-                <td>power<input type="text" name="power"/></td>
+                <td>power<input name="power" type="text"/></td>
             </tr>
         </table>
         <input type="submit" value="添加">
     </form>
-    <form action="${root}/user/edit"  method="post" >
+
+    <s:form action="${root}/user/1" method="put">
         <table>
             <tr>
-                <td>id<input type="text" name="id"/></td>
+                <td>name<input name="name" type="text"/></td>
             </tr>
             <tr>
-                <td>name<input type="text" name="name"/></td>
+                <td>role<input name="role" type="text"/></td>
             </tr>
             <tr>
-                <td>role<input type="text" name="role"/></td>
-            </tr>
-            <tr>
-                <td>power<input type="text" name="power"/></td>
+                <td>power<input name="power" type="text"/></td>
             </tr>
         </table>
         <input type="submit" value="修改">
-    </form>
-    <form action="${root}/user/upload" method="post" enctype="multipart/form-data">
+    </s:form>
+
+    <s:form action="${root}/user/file" method="post" enctype="multipart/form-data">
         <input type="file" name="uploadFile" />
         <input type="submit" value="上传" />
-    </form>
+    </s:form>
 
 
 测试session共享----
@@ -91,7 +76,7 @@
             System.out.println( name + " = " + value);
         }
     %>
-    <form action="${root}/user" method="post">
+    <form action="${root}/user" method="get">
         名称:<input type="text" size="20" name="dataName">
         <br>
         值:<input type="text" size="20" name="dataValue">
