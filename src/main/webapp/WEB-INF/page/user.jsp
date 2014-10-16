@@ -12,32 +12,47 @@
         };
     </script>
     <script type="text/javascript">
-        function req(id){
+        function del(id,dom){
             $.ajax({
-                type : "POST",
-                url : "${root}/user/json?id="+id,
+                type : "DELETE",
+                url : "${root}/user/" + id,
                 success : function(json){
-                    alert(json.name);
+                    if(json == "success"){
+                        $(dom).remove();
+                    }
+                }
+            });
+        }
+
+        function show(id){
+            $.ajax({
+                type : "GET",
+                url : "${root}/user/json/" + id,
+                success : function(json){
+                    alert(json.power);
                 }
             });
         }
     </script>
 </head>
 <body>
-
     <a href="${root}">首页</a>
+
     <table>
         <c:forEach items="${users}" var="user">
-            <tr>
-                <td><a href="javascript:void(0);" onclick="req('${user.id}');">${user.id}</a></td>
-                <td>${user.name}</td>
-                <td>${user.role}</td>
-                <td>${user.power}</td>
-                <td><a href="${root}/user/${user.id}">删除</a></td>
-            </tr>
+            <table>
+                <s:form action="${root}/user/${user.id}" method="put">
+                    <tr>
+                        <td>name<input name="v_name" type="text" value="${user.name}"/></td>
+                        <td>role<input name="v_role" type="text" value="${user.role}"/></td>
+                        <td><input type="submit" value="修改"></td>
+                        <td><a href="javascript:void(0);" onclick="show('${user.id}');">查看power</a></td>
+                        <td><a href="javascript:void(0);" onclick="del('${user.id}',this.parentNode.parentNode)">删除</a></td>
+                    </tr>
+                </s:form>
+            </table>
         </c:forEach>
     </table>
-    ${user.name}
 
     <textarea id="editor"/>
 </body>

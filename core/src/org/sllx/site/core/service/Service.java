@@ -12,5 +12,4 @@ public interface Service<T> {
     int update(T obj);
     T get(T obj);
     List<T> list(Map<String,String> param, Page page);
-    <T> T  copyValidProp(T recipient ,T provider);
 }

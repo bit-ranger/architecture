@@ -7,21 +7,31 @@
     <title>index</title>
 </head>
 <body>
+    多条件查询--GET
     <form  action="${root}/user"  method="get">
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
             </tr>
             <tr>
-                <td>id<input type="text" name="id"/></td>
+                <td>id<input name="v_id" type="text" /></td>
+            </tr>
+            <tr>
+                <td>name<input name="v_name" type="text"/></td>
+            </tr>
+            <tr>
+                <td>role<input name="v_role" type="text"/></td>
+            </tr>
+            <tr>
+                <td>power<input name="v_power" type="text"/></td>
             </tr>
         </table>
         <input type="submit" value="查询">
     </form>
+    <br/>
 
-    <a href="/user/1">get</a>
-
-    <form action="${root}/user"  method="post" commandName="user">
+    添加数据--POST
+    <form action="${root}/user"  method="post">
         <table>
             <tr>
                 <td>name<input name="name" type="text"/></td>
@@ -35,26 +45,13 @@
         </table>
         <input type="submit" value="添加">
     </form>
+    <br/>
 
-    <s:form action="${root}/user/1" method="put">
-        <table>
-            <tr>
-                <td>name<input name="name" type="text"/></td>
-            </tr>
-            <tr>
-                <td>role<input name="role" type="text"/></td>
-            </tr>
-            <tr>
-                <td>power<input name="power" type="text"/></td>
-            </tr>
-        </table>
-        <input type="submit" value="修改">
-    </s:form>
-
-    <s:form action="${root}/user/file" method="post" enctype="multipart/form-data">
+    <form action="${root}/user/file" method="post" enctype="multipart/form-data">
         <input type="file" name="uploadFile" />
         <input type="submit" value="上传" />
-    </s:form>
+    </form>
+    <br/>
 
 
 测试session共享----
