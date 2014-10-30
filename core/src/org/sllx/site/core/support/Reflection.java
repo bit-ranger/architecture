@@ -23,7 +23,7 @@ public class Reflection {
     public static boolean setProperty(Object bean, String name, Object value) throws InvocationTargetException, IllegalAccessException {
         String methodName = "set" + name.substring(0,1).toUpperCase() + name.substring(1);
         Method method = getMethod(bean,methodName);
-        if(method.getParameterCount() != 1){
+        if(method == null || method.getParameterCount() != 1){
             return false;
         }
         Class<?> toType = method.getParameterTypes()[0];
