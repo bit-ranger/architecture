@@ -19,7 +19,7 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
         <!-- 该拦截器不会拦截静态资源 -->
         <property name="interceptors">
             <list>

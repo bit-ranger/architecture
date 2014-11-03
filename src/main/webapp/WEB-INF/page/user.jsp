@@ -15,7 +15,7 @@
         function del(id,dom){
             $.ajax({
                 type : "DELETE",
-                url : "${root}/user/" + id,
+                url : "${resource.getLink('self').href}" + id,
                 success : function(json){
                     if(json == "success"){
                         $(dom).remove();
@@ -27,7 +27,7 @@
         function show(id){
             $.ajax({
                 type : "GET",
-                url : "${root}/user/json/" + id,
+                url : "${resource.getLink('self').href}/json/" + id,
                 success : function(json){
                     alert(json.power);
                 }

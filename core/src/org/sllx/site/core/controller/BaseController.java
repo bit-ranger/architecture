@@ -3,7 +3,9 @@ package org.sllx.site.core.controller;
 import org.sllx.site.core.support.Reflection;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,5 +48,14 @@ public abstract class BaseController {
             Reflection.setProperty(pojo,entry.getKey(),entry.getValue());
         }
         return pojo;
+    }
+
+    protected String getRoot(HttpServletRequest request){
+       String root = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+       return root;
+    }
+
+    protected Method getMethod(String name){
+        return Reflection.getMethod(this,name);
     }
 }
