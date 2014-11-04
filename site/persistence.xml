@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="persistenceUnit">
+        <mapping-file>site/orm.xml</mapping-file>
+        <properties>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/sllxsite"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="sllx"/>
+            <property name="hibernate.connection.password" value="331320"/>
+        </properties>
+    </persistence-unit>
+</persistence>
