@@ -1,4 +1,4 @@
-package org.sllx.site.core.controller;
+package org.sllx.mvc;
 
 import org.sllx.core.util.Reflection;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * 基础控制层,包含一些控制层通用方法
  */
-public abstract class BaseController {
+public abstract class Controller {
     private final static String VALID_PREFIX = "v_";
 
     protected final static String SUCCESS = "success";

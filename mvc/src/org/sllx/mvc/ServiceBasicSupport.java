@@ -1,18 +1,17 @@
-package org.sllx.site.core.service;
+package org.sllx.mvc;
 
 
-import org.sllx.site.core.dao.Dao;
 import org.sllx.core.util.Page;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * 实现了{@link org.sllx.site.core.service.Service}中所有方法的默认实现类
+ * 实现了{@link Service}中所有方法的默认实现类
  * 该类可作为事务的通用实现
  * @param <T>
  */
-public abstract class DefaultServiceSupport<T> implements Service<T>{
+public abstract class ServiceBasicSupport<T> implements Service<T> {
 
     private Dao<T> dao;
 

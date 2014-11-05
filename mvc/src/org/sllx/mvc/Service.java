@@ -1,4 +1,5 @@
-package org.sllx.site.core.dao;
+package org.sllx.mvc;
+
 
 import org.sllx.core.util.Page;
 
@@ -6,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 数据访问顶层接口
+ * 事务顶层接口
  * @param <T>
  */
-public interface Dao<T> {
+public interface Service<T> {
     int insert(T obj);
     int delete(T obj);
     int update(T obj);

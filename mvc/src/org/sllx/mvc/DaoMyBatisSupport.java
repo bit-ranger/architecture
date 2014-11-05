@@ -1,4 +1,4 @@
-package org.sllx.site.core.dao;
+package org.sllx.mvc;
 
 
 import org.apache.ibatis.session.RowBounds;
@@ -12,11 +12,11 @@ import java.util.Map;
 
 
 /**
- * 实现了{@link org.sllx.site.core.dao.Dao}中所有方法的默认实现类
+ * 实现了{@link Dao}中所有方法的默认实现类
  * 当使用Mybatis框架时该类可作为DAO的通用实现
  * @param <T>
  */
-public abstract class MyBatisDaoSupport<T>  implements Dao<T>{
+public abstract class DaoMyBatisSupport<T>  implements Dao<T> {
 
     protected final static String SQLID_INSERT = "insert";
     protected final static String SQLID_DELETE = "delete";
@@ -53,7 +53,7 @@ public abstract class MyBatisDaoSupport<T>  implements Dao<T>{
         if(st instanceof ParameterizedType){
             ParameterizedType pt = (ParameterizedType)st;
             if(getName(pt) == null){
-                throw new ClassCastException("泛型必须为确定的类型!");
+                throw new ClassCastException(String.format("[%s]参数化类型必须是明确的!",this.getClass().getName()));
             }
             return pt;
         } else{
