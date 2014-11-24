@@ -15,7 +15,7 @@
         function del(id,dom){
             $.ajax({
                 type : "DELETE",
-                url : "${selfLink}/" + id,
+                url : "${selfHref}/" + id,
                 success : function(json){
                     if(json == "success"){
                         $(dom).remove();
@@ -27,7 +27,7 @@
         function show(id){
             $.ajax({
                 type : "GET",
-                url : "${selfLink}/json/" + id,
+                url : "${jsonHref}/" + id,
                 success : function(json){
                     alert(json.power);
                 }
@@ -41,7 +41,7 @@
     <table>
         <c:forEach items="${users}" var="user">
             <table>
-                <s:form action="${selfLink}/${user.id}" method="put" enctype="multipart/form-data">
+                <s:form action="${selfHref}/${user.id}" method="put" enctype="multipart/form-data">
                     <tr>
                         <td>name<input name="v_name" type="text" value="${user.name}"/></td>
                         <td>role<input name="v_role" type="text" value="${user.role}"/></td>
@@ -55,7 +55,7 @@
     </table>
 
     多条件查询--GET
-    <form  action="${selfLink}"  method="get">
+    <form  action="${selfHref}"  method="get">
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
@@ -69,7 +69,7 @@
     </form>
 
     添加数据--POST
-    <form action="${selfLink}"  method="post">
+    <form action="${selfHref}"  method="post">
         <table>
             <tr>
                 <td>name<input name="name" type="text"/></td>
@@ -81,7 +81,7 @@
     </form>
 
     上传文件--POST
-    <form action="${selfLink}/file" method="post" enctype="multipart/form-data">
+    <form action="${fileHref}" method="post" enctype="multipart/form-data">
         <input type="file" name="uploadFile" />
         <input type="submit" value="上传" />
     </form>

@@ -23,6 +23,16 @@ public class UserController extends CommonController{
     @javax.annotation.Resource(name = "userService")
     private UserService userService;
 
+    @ModelAttribute("jsonHref")
+    public String getJsonHref(){
+        return selfLinkBuilder.slash("json").withRel("json").getHref();
+    }
+
+    @ModelAttribute("fileHref")
+    public String getFileHref(){
+        return selfLinkBuilder.slash("file").withRel("file").getHref();
+    }
+
     /**
      * 查询一组记录
      * @param request

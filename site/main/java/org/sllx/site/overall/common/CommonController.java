@@ -1,7 +1,7 @@
 package org.sllx.site.overall.common;
 
 import org.sllx.mvc.Controller;
-import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkBuilder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -11,10 +11,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  */
 public abstract class CommonController extends Controller {
 
-    private Link selfLink = linkTo(this.getClass()).withSelfRel();
-    @ModelAttribute("selfLink")
-    public String getSelfLink(){
-        return selfLink.getHref();
+    protected LinkBuilder selfLinkBuilder = linkTo(this.getClass());
+    @ModelAttribute("selfHref")
+    public String getHref(){
+        return selfLinkBuilder.withSelfRel().getHref();
     }
 
 }
