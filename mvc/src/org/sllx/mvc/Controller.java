@@ -1,6 +1,7 @@
 package org.sllx.mvc;
 
-import org.sllx.core.util.Reflection;
+
+import org.sllx.core.util.BeanUtils;
 
 import javax.servlet.ServletRequest;
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,7 @@ public abstract class Controller {
      */
     protected <T> T reset(T pojo, Map<String,String> map) throws InvocationTargetException, IllegalAccessException {
         for (Map.Entry<String,String> entry : map.entrySet()) {
-            Reflection.setProperty(pojo,entry.getKey(),entry.getValue());
+            BeanUtils.setProperty(pojo, entry.getKey(), entry.getValue());
         }
         return pojo;
     }

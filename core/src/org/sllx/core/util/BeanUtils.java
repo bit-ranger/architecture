@@ -1,12 +1,14 @@
 package org.sllx.core.util;
 
+import org.sllx.core.Assert;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Created by sllx on 14-10-14.
+ * Created by sllx on 14-11-26.
  */
-public class Reflection {
+public class BeanUtils {
 
     public static Method getMethod(Object object, String methodName){
         Assert.notNull(object);
@@ -20,15 +22,21 @@ public class Reflection {
     }
 
 
-    public static boolean setProperty(Object bean, String name, Object value) throws InvocationTargetException, IllegalAccessException {
-        String methodName = "set" + name.substring(0,1).toUpperCase() + name.substring(1);
+    public static Object setProperty(Object bean, String field, Object value) throws InvocationTargetException, IllegalAccessException {
+        String methodName = toSetterName(field);
         Method method = getMethod(bean,methodName);
-        if(method == null || method.getParameterCount() != 1){
+        if(method == null || method.getParameterTypes().length != 1){
             return false;
         }
         Class<?> toType = method.getParameterTypes()[0];
         value = TypeConverter.getInstance().convert(value,toType);
-        method.invoke(bean, value);
-        return true;
+        return method.invoke(bean, value);
+    }
+
+    private static String toSetterName(String field){
+        if(field.length() >= 2 && Character.isUpperCase(field.charAt(1))){
+            return "set" + field;
+        }
+        return "set" + field.substring(0,1).toUpperCase() + field.substring(1);
     }
 }

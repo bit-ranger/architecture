@@ -3,7 +3,7 @@ package org.sllx.mvc;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
-import org.sllx.core.util.Page;
+import org.sllx.core.Page;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -101,7 +101,7 @@ public abstract class DaoMyBatisSupport<T>  implements Dao<T> {
     }
 
     public T get(T obj){
-        return sqlSession.selectOne(getNameSpace() + "." + SQLID_GET, obj);
+        return (T)sqlSession.selectOne(getNameSpace() + "." + SQLID_GET, obj);
     }
 
     public List<T> list(Map<String, String> param, Page page){

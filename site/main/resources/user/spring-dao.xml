@@ -5,7 +5,7 @@
 	
 	<bean id="userDao" class="org.sllx.site.user.dao.impl.UserDaoImpl" parent="commonDao"/>
 
-    <bean id="commonDao" class="org.sllx.site.overall.common.CommonDaoImpl">
+    <bean id="commonDao" class="org.sllx.site.core.common.DaoImpl">
         <property name="sqlSession" ref="sqlSessionTemplate"/>
     </bean>
 </beans>

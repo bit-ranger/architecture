@@ -1,6 +1,6 @@
 package org.sllx.mvc;
 
-import org.sllx.core.util.Page;
+import org.sllx.core.Page;
 
 import java.util.List;
 import java.util.Map;

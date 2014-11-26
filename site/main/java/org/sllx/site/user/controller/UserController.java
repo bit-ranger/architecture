@@ -1,24 +1,26 @@
 package org.sllx.site.user.controller;
 
-import org.sllx.core.util.Page;
-import org.sllx.site.overall.common.CommonController;
-import org.sllx.site.overall.util.AwareHolder;
+import org.sllx.core.Page;
+import org.sllx.site.core.common.Controller;
+import org.sllx.site.core.util.AwareHolder;
 import org.sllx.site.user.entity.User;
 import org.sllx.site.user.service.UserService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-@Controller
+@org.springframework.stereotype.Controller
 @RequestMapping("/user")
-public class UserController extends CommonController{
+public class UserController extends Controller {
 
     @javax.annotation.Resource(name = "userService")
     private UserService userService;
@@ -123,13 +125,22 @@ public class UserController extends CommonController{
 
     /**
      * 上传文件
-     * @param uploadFile
+     * @param upload
      * @return
      * @throws IOException
      */
     @RequestMapping(value = "/file", method = RequestMethod.POST)
-    public String upload(@RequestParam MultipartFile uploadFile) throws IOException {
-        uploadFile.transferTo(new File(AwareHolder.getServletConfig().getServletContext().getRealPath("/") + "/tmp/" + uploadFile.getOriginalFilename()));
-        return "redirect:/user";
+    public String upload(@RequestParam MultipartFile upload, int CKEditorFuncNum, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String fileName = upload.getOriginalFilename();
+        File img = new File(AwareHolder.getServletConfig().getServletContext().getRealPath("/") + "/resources/image/" + fileName);
+        upload.transferTo(img);
+
+        PrintWriter out = response.getWriter();
+        out.println("<script type=\"text/javascript\">");
+        String callFuntion = "window.parent.CKEDITOR.tools.callFunction(" + CKEditorFuncNum + ",'" + request.getContextPath() + "/resources/image/" + fileName + "','')";
+        out.println(callFuntion);
+        out.println("</script>");
+        return null;
     }
+
 }

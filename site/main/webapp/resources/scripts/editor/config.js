@@ -11,4 +11,6 @@ CKEDITOR.editorConfig = function( config ) {
     // 设置宽高
     config.width = 1024;
     config.height = 220;
+    config.image_previewText = ' '; //预览区域显示内容
+    config.filebrowserImageUploadUrl = "user/file";//文件上传url
 };

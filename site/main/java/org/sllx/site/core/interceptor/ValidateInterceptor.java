@@ -1,4 +1,4 @@
-package org.sllx.site.overall.interceptor;
+package org.sllx.site.core.interceptor;
 
 
 import org.springframework.web.servlet.HandlerInterceptor;

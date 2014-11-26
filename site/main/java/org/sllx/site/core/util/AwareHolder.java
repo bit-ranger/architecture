@@ -1,4 +1,4 @@
-package org.sllx.site.overall.util;
+package org.sllx.site.core.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

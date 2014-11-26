@@ -1,4 +1,4 @@
-package org.sllx.core.util;
+package org.sllx.core;
 
 public class Page {
 
