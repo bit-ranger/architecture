@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
 	default-lazy-init="true">
 
-    <context:component-scan base-package="org.sllx.site.user.controller" />
+    <context:component-scan base-package="org.sllx.site.user.controller,org.sllx.site.blog.controller" />
 
     <mvc:resources mapping="/favicon.ico" location="/resources/favicon.ico"/>
     <mvc:resources mapping="/resources/**" location="/resources/" />

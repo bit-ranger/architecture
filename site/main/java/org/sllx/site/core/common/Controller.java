@@ -12,7 +12,7 @@ public abstract class Controller extends org.sllx.mvc.Controller {
 
     protected LinkBuilder selfLinkBuilder = linkTo(this.getClass());
     @ModelAttribute("selfHref")
-    public String getHref(){
+    public String getSelfHref(){
         return selfLinkBuilder.withSelfRel().getHref();
     }
 

@@ -5,7 +5,7 @@
 <mapper namespace="org.sllx.site.user.entity.User">
 
     <select id="get" resultType="User" parameterType="User">
-        select * from user where id = #{id}
+        select * from user where userid = #{userid}
     </select>
 
     <select id="list" resultType="User" parameterType="String">
@@ -13,14 +13,14 @@
     </select>
 
     <insert id="insert" parameterType="User">
-         insert into user(name,role,power) values(#{name},#{role},#{power})
+         insert into user(name,password) values(#{name},#{password})
     </insert>
 
     <delete id="delete" parameterType="User">
-        delete from user where id = #{id}
+        delete from user where userid = #{userid}
     </delete>
 
     <update id="update" parameterType="User">
-        update user set name = #{name}, role = #{role}, power = #{power} where id = #{id}
+        update user set name = #{name}, password = #{password} where userid = #{userid}
     </update>
 </mapper>

@@ -29,7 +29,7 @@
                 type : "GET",
                 url : "${jsonHref}/" + id,
                 success : function(json){
-                    alert(json.power);
+                    alert(json.name);
                 }
             });
         }
@@ -41,13 +41,13 @@
     <table>
         <c:forEach items="${users}" var="user">
             <table>
-                <s:form action="${selfHref}/${user.id}" method="put" enctype="multipart/form-data">
+                <s:form action="${selfHref}/${user.userid}" method="put" enctype="multipart/form-data">
                     <tr>
                         <td>name<input name="v_name" type="text" value="${user.name}"/></td>
-                        <td>role<input name="v_role" type="text" value="${user.role}"/></td>
+                        <td>password<input name="v_password" type="text" value="${user.password}"/></td>
                         <td><input type="submit" value="修改"></td>
-                        <td><a href="javascript:void(0);" onclick="show('${user.id}');">查看power</a></td>
-                        <td><a href="javascript:void(0);" onclick="del('${user.id}',this.parentNode.parentNode)">删除</a></td>
+                        <td><a href="javascript:void(0);" onclick="show('${user.userid}');">查看</a></td>
+                        <td><a href="javascript:void(0);" onclick="del('${user.userid}',this.parentNode.parentNode)">删除</a></td>
                     </tr>
                 </s:form>
             </table>
@@ -59,10 +59,8 @@
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
-                <td>id<input name="v_id" type="text" /></td>
+                <td>id<input name="v_userid" type="text" /></td>
                 <td>name<input name="v_name" type="text"/></td>
-                <td>role<input name="v_role" type="text"/></td>
-                <td>power<input name="v_power" type="text"/></td>
             </tr>
         </table>
         <input type="submit" value="查询">
@@ -73,17 +71,10 @@
         <table>
             <tr>
                 <td>name<input name="name" type="text"/></td>
-                <td>role<input name="role" type="text"/></td>
-                <td>power<input name="power" type="text"/></td>
+                <td>password<input name="password" type="text"/></td>
             </tr>
         </table>
         <input type="submit" value="添加">
-    </form>
-
-    上传文件--POST
-    <form action="${fileHref}" method="post" enctype="multipart/form-data">
-        <input type="file" name="uploadFile" />
-        <input type="submit" value="上传" />
     </form>
     <textarea id="editor"/>
 </body>

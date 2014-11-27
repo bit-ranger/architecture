@@ -3,20 +3,77 @@
         version="2.0">
 
 
+    <entity class="org.sllx.site.blog.entity.Article">
+        <table name="article" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="articleid">
+                <column name="articleid"/>
+            </id>
+            <basic name="classid">
+                <column name="classid"/>
+            </basic>
+            <basic name="userid">
+                <column name="userid"/>
+            </basic>
+            <basic name="title">
+                <column name="title"/>
+            </basic>
+            <basic name="content">
+                <column name="content"/>
+            </basic>
+            <basic name="releasetime">
+                <column name="releasetime"/>
+            </basic>
+            <basic name="sort">
+                <column name="sort"/>
+            </basic>
+            <basic name="state">
+                <column name="state"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="org.sllx.site.blog.entity.Articleclass">
+        <table name="articleclass" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="classid">
+                <column name="classid"/>
+            </id>
+            <basic name="userid">
+                <column name="userid"/>
+            </basic>
+            <basic name="name">
+                <column name="name"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="org.sllx.site.blog.entity.Homepage">
+        <table name="homepage" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="userid">
+                <column name="userid"/>
+            </id>
+            <basic name="keyword">
+                <column name="keyword"/>
+            </basic>
+            <basic name="description">
+                <column name="description"/>
+            </basic>
+            <basic name="name">
+                <column name="name"/>
+            </basic>
+        </attributes>
+    </entity>
     <entity class="org.sllx.site.user.entity.User">
         <table name="user" schema="" catalog="sllxsite"/>
         <attributes>
-            <id name="id">
-                <column name="id" nullable="false" precision="10"/>
+            <id name="userid">
+                <column name="userid"/>
             </id>
             <basic name="name">
-                <column name="name" nullable="false" length="16"/>
+                <column name="name"/>
             </basic>
-            <basic name="role">
-                <column name="role" nullable="false" precision="10"/>
-            </basic>
-            <basic name="power">
-                <column name="power" nullable="false" precision="10"/>
+            <basic name="password">
+                <column name="password"/>
             </basic>
         </attributes>
     </entity>

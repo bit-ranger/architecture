@@ -2,19 +2,12 @@ package org.sllx.site.user.controller;
 
 import org.sllx.core.Page;
 import org.sllx.site.core.common.Controller;
-import org.sllx.site.core.util.AwareHolder;
 import org.sllx.site.user.entity.User;
 import org.sllx.site.user.service.UserService;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -60,7 +53,7 @@ public class UserController extends Controller {
      */
     @RequestMapping(value  = "/{id}", method = RequestMethod.GET)
     public String get(@PathVariable int id, User user, ModelMap model){
-        user.setId(id);
+        user.setUserid(id);
         user = userService.get(user);
         model.addAttribute("user", user);
         return "user";
@@ -90,7 +83,7 @@ public class UserController extends Controller {
      */
     @RequestMapping(value  = "/{id}", method = RequestMethod.PUT)
     public String put(@PathVariable int id, User user, ServletRequest request) throws InvocationTargetException, IllegalAccessException {
-        user.setId(id);
+        user.setUserid(id);
         user = userService.get(user);
         reset(user, makeParam(request));
         userService.update(user);
@@ -106,7 +99,7 @@ public class UserController extends Controller {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public @ResponseBody String delete(@PathVariable int id, User user){
-        user.setId(id);
+        user.setUserid(id);
         userService.delete(user);
         return SUCCESS;
     }
@@ -119,28 +112,8 @@ public class UserController extends Controller {
      */
     @RequestMapping(value  = "/json/{id}", method = RequestMethod.GET)
     public @ResponseBody User json(@PathVariable int id, User user){
-        user.setId(id);
+        user.setUserid(id);
         return userService.get(user);
-    }
-
-    /**
-     * 上传文件
-     * @param upload
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(value = "/file", method = RequestMethod.POST)
-    public String upload(@RequestParam MultipartFile upload, int CKEditorFuncNum, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String fileName = upload.getOriginalFilename();
-        File img = new File(AwareHolder.getServletConfig().getServletContext().getRealPath("/") + "/resources/image/" + fileName);
-        upload.transferTo(img);
-
-        PrintWriter out = response.getWriter();
-        out.println("<script type=\"text/javascript\">");
-        String callFuntion = "window.parent.CKEDITOR.tools.callFunction(" + CKEditorFuncNum + ",'" + request.getContextPath() + "/resources/image/" + fileName + "','')";
-        out.println(callFuntion);
-        out.println("</script>");
-        return null;
     }
 
 }
