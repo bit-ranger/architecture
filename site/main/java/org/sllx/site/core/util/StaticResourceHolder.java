@@ -12,13 +12,15 @@ import javax.servlet.ServletContext;
 /**
  * Created by sllx on 14-11-4.
  */
-public class AwareHolder implements ApplicationContextAware,ServletConfigAware,ServletContextAware {
+public class StaticResourceHolder implements ApplicationContextAware,ServletConfigAware,ServletContextAware {
 
     private static ApplicationContext applicationContext;
 
     private static ServletConfig servletConfig;
 
     private static ServletContext servletContext;
+
+    private static String fileStorage;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -45,5 +47,13 @@ public class AwareHolder implements ApplicationContextAware,ServletConfigAware,S
 
     public static ApplicationContext getApplicationContext(){
         return applicationContext;
+    }
+
+    public  void setFileStorage(String fileStorage) {
+        this.fileStorage = fileStorage;
+    }
+
+    public static String getFileStorage() {
+        return fileStorage;
     }
 }

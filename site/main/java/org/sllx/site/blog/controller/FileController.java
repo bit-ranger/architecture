@@ -1,6 +1,9 @@
 package org.sllx.site.blog.controller;
 
-import org.sllx.site.core.common.Controller;
+import org.sllx.core.util.FileUtils;
+import org.sllx.core.util.IOUtils;
+import org.sllx.site.core.base.BaseController;
+import org.sllx.site.core.util.StaticResourceHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,10 +14,18 @@ import java.io.*;
  * Created by sllx on 14-11-27.
  */
 @org.springframework.stereotype.Controller
-@RequestMapping("/file")
-public class FileController extends Controller{
+@RequestMapping("file")
+public class FileController extends BaseController {
 
-    private final static String fileDir = "E:/tmp";
+    private final static File fileDir = new File(StaticResourceHolder.getFileStorage());
+
+    static {
+        try {
+            FileUtils.forceMkdir(fileDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 上传文件
@@ -25,26 +36,17 @@ public class FileController extends Controller{
     @RequestMapping(method = RequestMethod.POST)
     public void upload(@RequestParam MultipartFile upload, int CKEditorFuncNum, HttpServletResponse response) throws IOException {
         String fileName = upload.getOriginalFilename();
-        File img = new File(fileDir + "/" + fileName);
+        File img = new File(fileDir,fileName);
         upload.transferTo(img);
 
         PrintWriter out = response.getWriter();
-        String scritpt = String.format("<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(%s,'%s/%s','');</script>",CKEditorFuncNum,getSelfHref(),fileName);
-        out.println(scritpt);
+        String script = String.format("<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(%s,'%s/%s','');</script>",CKEditorFuncNum,getSelfHref(),fileName);
+        out.println(script);
     }
 
-    @RequestMapping(value = "/{fileName}",method = RequestMethod.GET)
+    @RequestMapping(value = "{fileName:.*}",method = RequestMethod.GET)
     public void download(@PathVariable String fileName,HttpServletResponse response) throws IOException {
-        File img = new File(fileDir + "/" + fileName + ".jpg");
-        response.getOutputStream().write(toinputStream(img));
-    }
-
-    public static byte[] toinputStream(File file) throws IOException {
-        byte[] a = new byte[1048576];
-        FileInputStream fis;
-        fis = new FileInputStream(file);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        bis.read(a);
-        return a;
+        File img = new File(fileDir,fileName);
+        FileUtils.copyFileToOutputStream(img,response.getOutputStream());
     }
 }

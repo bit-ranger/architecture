@@ -90,7 +90,7 @@
 
     <error-page>
         <error-code>404</error-code>
-        <location>/redirect</location>
+        <location>/404</location>
     </error-page>
 
     <distributable/>

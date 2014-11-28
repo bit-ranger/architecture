@@ -1,5 +1,7 @@
 package org.sllx.site.blog.entity;
 
+import org.sllx.site.user.entity.User;
+
 import java.sql.Date;
 
 /**
@@ -109,5 +111,15 @@ public class Article {
         result = 31 * result + sort;
         result = 31 * result + state;
         return result;
+    }
+
+
+    private Articleclass articleclass;
+    private User user;
+    public Articleclass getArticleclass() {
+        return articleclass;
+    }
+    public void setArticleclass(Articleclass articleclass) {
+        this.articleclass = articleclass;
     }
 }

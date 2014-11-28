@@ -1,7 +1,7 @@
 package org.sllx.site.user.controller;
 
 import org.sllx.core.Page;
-import org.sllx.site.core.common.Controller;
+import org.sllx.site.core.base.BaseController;
 import org.sllx.site.user.entity.User;
 import org.sllx.site.user.service.UserService;
 import org.springframework.ui.ModelMap;
@@ -12,8 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @org.springframework.stereotype.Controller
-@RequestMapping("/user")
-public class UserController extends Controller {
+@RequestMapping("user")
+public class UserController extends BaseController {
 
     @javax.annotation.Resource(name = "userService")
     private UserService userService;
@@ -40,7 +40,7 @@ public class UserController extends Controller {
     public String list(ServletRequest request, Page page, ModelMap model) throws IllegalAccessException {
         List<User> users = userService.list(makeParam(request), page);
         model.addAttribute("users", users);
-        return "user";
+        return "user/user";
     }
 
 
@@ -51,12 +51,12 @@ public class UserController extends Controller {
      * @param model
      * @return
      */
-    @RequestMapping(value  = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value  = "{id}", method = RequestMethod.GET)
     public String get(@PathVariable int id, User user, ModelMap model){
         user.setUserid(id);
         user = userService.get(user);
         model.addAttribute("user", user);
-        return "user";
+        return "user/user";
     }
 
 
@@ -81,7 +81,7 @@ public class UserController extends Controller {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    @RequestMapping(value  = "/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value  = "{id}", method = RequestMethod.PUT)
     public String put(@PathVariable int id, User user, ServletRequest request) throws InvocationTargetException, IllegalAccessException {
         user.setUserid(id);
         user = userService.get(user);
@@ -97,7 +97,7 @@ public class UserController extends Controller {
      * @param user
      * @return
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public @ResponseBody String delete(@PathVariable int id, User user){
         user.setUserid(id);
         userService.delete(user);
@@ -110,7 +110,7 @@ public class UserController extends Controller {
      * @param user
      * @return
      */
-    @RequestMapping(value  = "/json/{id}", method = RequestMethod.GET)
+    @RequestMapping(value  = "json/{id}", method = RequestMethod.GET)
     public @ResponseBody User json(@PathVariable int id, User user){
         user.setUserid(id);
         return userService.get(user);

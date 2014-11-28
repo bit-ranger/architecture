@@ -26,14 +26,14 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:org/sllx/site/user/dao/impl/mapper/*.xml"/>
-        <property name="typeAliasesPackage" value="org.sllx.site.user.entity"/>
-    </bean>
-
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:org/sllx/site/*/dao/impl/mapper/*.xml"/>
+        <property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>
     </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
