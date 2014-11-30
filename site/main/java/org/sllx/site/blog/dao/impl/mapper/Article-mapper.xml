@@ -4,16 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.sllx.site.blog.entity.Article">
 
-    <resultMap id="ArticleExpand" type="Article">
-
+    <resultMap id="ArticleExpand" type="Article" autoMapping="true">
+        <association property="user" javaType="org.sllx.site.user.entity.User">
+            <result column="userid" property="userid"/>
+            <result column="name" property="name" />
+            <result column="password" property="password" />
+         </association>
+        <association property="articleclass" javaType="org.sllx.site.blog.entity.Articleclass">
+            <result column="classid" property="classid" />
+            <result column="userid" property="userid" />
+            <result column="name" property="name" />
+        </association>
     </resultMap>
+
 
     <select id="get" resultType="Article" parameterType="Article">
         select * from article where article.articleid=#{articleid}
     </select>
 
-    <select id="getExpand" resultType="ArticleExpand" parameterType="Article">
-        select * from article left join articleclass left join user on article.classid=articleclass.classid and articleclass.userid=user.userid and article.userid=user.userid  where article.articleid=#{articleid}
+    <select id="expand" resultMap="ArticleExpand" parameterType="Article">
+        select * from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid where article.articleid=#{articleid}
     </select>
 
     <select id="list" resultType="Article" parameterType="Article">

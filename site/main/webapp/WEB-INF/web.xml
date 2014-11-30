@@ -64,6 +64,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
+            classpath:blog/spring*.xml
             classpath:user/spring*.xml
             classpath:spring.xml
         </param-value>
