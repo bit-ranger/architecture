@@ -62,7 +62,7 @@
 
                     <c:forEach items="${articleList}" var="article">
                         <li class="list-group-item title">
-                            <a href="http://yinwang.org/blog-cn/2014/04/24/sql-nosql">${article.classid}</a>
+                            <a href="http://yinwang.org/blog-cn/2014/04/24/sql-nosql">${article.title}</a>
                         </li>
                     </c:forEach>
 

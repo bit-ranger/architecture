@@ -17,9 +17,7 @@
         </association>
     </resultMap>
 
-
-    <select id="select" resultType="org.sllx.site.blog.entity.Article" parameterType="org.sllx.site.blog.entity.Article">
-        select * from article
+    <sql id="whereClause">
         <where>
             <if test="articleid!=null">articleid=#{articleid}</if>
             <if test="classid!=null">AND classid=#{classid}</if>
@@ -30,6 +28,11 @@
             <if test="sort!=null">AND sort=#{sort}</if>
             <if test="state!=null">AND state=#{state}</if>
         </where>
+    </sql>
+
+    <select id="select" resultType="org.sllx.site.blog.entity.Article" parameterType="org.sllx.site.blog.entity.Article">
+        select * from article
+        <include refid="whereClause"/>
     </select>
 
     <insert id="insert" parameterType="org.sllx.site.blog.entity.Article">
@@ -56,6 +59,7 @@
     </update>
 
     <select id="selectFull" resultMap="ArticleFull" parameterType="org.sllx.site.blog.entity.Article">
-        select * from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid where article.articleid=#{articleid}
+        select * from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid
+        <include refid="whereClause"/>
     </select>
 </mapper>

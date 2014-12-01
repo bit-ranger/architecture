@@ -1,7 +1,6 @@
 package org.sllx.site.blog.controller;
 
 import org.sllx.core.util.FileUtils;
-import org.sllx.core.util.IOUtils;
 import org.sllx.site.core.base.BaseController;
 import org.sllx.site.core.util.StaticResourceHolder;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,7 @@ import java.io.*;
 @RequestMapping("file")
 public class FileController extends BaseController {
 
-    private final static File fileDir = new File(StaticResourceHolder.getFileStorage());
+    private static File fileDir = new File(StaticResourceHolder.getFileStorage());;
 
     static {
         try {

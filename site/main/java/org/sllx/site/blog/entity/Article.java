@@ -2,7 +2,7 @@ package org.sllx.site.blog.entity;
 
 import org.sllx.site.user.entity.User;
 
-import java.sql.Date;
+import java.util.Date;
 
 /**
  * Created by sllx on 14-11-27.

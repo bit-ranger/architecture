@@ -9,7 +9,6 @@
         window.onload = function()
         {
             CKEDITOR.replace('editor');
-            CKEDITOR.config.filebrowserImageUploadUrl = "${uploadHref}";
         };
     </script>
 </head>
@@ -21,7 +20,7 @@
                 <option value="${articleclass.classid}">${articleclass.name}</option>
             </c:forEach>
         </select>
-
+        <input type="text" name="title"/>
         <textarea id="editor" name="content"></textarea>
         <input type="submit"/>
     </s:form>
