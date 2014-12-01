@@ -1,4 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8" %>
+<%@include file="../overall/common.jsp"%>
 <html>
 <head>
 
@@ -58,6 +59,12 @@
                     <h3 class="panel-title">Blog</h3>
                 </div>
                 <ul class="list-group">
+
+                    <c:forEach items="${articleList}" var="article">
+                        <li class="list-group-item title">
+                            <a href="http://yinwang.org/blog-cn/2014/04/24/sql-nosql">${article.classid}</a>
+                        </li>
+                    </c:forEach>
 
                     <li class="list-group-item title">
                         <a href="http://yinwang.org/blog-cn/2014/04/24/sql-nosql">SQL，NoSQL 以及数据库的实质</a>

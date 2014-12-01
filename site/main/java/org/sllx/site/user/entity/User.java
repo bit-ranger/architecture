@@ -4,15 +4,15 @@ package org.sllx.site.user.entity;
  * Created by sllx on 14-11-27.
  */
 public class User {
-    private int userid;
+    private Integer userid;
     private String name;
     private String password;
 
-    public int getUserid() {
+    public Integer getUserid() {
         return userid;
     }
 
-    public void setUserid(int userid) {
+    public void setUserid(Integer userid) {
         this.userid = userid;
     }
 

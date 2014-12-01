@@ -10,8 +10,8 @@ import java.util.List;
  */
 public interface ArticleDao extends BaseDao<Article>{
 
-    Article getExpand(Article article);
+    Article getFull(Article article);
 
-    List<Article> listExpand(Article article);
+    List<Article> listFull(Article article);
 
 }

@@ -5,6 +5,8 @@
 	
 	<bean id="ardticleDao" class="org.sllx.site.blog.dao.impl.ArticleDaoImpl" parent="commonDao"/>
 
+    <bean id="articleclassDao" class="org.sllx.site.blog.dao.impl.ArticleclassDaoImpl" parent="commonDao"/>
+
     <bean id="commonDao" class="org.sllx.site.core.base.BaseDaoImpl">
         <property name="sqlSession" ref="sqlSessionTemplate"/>
     </bean>

@@ -21,8 +21,7 @@ public abstract class DaoMyBatisSupport<T>  implements Dao<T> {
     protected final static String SQLID_INSERT = "insert";
     protected final static String SQLID_DELETE = "delete";
     protected final static String SQLID_UPDATE = "update";
-    protected final static String SQLID_GET = "get";
-    protected final static String SQLID_LIST = "list";
+    protected final static String SQLID_SELECT = "select";
 
     protected SqlSession sqlSession;
 
@@ -53,7 +52,7 @@ public abstract class DaoMyBatisSupport<T>  implements Dao<T> {
         if(st instanceof ParameterizedType){
             ParameterizedType pt = (ParameterizedType)st;
             if(getName(pt) == null){
-                throw new ClassCastException(String.format("[%s]参数化类型必须是明确的!",this.getClass().getName()));
+                throw new ClassCastException(String.format("the parameterizedType [%s] must be clear!",this.getClass().getName()));
             }
             return pt;
         } else{
@@ -88,46 +87,27 @@ public abstract class DaoMyBatisSupport<T>  implements Dao<T> {
         return 0;
     }
 
+    protected String makeIdFullName(String sqlid){
+        return getNameSpace() + "." + sqlid;
+    }
+
     public int insert(T obj){
-        return sqlSession.insert(getNameSpace() + "." + SQLID_INSERT, obj);
+        return sqlSession.insert(makeIdFullName(SQLID_INSERT), obj);
     }
 
     public int delete(T obj){
-        return sqlSession.delete(getNameSpace() + "." + SQLID_DELETE, obj);
+        return sqlSession.delete(makeIdFullName(SQLID_DELETE), obj);
     }
 
     public int update(T obj){
-        return sqlSession.update(getNameSpace() + "." + SQLID_UPDATE, obj);
+        return sqlSession.update(makeIdFullName(SQLID_UPDATE), obj);
     }
 
     public T get(T obj){
-        return (T)sqlSession.selectOne(getNameSpace() + "." + SQLID_GET, obj);
+        return (T)sqlSession.selectOne(makeIdFullName(SQLID_SELECT), obj);
     }
 
-    public List<T> list(Map<String, String> param, Page page){
-        return sqlSession.selectList(getNameSpace() + "." + SQLID_LIST, toWhereClause(param), new RowBounds(page.getOffset(), page.getPageSize()));
-    }
-
-    private String toWhereClause(Map<String,String> param){
-        StringBuilder clause = new StringBuilder();
-        if(param != null && param.size() > 0){
-            int index = 0;
-            for (Map.Entry<String,String> entry : param.entrySet()) {
-                String value = entry.getValue();
-                if(value == null || value.equals("")){
-                    continue;
-                }
-                String key = entry.getKey();
-                if(index > 0){
-                    clause.append(" and");
-                }
-                clause.append(" ").append(key).append("=").append("'").append(value).append("'");
-                index ++;
-            }
-        }
-        if(clause.length() > 0){
-            clause.insert(0, " where");
-        }
-        return clause.toString();
+    public List<T> list(T obj, Page page){
+        return sqlSession.selectList(makeIdFullName(SQLID_SELECT), obj, new RowBounds(page.getOffset(), page.getPageSize()));
     }
 }

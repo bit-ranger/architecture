@@ -40,7 +40,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
     @Override
-    public List<T> list(Map<String,String> param, Page page) {
-        return dao.list(param,page);
+    public List<T> list(T obj, Page page) {
+        return dao.list(obj,page);
     }
 }

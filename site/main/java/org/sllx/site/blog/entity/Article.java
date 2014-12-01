@@ -8,36 +8,36 @@ import java.sql.Date;
  * Created by sllx on 14-11-27.
  */
 public class Article {
-    private int articleid;
-    private int classid;
-    private int userid;
+    private Integer articleid;
+    private Integer classid;
+    private Integer userid;
     private String title;
     private String content;
     private Date releasetime;
-    private int sort;
-    private int state;
+    private Integer sort;
+    private Integer state;
 
-    public int getArticleid() {
+    public Integer getArticleid() {
         return articleid;
     }
 
-    public void setArticleid(int articleid) {
+    public void setArticleid(Integer articleid) {
         this.articleid = articleid;
     }
 
-    public int getClassid() {
+    public Integer getClassid() {
         return classid;
     }
 
-    public void setClassid(int classid) {
+    public void setClassid(Integer classid) {
         this.classid = classid;
     }
 
-    public int getUserid() {
+    public Integer getUserid() {
         return userid;
     }
 
-    public void setUserid(int userid) {
+    public void setUserid(Integer userid) {
         this.userid = userid;
     }
 
@@ -65,19 +65,19 @@ public class Article {
         this.releasetime = releasetime;
     }
 
-    public int getSort() {
+    public Integer getSort() {
         return sort;
     }
 
-    public void setSort(int sort) {
+    public void setSort(Integer sort) {
         this.sort = sort;
     }
 
-    public int getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 

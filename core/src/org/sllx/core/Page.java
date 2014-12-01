@@ -68,20 +68,6 @@ public class Page {
     }
 
     /**
-     * 设置当前页码，包含从String到int的类型转换,若输入异常数据，页码为1
-     * @param pn 当前页码
-     */
-    public void setPn(String pn){
-        int n;
-        try{
-            n = Integer.parseInt(pn);
-        } catch (NumberFormatException e){
-            n = 1;
-        }
-        setCurrentPage(n);
-    }
-
-    /**
      * @return 每页记录条数
      */
     public int getPageSize() {return pageSize; }
@@ -108,5 +94,19 @@ public class Page {
 
     public boolean getHasNext() {
         return currentPage != totalPage;// 只要当前页不是最后1页
+    }
+
+    /**
+     * 设置当前页码，包含从String到int的类型转换,若输入异常数据，页码为1
+     * @param pn 当前页码
+     */
+    public void setPn(String pn){
+        int n;
+        try{
+            n = Integer.parseInt(pn);
+        } catch (NumberFormatException e){
+            n = 1;
+        }
+        setCurrentPage(n);
     }
 }

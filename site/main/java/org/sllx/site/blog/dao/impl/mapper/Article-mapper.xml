@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.sllx.site.blog.entity.Article">
 
-    <resultMap id="ArticleExpand" type="Article" autoMapping="true">
+    <resultMap id="ArticleFull" type="org.sllx.site.blog.entity.Article" autoMapping="true">
         <association property="user" javaType="org.sllx.site.user.entity.User">
             <result column="userid" property="userid"/>
             <result column="name" property="name" />
@@ -18,27 +18,44 @@
     </resultMap>
 
 
-    <select id="get" resultType="Article" parameterType="Article">
-        select * from article where article.articleid=#{articleid}
+    <select id="select" resultType="org.sllx.site.blog.entity.Article" parameterType="org.sllx.site.blog.entity.Article">
+        select * from article
+        <where>
+            <if test="articleid!=null">articleid=#{articleid}</if>
+            <if test="classid!=null">AND classid=#{classid}</if>
+            <if test="userid!=null">AND userid=#{userid}</if>
+            <if test="title!=null">AND title=#{title}</if>
+            <if test="content!=null">AND content=#{content}</if>
+            <if test="releasetime!=null">AND releasetime=#{releasetime}</if>
+            <if test="sort!=null">AND sort=#{sort}</if>
+            <if test="state!=null">AND state=#{state}</if>
+        </where>
     </select>
 
-    <select id="expand" resultMap="ArticleExpand" parameterType="Article">
-        select * from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid where article.articleid=#{articleid}
-    </select>
-
-    <select id="list" resultType="Article" parameterType="Article">
-         select * from user ${_parameter}
-    </select>
-
-    <insert id="insert" parameterType="Article">
-         insert into user(name,password) values(#{name},#{password})
+    <insert id="insert" parameterType="org.sllx.site.blog.entity.Article">
+         insert into article(classid,userid,title,content,releasetime,sort,state) values(#{classid},#{userid},#{title},#{content},#{releasetime},#{sort},#{state})
     </insert>
 
-    <delete id="delete" parameterType="Article">
-        delete from user where userid = #{userid}
+    <delete id="delete" parameterType="org.sllx.site.blog.entity.Article">
+        delete from article where articleid = #{articleid}
     </delete>
 
-    <update id="update" parameterType="Article">
-        update user set name = #{name}, password = #{password} where userid = #{userid}
+    <update id="update" parameterType="org.sllx.site.blog.entity.Article">
+        update article
+         <set>
+             <if test="articleid!=null">articleid=#{articleid}</if>
+             <if test="classid!=null">classid=#{classid}</if>
+             <if test="userid!=null">userid=#{userid}</if>
+             <if test="title!=null">title=#{title}</if>
+             <if test="content!=null">content=#{content}</if>
+             <if test="releasetime!=null">releasetime=#{releasetime}</if>
+             <if test="sort!=null">sort=#{sort}</if>
+             <if test="state!=null">state=#{state}</if>
+         </set>
+         where articleid = #{articleid}
     </update>
+
+    <select id="selectFull" resultMap="ArticleFull" parameterType="org.sllx.site.blog.entity.Article">
+        select * from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid where article.articleid=#{articleid}
+    </select>
 </mapper>

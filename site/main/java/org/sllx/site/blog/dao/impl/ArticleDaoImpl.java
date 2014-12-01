@@ -11,12 +11,12 @@ import java.util.List;
  */
 public class ArticleDaoImpl extends BaseDaoImpl<Article> implements ArticleDao{
     @Override
-    public Article getExpand(Article article) {
-       return (Article)sqlSession.selectOne(getNameSpace() + "." + "expand", article);
+    public Article getFull(Article article) {
+       return (Article)sqlSession.selectOne(makeIdFullName("selectFull"), article);
     }
 
     @Override
-    public List<Article> listExpand(Article article) {
-        return sqlSession.selectList(getNameSpace() + "." + "expand", article);
+    public List<Article> listFull(Article article) {
+        return sqlSession.selectList(makeIdFullName("selectFull"), article);
     }
 }

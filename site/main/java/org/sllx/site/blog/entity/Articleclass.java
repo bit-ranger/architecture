@@ -4,23 +4,23 @@ package org.sllx.site.blog.entity;
  * Created by sllx on 14-11-27.
  */
 public class Articleclass {
-    private int classid;
-    private int userid;
+    private Integer classid;
+    private Integer userid;
     private String name;
 
-    public int getClassid() {
+    public Integer getClassid() {
         return classid;
     }
 
-    public void setClassid(int classid) {
+    public void setClassid(Integer classid) {
         this.classid = classid;
     }
 
-    public int getUserid() {
+    public Integer getUserid() {
         return userid;
     }
 
-    public void setUserid(int userid) {
+    public void setUserid(Integer userid) {
         this.userid = userid;
     }
 

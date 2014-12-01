@@ -4,5 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 	<bean id="blogService" class="org.sllx.site.blog.service.impl.BlogServiceImpl">
 		<property name="ardticleDao" ref="ardticleDao"/>
+        <property name="articleclassDao" ref="articleclassDao"/>
     </bean>
 </beans>

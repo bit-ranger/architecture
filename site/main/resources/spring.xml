@@ -18,6 +18,7 @@
 			<tx:method name="insert*" propagation="REQUIRED" />
 			<tx:method name="delete*" propagation="REQUIRED" />
 			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="save*" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true"/>
 		</tx:attributes>
 	</tx:advice>
@@ -33,7 +34,7 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath:org/sllx/site/*/dao/impl/mapper/*.xml"/>
-        <property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>
+        <!--<property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>-->
     </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

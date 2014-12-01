@@ -30,15 +30,15 @@ public class UserController extends BaseController {
 
     /**
      * 查询一组记录
-     * @param request
+     * @param user
      * @param page
      * @param model
      * @return
      * @throws IllegalAccessException
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String list(ServletRequest request, Page page, ModelMap model) throws IllegalAccessException {
-        List<User> users = userService.list(makeParam(request), page);
+    public String list(User user, Page page, ModelMap model) throws IllegalAccessException {
+        List<User> users = userService.list(user, page);
         model.addAttribute("users", users);
         return "user/user";
     }
@@ -84,8 +84,6 @@ public class UserController extends BaseController {
     @RequestMapping(value  = "{id}", method = RequestMethod.PUT)
     public String put(@PathVariable int id, User user, ServletRequest request) throws InvocationTargetException, IllegalAccessException {
         user.setUserid(id);
-        user = userService.get(user);
-        reset(user, makeParam(request));
         userService.update(user);
         return "redirect:/user";
     }
