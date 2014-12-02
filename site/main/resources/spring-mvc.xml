@@ -20,12 +20,13 @@
     </mvc:interceptors>
 
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
-        <!-- 该拦截器不会拦截静态资源 -->
+        <!-- 该拦截器不会拦截静态资源
         <property name="interceptors">
             <list>
                 <bean class="org.sllx.site.core.interceptor.ValidateInterceptor" />
             </list>
         </property>
+        -->
     </bean>
 
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
@@ -57,6 +58,6 @@
         该过滤器会自动创建filterMultipartResolver -->
 
     <bean class="org.sllx.site.core.util.StaticResourceHolder"  lazy-init="false">
-        <property name="fileStorage" value="/home/sllx/tmp"/>
+        <property name="fileStorage" value="E:/tmp"/>
     </bean>
 </beans>

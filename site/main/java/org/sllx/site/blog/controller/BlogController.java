@@ -47,7 +47,6 @@ public class BlogController extends BaseController {
         article.setSort(1);
         article.setState(0);
         blogService.save(article);
-        modelMap.clear();
         return "redirect:/blog";
     }
 

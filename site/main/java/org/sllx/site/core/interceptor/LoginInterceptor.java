@@ -5,12 +5,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String id = request.getSession().getId();
-        System.out.println(id);
+        HttpSession session = request.getSession();
+        if(session.getAttribute("user") == null){
+            response.sendRedirect("/login");
+            return false;
+        }
         return true;
     }
 
