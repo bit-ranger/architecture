@@ -122,4 +122,10 @@ public class Article {
     public void setArticleclass(Articleclass articleclass) {
         this.articleclass = articleclass;
     }
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

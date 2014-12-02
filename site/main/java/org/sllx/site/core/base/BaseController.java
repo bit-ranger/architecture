@@ -11,7 +11,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public abstract class BaseController extends org.sllx.mvc.Controller {
 
     protected LinkBuilder selfLinkBuilder = linkTo(this.getClass());
-    @ModelAttribute("selfHref")
     public String getSelfHref(){
         return selfLinkBuilder.withSelfRel().getHref();
     }

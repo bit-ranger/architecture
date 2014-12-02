@@ -7,13 +7,13 @@
     <resultMap id="ArticleFull" type="org.sllx.site.blog.entity.Article" autoMapping="true">
         <association property="user" javaType="org.sllx.site.user.entity.User">
             <result column="userid" property="userid"/>
-            <result column="name" property="name" />
+            <result column="username" property="name" />
             <result column="password" property="password" />
          </association>
         <association property="articleclass" javaType="org.sllx.site.blog.entity.Articleclass">
             <result column="classid" property="classid" />
             <result column="userid" property="userid" />
-            <result column="name" property="name" />
+            <result column="articleclassname" property="name" />
         </association>
     </resultMap>
 
@@ -59,7 +59,7 @@
     </update>
 
     <select id="selectFull" resultMap="ArticleFull" parameterType="org.sllx.site.blog.entity.Article">
-        select * from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid
+        select *,articleclass.name as articleclassname,user.name as username from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid
         <include refid="whereClause"/>
     </select>
 </mapper>
