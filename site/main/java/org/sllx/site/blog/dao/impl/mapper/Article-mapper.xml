@@ -31,8 +31,9 @@
     </sql>
 
     <select id="select" resultType="org.sllx.site.blog.entity.Article" parameterType="org.sllx.site.blog.entity.Article">
-        select * from article
+        select articleid,title from article
         <include refid="whereClause"/>
+        order by releasetime desc
     </select>
 
     <insert id="insert" parameterType="org.sllx.site.blog.entity.Article">

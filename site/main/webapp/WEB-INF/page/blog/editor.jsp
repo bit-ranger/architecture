@@ -1,20 +1,22 @@
-<%@page contentType="text/html; charset=UTF-8" %>
-<%@include file="../overall/common.jsp"%>
+<%@page contentType="text/html;charset=UTF-8" %>
+<%@include file="../global/common.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
 <head>
     <title>hello</title>
-    <script src="${root}/resources/scripts/editor/ckeditor.js" type="text/javascript"></script>
+    <script src="${scripts}/editor/ckeditor.js" type="text/javascript"></script>
+    <script src="${scripts}/editor/loginCheck.js" type="text/javascript"></script>
     <script type="text/javascript">
         window.onload = function()
         {
             CKEDITOR.replace('editor');
+            LOGINCHECK.name("abc");
         };
     </script>
 </head>
 <body>
     <a href="${root}">首页</a>
-    <s:form action="${releaseHref}" method="post">
+    <s:form action="${releaseURL}" method="post">
         <select name="classid">
             <c:forEach items="${articleclassList}" var="articleclass">
                 <option value="${articleclass.classid}">${articleclass.name}</option>

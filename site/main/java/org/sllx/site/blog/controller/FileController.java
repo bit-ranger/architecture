@@ -39,7 +39,7 @@ public class FileController extends BaseController {
         upload.transferTo(img);
 
         PrintWriter out = response.getWriter();
-        String script = String.format("<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(%s,'%s/%s','');</script>",CKEditorFuncNum,getSelfHref(),fileName);
+        String script = String.format("<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(%s,'%s/%s','');</script>",CKEditorFuncNum,selfURL(),fileName);
         out.println(script);
     }
 
