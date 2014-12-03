@@ -4,19 +4,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
 <head>
     <title>hello</title>
+    <script src="${scripts}/loginCheck.js" type="text/javascript"></script>
     <script src="${scripts}/editor/ckeditor.js" type="text/javascript"></script>
-    <script src="${scripts}/editor/loginCheck.js" type="text/javascript"></script>
     <script type="text/javascript">
         window.onload = function()
         {
             CKEDITOR.replace('editor');
-            LOGINCHECK.name("abc");
+            LOGINCHECK_URL = "${root}/";
         };
     </script>
 </head>
 <body>
     <a href="${root}">首页</a>
-    <s:form action="${releaseURL}" method="post">
+    <s:form action="${releaseURL}" method="post" id="logincheck">
         <select name="classid">
             <c:forEach items="${articleclassList}" var="articleclass">
                 <option value="${articleclass.classid}">${articleclass.name}</option>
@@ -26,5 +26,7 @@
         <textarea id="editor" name="content"></textarea>
         <input type="submit"/>
     </s:form>
+
+    <input type="button" onclick="alert(LOGINCHECK);"/>
 </body>
 </html>

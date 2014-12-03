@@ -34,7 +34,7 @@
     <div class="container center" style="padding-top: 70px;">
 
         <div class="blog-header text-center">
-            <h1 class="blog-title">${article.title}</h1>
+            <h2 class="blog-title">${article.title}</h2>
             <p class="lead blog-description"><fmt:formatDate value="${article.releasetime}" pattern="yyyy-MM-dd"/> by ${article.user.name}</p>
         </div>
 

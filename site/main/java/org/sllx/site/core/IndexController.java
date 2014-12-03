@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created by sllx on 14-11-28.
@@ -38,5 +39,10 @@ public class IndexController{
     @RequestMapping(value = "landing",method = RequestMethod.POST)
     public String landing(){
         return "redirect:/";
+    }
+
+    @RequestMapping("loginCheck")
+    public @ResponseBody boolean loginCheck(){
+        return true;
     }
 }
