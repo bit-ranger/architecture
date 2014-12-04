@@ -14,7 +14,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         if(session.getAttribute("user") == null){
             String redirectURL = request.getRequestURL().toString();
             redirectURL = URLEncoder.encode(redirectURL,"UTF-8");
-            response.sendRedirect("/login/" + redirectURL);
+            response.sendRedirect("/login?redirectURL=" + redirectURL);
             return false;
         }
         return true;

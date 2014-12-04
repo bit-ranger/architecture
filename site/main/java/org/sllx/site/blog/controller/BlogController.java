@@ -4,6 +4,7 @@ import org.sllx.core.Page;
 import org.sllx.site.blog.entity.Article;
 import org.sllx.site.blog.entity.Articleclass;
 import org.sllx.site.blog.service.BlogService;
+import org.sllx.site.core.GlobalController;
 import org.sllx.site.core.base.BaseController;
 import org.sllx.site.user.entity.User;
 import org.springframework.ui.ModelMap;
@@ -26,7 +27,6 @@ public class BlogController extends BaseController {
     @RequestMapping(method = RequestMethod.GET)
     public String list(Page page, ModelMap modelMap){
         Article article = new Article();
-        article.setUserid(1);
         List<Article> articleList = blogService.list(article,page);
         modelMap.addAttribute("articleList",articleList);
         modelMap.addAttribute("selfURL",selfURL());
@@ -37,8 +37,8 @@ public class BlogController extends BaseController {
     public String editor(Articleclass articleclass,ModelMap modelMap){
         articleclass.setUserid(1);
         List<Articleclass> articleclassList = blogService.listArticleclass(articleclass);
-
         modelMap.addAttribute("articleclassList",articleclassList);
+        modelMap.addAttribute("loginURL", url(GlobalController.class,"login","loginURL"));
         modelMap.addAttribute("uploadURL", url(FileController.class,"uploadURL"));
         modelMap.addAttribute("releaseURL",selfURL("release","releaseURL"));
         return "blog/editor";
@@ -59,10 +59,13 @@ public class BlogController extends BaseController {
         return "redirect:/";
     }
 
-    @RequestMapping(value="{id}" , method = RequestMethod.GET)
+    @RequestMapping(value="{id:[0-9]{1,9}}" , method = RequestMethod.GET)
     public String view(@PathVariable Integer id, Article article, ModelMap modelMap){
         article.setArticleid(id);
         article = blogService.getFull(article);
+        if(article == null){
+            return "redirect:/404";
+        }
         modelMap.addAttribute("article", article);
         return "blog/view";
     }

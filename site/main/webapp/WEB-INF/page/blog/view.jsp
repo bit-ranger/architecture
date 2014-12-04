@@ -19,47 +19,34 @@
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a class="navbar-brand" href="${root}">首页</a>
+                <a class="navbar-brand" href="${root}">Index</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="#">github</a></li>
+                    <li><a href="https://github.com/dubuyuye/site" target="_blank">github</a></li>
                 </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
 
-    <div class="container center" style="padding-top: 70px;">
 
-        <div class="blog-header text-center">
-            <h2 class="blog-title">${article.title}</h2>
-            <p class="lead blog-description"><fmt:formatDate value="${article.releasetime}" pattern="yyyy-MM-dd"/> by ${article.user.name}</p>
-        </div>
+    <div class="row" style="padding-top: 70px">
+        <div class="container center-block">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <h2 class="text-center">${article.title}</h2>
+                <p class="lead text-center"><fmt:formatDate value="${article.releasetime}" pattern="yyyy-MM-dd"/> by ${article.user.name}</p>
 
-        <div class="row">
-
-            <div class="blog-main col-sm-8 center">
-
-                <div class="blog-post">
+                <div>
                     ${article.content}
-                </div><!-- /.blog-post -->
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <!--<nav>
-                    <ul class="pager">
-                        <li><a href="#">Previous</a></li>
-                        <li><a href="#">Next</a></li>
-                    </ul>
-                </nav>-->
-
-            </div><!-- /.blog-main -->
-
-        </div><!-- /.row -->
-
-    </div><!-- /.container -->
-
-    <div class="blog-footer center text-center">
+    <div class="center text-center">
         <p>
             <a href="#">Back to top</a>
         </p>

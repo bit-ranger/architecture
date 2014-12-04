@@ -9,14 +9,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by sllx on 14-11-28.
@@ -44,8 +40,7 @@ public class GlobalController extends BaseController{
      * @return
      */
     @RequestMapping("login")
-    public String login(ModelMap modelMap, String redirectURL, String message){
-        modelMap.addAttribute("message",message);
+    public String login(ModelMap modelMap, String redirectURL){
         modelMap.addAttribute("redirectURL",redirectURL);
         modelMap.addAttribute("landingURL",selfURL("landing","landingURL"));
         return "/login";
