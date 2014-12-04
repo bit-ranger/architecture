@@ -8,8 +8,8 @@
          select * from user
          <where>
              <if test="userid!=null">userid=#{userid}</if>
-             <if test="userid!=null">AND name=#{name}</if>
-             <if test="userid!=null">AND password=#{password}</if>
+             <if test="name!=null">AND name=#{name}</if>
+             <if test="password!=null">AND password=#{password}</if>
          </where>
     </select>
 
@@ -25,8 +25,8 @@
         update user
         <set>
             <if test="userid!=null">userid=#{userid}</if>
-            <if test="userid!=null">name=#{name}</if>
-            <if test="userid!=null">password=#{password}</if>
+            <if test="name!=null">name=#{name}</if>
+            <if test="password!=null">password=#{password}</if>
         </set>
         where userid = #{userid}
     </update>

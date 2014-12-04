@@ -1,9 +1,11 @@
 package org.sllx.site.user.entity;
 
-/**
- * Created by sllx on 14-11-27.
- */
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable{
+
+    private static final long serialVersionUID = 2894257361469960272L;
+
     private Integer userid;
     private String name;
     private String password;

@@ -5,9 +5,12 @@ import org.sllx.site.blog.entity.Article;
 import org.sllx.site.blog.entity.Articleclass;
 import org.sllx.site.blog.service.BlogService;
 import org.sllx.site.core.base.BaseController;
+import org.sllx.site.user.entity.User;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import sun.print.resources.serviceui_es;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +24,7 @@ public class BlogController extends BaseController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public String list(Page page,ModelMap modelMap){
+    public String list(Page page, ModelMap modelMap){
         Article article = new Article();
         article.setUserid(1);
         List<Article> articleList = blogService.list(article,page);
@@ -42,8 +45,13 @@ public class BlogController extends BaseController {
     }
 
     @RequestMapping(value = "release", method = RequestMethod.POST)
-    public String release(Article article){
-        article.setUserid(1);
+    public String release(Article article, HttpSession session){
+        Object userObj = session.getAttribute("user");
+        if(userObj == null){
+            return "redirect:/login";
+        }
+        User user = (User)userObj;
+        article.setUserid(user.getUserid());
         article.setReleasetime(new Date());
         article.setSort(1);
         article.setState(0);

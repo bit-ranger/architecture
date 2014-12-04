@@ -10,13 +10,12 @@
         window.onload = function()
         {
             CKEDITOR.replace('editor');
-            LOGINCHECK_URL = "${root}/";
         };
     </script>
 </head>
 <body>
     <a href="${root}">首页</a>
-    <s:form action="${releaseURL}" method="post" id="logincheck">
+    <s:form action="${releaseURL}" method="post" id="loginCheck">
         <select name="classid">
             <c:forEach items="${articleclassList}" var="articleclass">
                 <option value="${articleclass.classid}">${articleclass.name}</option>
@@ -26,7 +25,5 @@
         <textarea id="editor" name="content"></textarea>
         <input type="submit"/>
     </s:form>
-
-    <input type="button" onclick="alert(LOGINCHECK);"/>
 </body>
 </html>

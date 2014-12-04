@@ -1,42 +1,52 @@
-var LOGINCHECK = "logincheck";
-var LOGINCHECK_URI = "loginCheck";
+var LOGINCHECK = {
+    ID : "loginCheck",
+    CHECK_URI : "loginCheck",
+    replaceID:function(id){
+        LOGINCHECK.ID = id;
+    },
+    replaceCHECK_URI:function(uri){
+        LOGINCHECK.CHECK_URI = uri;
+    },
+    getROOT:function(action){
+        if(action == null || action == undefined || action.length == 0){
+            throw "action is '" + action + "'";
+        }
+        var root = action.match(/^\w*:\/{2}[^/]*\//);
+        return root;
+    },
+    check:function(form){
+        var isLogin = false;
+        var check_url = LOGINCHECK.getROOT(form.attr("action")) + LOGINCHECK.CHECK_URI;
+        $.ajax({
+            url : check_url,
+            type : "get",
+            cache : false,
+            async : false,
+            timeout : 2000,
+            success : function(message){
+                isLogin = message;
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown){
+                throw errorThrown;
+            }
+        });
+        return isLogin;
+    }
+};
 $(document).ready(
     function(){
-        var form = $("#"+LOGINCHECK);
+        var form = $("#"+LOGINCHECK.ID);
         form.submit(function(){
             try{
-                if(logincheck_func()){
-                    form.submit();
+                if(!LOGINCHECK.check(form)){
+                    alert("请登录后重试!");
+                    return false;
                 }
             }catch(e){
                 alert(e);
                 return false;
             }
         });
-
-        var logincheck_func = function(){
-            var isLogin = false;
-            var url = getURL();
-            $.ajax({
-                url:url,
-                type:"get",
-                success:function(message){
-                    isLogin = message;
-                }
-            });
-            return isLogin;
-        }
-
-        var getURL = function(){
-            var action = form.attr("action");
-            if(action == null || action == undefined){
-                throw "action is" + action;
-            }
-            var arr = action.split("//");
-            var scheme = arr[0];
-            var sp = arr[1].split("/")[0];
-            return scheme + "//" + sp + "/" + LOGINCHECK_URI;
-        }
     }
 );
 

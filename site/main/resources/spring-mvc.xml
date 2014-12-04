@@ -58,6 +58,6 @@
         该过滤器会自动创建filterMultipartResolver -->
 
     <bean class="org.sllx.site.core.util.StaticResourceHolder"  lazy-init="false">
-        <property name="fileStorage" value="/home/sllx/tmp"/>
+        <property name="fileStorage" value="E:/tmp"/>
     </bean>
 </beans>
