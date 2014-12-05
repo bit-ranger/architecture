@@ -30,7 +30,8 @@ public class GlobalController extends BaseController{
     }
 
     @RequestMapping("404")
-    public String redirect404(){
+    public String redirect404(ModelMap modelMap){
+        modelMap.clear();
         return "redirect:/";
     }
 
@@ -42,7 +43,7 @@ public class GlobalController extends BaseController{
     @RequestMapping("login")
     public String login(ModelMap modelMap, String redirectURL){
         modelMap.addAttribute("redirectURL",redirectURL);
-        modelMap.addAttribute("landingURL",selfURL("landing","landingURL"));
+        modelMap.addAttribute("landingURL",selfURL("landing"));
         return "/login";
     }
 
@@ -51,7 +52,8 @@ public class GlobalController extends BaseController{
      * @return
      */
     @RequestMapping(value = "landing",method = RequestMethod.POST)
-    public String landing(User user, HttpSession session, String redirectURL) throws UnsupportedEncodingException {
+    public String landing(User user, HttpSession session, String redirectURL, ModelMap modelMap) throws UnsupportedEncodingException {
+        modelMap.clear();
         user = userService.get(user);
         boolean hasRedirect = StringUtils.isNotBlank(redirectURL);
         if(user == null){

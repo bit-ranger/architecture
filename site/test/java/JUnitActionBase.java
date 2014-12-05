@@ -20,10 +20,12 @@ public class JUnitActionBase {
     @BeforeClass
     public static void setUp() {
         if (handlerMapping == null) {
-            String[] configs = { "file:src/main/resources/spring-mvc.xml",
-                    "file:src/main/resources/spring.xml",
-                    "file:src/main/resources/user/spring-dao.xml",
-                    "file:src/main/resources/user/spring-service.xml"};
+            String[] configs = { "file:site/main/resources/spring-mvc.xml",
+                    "file:site/main/resources/spring.xml",
+                    "file:site/main/resources/user/spring-dao.xml",
+                    "file:site/main/resources/user/spring-service.xml",
+                    "file:site/main/resources/blog/spring-dao.xml",
+                    "file:site/main/resources/blog/spring-service.xml"};
             XmlWebApplicationContext context = new XmlWebApplicationContext();
             context.setConfigLocations(configs);
             MockServletContext msc = new MockServletContext();

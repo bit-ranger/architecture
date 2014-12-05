@@ -23,13 +23,26 @@ public class BlogController extends BaseController {
     @javax.annotation.Resource(name = "blogService")
     private BlogService blogService;
 
+    @ModelAttribute("loginURL")
+    public String loginURL(){
+        return url(GlobalController.class,"login");
+    }
+
+    @ModelAttribute("uploadURL")
+    public String uploadURL(){
+        return url(FileController.class,"uploadURL");
+    }
+
+    @ModelAttribute("releaseURL")
+    public String releaseURL(){
+        return selfURL("release");
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public String list(Page page, ModelMap modelMap){
         Article article = new Article();
         List<Article> articleList = blogService.list(article,page);
         modelMap.addAttribute("articleList",articleList);
-        modelMap.addAttribute("selfURL",selfURL());
         return "blog/list";
     }
 
@@ -38,14 +51,12 @@ public class BlogController extends BaseController {
         articleclass.setUserid(1);
         List<Articleclass> articleclassList = blogService.listArticleclass(articleclass);
         modelMap.addAttribute("articleclassList",articleclassList);
-        modelMap.addAttribute("loginURL", url(GlobalController.class,"login","loginURL"));
-        modelMap.addAttribute("uploadURL", url(FileController.class,"uploadURL"));
-        modelMap.addAttribute("releaseURL",selfURL("release","releaseURL"));
         return "blog/editor";
     }
 
     @RequestMapping(value = "release", method = RequestMethod.POST)
-    public String release(Article article, HttpSession session){
+    public String release(Article article, HttpSession session, ModelMap modelMap){
+        modelMap.clear();
         Object userObj = session.getAttribute("user");
         if(userObj == null){
             return "redirect:/login";
@@ -64,6 +75,7 @@ public class BlogController extends BaseController {
         article.setArticleid(id);
         article = blogService.getFull(article);
         if(article == null){
+            modelMap.clear();
             return "redirect:/404";
         }
         modelMap.addAttribute("article", article);

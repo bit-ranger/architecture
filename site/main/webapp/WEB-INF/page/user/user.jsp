@@ -4,13 +4,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
 <head>
     <title>hello</title>
-    <script src="${root}/resources/scripts/editor/ckeditor.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        window.onload = function()
-        {
-            CKEDITOR.replace('editor');
-        };
-    </script>
     <script type="text/javascript">
         function del(id,dom){
             $.ajax({
@@ -27,7 +20,7 @@
         function show(id){
             $.ajax({
                 type : "GET",
-                url : "${jsonHref}/" + id,
+                url : "${jsonURL}/" + id,
                 success : function(json){
                     alert(json.name);
                 }
@@ -41,7 +34,7 @@
     <table>
         <c:forEach items="${users}" var="user">
             <table>
-                <s:form action="${selfHref}/${user.userid}" method="put" enctype="multipart/form-data">
+                <s:form action="${selfURL}/${user.userid}" method="put" enctype="multipart/form-data">
                     <tr>
                         <td>name<input name="v_name" type="text" value="${user.name}"/></td>
                         <td>password<input name="v_password" type="text" value="${user.password}"/></td>
@@ -55,7 +48,7 @@
     </table>
 
     多条件查询--GET
-    <form  action="${selfHref}"  method="get">
+    <form  action="${selfURL}"  method="get">
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
@@ -67,7 +60,7 @@
     </form>
 
     添加数据--POST
-    <form action="${selfHref}"  method="post">
+    <form action="${selfURL}"  method="post">
         <table>
             <tr>
                 <td>name<input name="name" type="text"/></td>
@@ -76,6 +69,5 @@
         </table>
         <input type="submit" value="添加">
     </form>
-    <textarea id="editor"/>
 </body>
 </html>

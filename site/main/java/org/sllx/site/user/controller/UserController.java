@@ -18,14 +18,9 @@ public class UserController extends BaseController {
     @javax.annotation.Resource(name = "userService")
     private UserService userService;
 
-    @ModelAttribute("jsonHref")
+    @ModelAttribute("jsonURL")
     public String getJsonHref(){
-        return selfLinkBuilder.slash("json").withRel("json").getHref();
-    }
-
-    @ModelAttribute("fileHref")
-    public String getFileHref(){
-        return selfLinkBuilder.slash("file").withRel("file").getHref();
+        return selfURL("json");
     }
 
     /**
@@ -51,8 +46,8 @@ public class UserController extends BaseController {
      * @param model
      * @return
      */
-    @RequestMapping(value  = "{id}", method = RequestMethod.GET)
-    public String get(@PathVariable int id, User user, ModelMap model){
+    @RequestMapping(value  = "{id:[0-9]{1,9}}", method = RequestMethod.GET)
+    public String get(@PathVariable Integer id, User user, ModelMap model){
         user.setUserid(id);
         user = userService.get(user);
         model.addAttribute("user", user);
@@ -66,7 +61,8 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST)
-    public String post(User user){
+    public String post(User user, ModelMap modelMap){
+        modelMap.clear();
         userService.insert(user);
         return "redirect:/user";
     }
@@ -76,13 +72,13 @@ public class UserController extends BaseController {
      * 通过ID更新现有记录
      * @param id
      * @param user
-     * @param request
      * @return
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    @RequestMapping(value  = "{id}", method = RequestMethod.PUT)
-    public String put(@PathVariable int id, User user, ServletRequest request) throws InvocationTargetException, IllegalAccessException {
+    @RequestMapping(value  = "{id:[0-9]{1,9}}", method = RequestMethod.PUT)
+    public String put(@PathVariable int id, User user, ModelMap modelMap) throws InvocationTargetException, IllegalAccessException {
+        modelMap.clear();
         user.setUserid(id);
         userService.update(user);
         return "redirect:/user";
@@ -95,8 +91,8 @@ public class UserController extends BaseController {
      * @param user
      * @return
      */
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public @ResponseBody String delete(@PathVariable int id, User user){
+    @RequestMapping(value = "{id:[0-9]{1,9}}", method = RequestMethod.DELETE)
+    public @ResponseBody String delete(@PathVariable Integer id, User user){
         user.setUserid(id);
         userService.delete(user);
         return SUCCESS;
@@ -108,8 +104,8 @@ public class UserController extends BaseController {
      * @param user
      * @return
      */
-    @RequestMapping(value  = "json/{id}", method = RequestMethod.GET)
-    public @ResponseBody User json(@PathVariable int id, User user){
+    @RequestMapping(value  = "json/{id:[0-9]{1,9}}", method = RequestMethod.GET)
+    public @ResponseBody User json(@PathVariable Integer id, User user){
         user.setUserid(id);
         return userService.get(user);
     }
