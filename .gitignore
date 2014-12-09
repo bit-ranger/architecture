@@ -19,3 +19,4 @@ out
 .project
 .springBeans
 *.eml
+*.iml
