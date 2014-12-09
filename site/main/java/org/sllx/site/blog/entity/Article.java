@@ -4,9 +4,6 @@ import org.sllx.site.user.entity.User;
 
 import java.util.Date;
 
-/**
- * Created by sllx on 14-11-27.
- */
 public class Article {
     private Integer articleid;
     private Integer classid;

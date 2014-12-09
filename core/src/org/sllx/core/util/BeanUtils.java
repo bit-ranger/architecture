@@ -5,9 +5,6 @@ import org.sllx.core.Assert;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Created by sllx on 14-11-26.
- */
 public class BeanUtils {
 
     public static Method getMethod(Object object, String methodName){

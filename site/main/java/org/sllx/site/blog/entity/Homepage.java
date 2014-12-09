@@ -1,8 +1,5 @@
 package org.sllx.site.blog.entity;
 
-/**
- * Created by sllx on 14-11-27.
- */
 public class Homepage {
     private Integer userid;
     private String keyword;

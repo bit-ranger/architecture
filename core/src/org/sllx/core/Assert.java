@@ -1,8 +1,5 @@
 package org.sllx.core;
 
-/**
- * Created by sllx on 14-10-14.
- */
 public class Assert {
 
     /**

@@ -10,9 +10,6 @@ import org.sllx.site.core.base.BaseServiceImpl;
 
 import java.util.List;
 
-/**
- * Created by sllx on 14-11-28.
- */
 public class BlogServiceImpl extends BaseServiceImpl<Article> implements BlogService{
 
     private ArticleclassDao articleclassDao;

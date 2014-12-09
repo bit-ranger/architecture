@@ -1,8 +1,5 @@
 package org.sllx.site.blog.entity;
 
-/**
- * Created by sllx on 14-11-27.
- */
 public class Articleclass {
     private Integer classid;
     private Integer userid;

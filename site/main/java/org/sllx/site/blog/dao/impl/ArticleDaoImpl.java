@@ -6,9 +6,6 @@ import org.sllx.site.core.base.BaseDaoImpl;
 
 import java.util.List;
 
-/**
- * Created by sllx on 14-11-28.
- */
 public class ArticleDaoImpl extends BaseDaoImpl<Article> implements ArticleDao{
     @Override
     public Article getFull(Article article) {

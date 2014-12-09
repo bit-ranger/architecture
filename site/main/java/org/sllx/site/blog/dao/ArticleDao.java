@@ -5,9 +5,6 @@ import org.sllx.site.core.base.BaseDao;
 
 import java.util.List;
 
-/**
- * Created by sllx on 14-11-28.
- */
 public interface ArticleDao extends BaseDao<Article>{
 
     Article getFull(Article article);

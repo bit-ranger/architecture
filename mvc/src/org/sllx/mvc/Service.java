@@ -4,7 +4,6 @@ package org.sllx.mvc;
 import org.sllx.core.Page;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 事务顶层接口

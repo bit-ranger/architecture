@@ -14,9 +14,6 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-/**
- * Created by sllx on 14-11-28.
- */
 @Controller
 @RequestMapping("/")
 public class GlobalController extends BaseController{

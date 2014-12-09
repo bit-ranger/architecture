@@ -9,9 +9,6 @@ import org.springframework.web.context.ServletContextAware;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-/**
- * Created by sllx on 14-11-4.
- */
 public class StaticResourceHolder implements ApplicationContextAware,ServletConfigAware,ServletContextAware {
 
     private static ApplicationContext applicationContext;

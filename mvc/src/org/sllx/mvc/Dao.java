@@ -3,7 +3,6 @@ package org.sllx.mvc;
 import org.sllx.core.Page;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 数据访问顶层接口
