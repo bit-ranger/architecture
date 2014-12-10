@@ -131,7 +131,7 @@
 		<finalName>sllx-site</finalName>
         <resources>
             <resource>
-                <directory>site/main/resources</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
 	</build>
