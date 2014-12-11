@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.UUID;
 
 @org.springframework.stereotype.Controller
 @RequestMapping("file")
@@ -35,7 +36,7 @@ public class FileController extends BaseController {
      */
     @RequestMapping(method = RequestMethod.POST)
     public void upload(@RequestParam MultipartFile upload, int CKEditorFuncNum, HttpServletResponse response) throws IOException {
-        String fileName = upload.getOriginalFilename();
+        String fileName = UUID.randomUUID().toString();
         File img = new File(fileDir,fileName);
         upload.transferTo(img);
 

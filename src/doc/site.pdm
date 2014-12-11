@@ -3174,10 +3174,10 @@ TableComment 0 新宋体,8,N</a:FontList>
 <a:Code>releasetime</a:Code>
 <a:CreationDate>1417058955</a:CreationDate>
 <a:Creator>zhangbin</a:Creator>
-<a:ModificationDate>1417066539</a:ModificationDate>
+<a:ModificationDate>1418285049</a:ModificationDate>
 <a:Modifier>zhangbin</a:Modifier>
 <a:Comment>发布时间</a:Comment>
-<a:DataType>date</a:DataType>
+<a:DataType>datetime</a:DataType>
 <a:Mandatory>1</a:Mandatory>
 </o:Column>
 <o:Column Id="o41">

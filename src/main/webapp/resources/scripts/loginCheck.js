@@ -20,6 +20,7 @@ var LOGINCHECK = {
         $.ajax({
             url : check_url,
             type : "get",
+            crossDomain : true,
             cache : false,
             async : false,
             timeout : 2000,

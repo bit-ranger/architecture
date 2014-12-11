@@ -36,8 +36,8 @@
             <table>
                 <s:form action="${selfURL}/${user.userid}" method="put" enctype="multipart/form-data">
                     <tr>
-                        <td>name<input name="v_name" type="text" value="${user.name}"/></td>
-                        <td>password<input name="v_password" type="text" value="${user.password}"/></td>
+                        <td>name<input name="name" type="text" value="${user.name}"/></td>
+                        <td>password<input name="password" type="text" value="${user.password}"/></td>
                         <td><input type="submit" value="修改"></td>
                         <td><a href="javascript:void(0);" onclick="show('${user.userid}');">查看</a></td>
                         <td><a href="javascript:void(0);" onclick="del('${user.userid}',this.parentNode.parentNode)">删除</a></td>
@@ -52,8 +52,8 @@
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
-                <td>id<input name="v_userid" type="text" /></td>
-                <td>name<input name="v_name" type="text"/></td>
+                <td>id<input name="userid" type="text" /></td>
+                <td>name<input name="name" type="text"/></td>
             </tr>
         </table>
         <input type="submit" value="查询">

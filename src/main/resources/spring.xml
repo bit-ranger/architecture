@@ -34,14 +34,26 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath:*/mapper/*.xml"/>
-        <!--<property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>-->
+        <!-- 避免混乱,mapper中不使用别名,使用全限定名
+            <property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>
+        -->
     </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+
+        <!-- SAE -->
+            <property name="url" value="jdbc:mysql://w.rdc.sae.sina.com.cn:3307/app_snowynight"/>
+            <property name="username" value="jyw2ym5n4j" />
+            <property name="password" value="01ij34w0154zlky05l3x3m43w4mj43lz2x0lm24j" />
+
+
+        <!-- local
+            <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
+            <property name="username" value="sllx" />
+            <property name="password" value="331320" />
+        -->
+
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://w.rdc.sae.sina.com.cn:3307/app_snowynight"/>
-        <property name="username" value="jyw2ym5n4j" />
-        <property name="password" value="01ij34w0154zlky05l3x3m43w4mj43lz2x0lm24j" />
         <property name="maxActive" value="100" />
         <property name="maxIdle" value="30" />
         <property name="maxWait" value="1000" />
@@ -51,4 +63,9 @@
         <property name="validationQuery" value="select 1 from dual" />
     </bean>
 
+    <!--@see{ org.springframework.web.multipart.support.MultipartFilter#DEFAULT_MULTIPART_RESOLVER_BEAN_NAME }-->
+    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <property name="maxUploadSize" value="500000"/>
+    </bean>
 </beans>

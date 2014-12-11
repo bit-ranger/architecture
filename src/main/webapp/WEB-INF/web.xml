@@ -36,7 +36,7 @@
     </filter-mapping>
 
     <!-- 表单隐藏域Http方法过滤,默认参数名为"_method" -->
-    <!-- 该过滤器需要从post请求体中获取"_method"的值,所以当请求为Multipart时,请求必须先被解析 -->
+    <!-- 该过滤器需要从post请求体中获取"_method"的值,所以当请求为Multipart时,请求必须先被multipartFilter解析 -->
     <filter>
         <filter-name>hiddenHttpMethodFilter</filter-name>
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
@@ -54,7 +54,8 @@
             <param-value>classpath*:/spring-mvc.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
-        <multipart-config/>
+        <!-- Servlet3.0时使用此配置
+            <multipart-config/> -->
     </servlet>
     <servlet-mapping>
         <servlet-name>springmvc</servlet-name>

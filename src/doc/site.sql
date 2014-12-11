@@ -16,7 +16,7 @@ create table article
    userid               int not null comment '发表用户id',
    title                varchar(128) not null comment '标题',
    content              longtext not null comment '内容',
-   releasetime          date not null comment '发布时间',
+   releasetime          datetime not null comment '发布时间',
    sort                 int not null comment '排序号',
    state                int not null comment '状态，{0:正常;1:隐藏}',
    primary key (articleid)
