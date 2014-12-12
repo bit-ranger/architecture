@@ -77,4 +77,15 @@
             </basic>
         </attributes>
     </entity>
+    <entity class="org.sllx.site.blog.entity.Archive">
+        <table name="archive" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="name">
+                <column name="name"/>
+            </id>
+            <basic name="body">
+                <column name="body"/>
+            </basic>
+        </attributes>
+    </entity>
 </entity-mappings>

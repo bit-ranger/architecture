@@ -1,6 +1,9 @@
 package org.sllx.site.blog.entity;
 
-public class Articleclass {
+import java.io.Serializable;
+
+public class Articleclass implements Serializable{
+    private static final long serialVersionUID = -5777858723395839135L;
     private Integer classid;
     private Integer userid;
     private String name;

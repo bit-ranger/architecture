@@ -2,9 +2,11 @@ package org.sllx.site.blog.entity;
 
 import org.sllx.site.user.entity.User;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Article {
+public class Article implements Serializable{
+    private static final long serialVersionUID = -7076464179594028194L;
     private Integer articleid;
     private Integer classid;
     private Integer userid;

@@ -1,3 +1,5 @@
+drop table if exists archive;
+
 drop table if exists article;
 
 drop table if exists articleclass;
@@ -5,6 +7,18 @@ drop table if exists articleclass;
 drop table if exists homepage;
 
 drop table if exists user;
+
+/*==============================================================*/
+/* Table: archive                                               */
+/*==============================================================*/
+create table archive
+(
+   name                 varchar(32) not null comment '文件名',
+   body                 mediumblob not null comment '二进制文件',
+   primary key (name)
+);
+
+alter table archive comment '文件';
 
 /*==============================================================*/
 /* Table: article                                               */

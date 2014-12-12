@@ -16,15 +16,16 @@ import java.util.UUID;
 @RequestMapping("file")
 public class FileController extends BaseController {
 
-    protected final Log logger = LogFactory.getLog(getClass());
+    protected static final Log logger = LogFactory.getLog(FileController.class);
 
     private static File fileDir = new File(StaticResourceHolder.getFileStorage());;
 
     static {
         try {
             FileUtils.forceMkdir(fileDir);
+            logger.debug(String.format("directory [%s] created",fileDir));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error(String.format("failed to create directory [%s]", fileDir),e);
         }
     }
 
@@ -39,7 +40,7 @@ public class FileController extends BaseController {
         String fileName = UUID.randomUUID().toString();
         File img = new File(fileDir,fileName);
         upload.transferTo(img);
-
+        logger.debug(String.format("image [%s] uploaded",fileName));
         PrintWriter out = response.getWriter();
         String script = String.format("<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(%s,'%s/%s','');</script>",CKEditorFuncNum,selfURL(),fileName);
         out.println(script);
@@ -50,8 +51,9 @@ public class FileController extends BaseController {
         File img = new File(fileDir,fileName);
         try{
             FileUtils.copyFileToOutputStream(img,response.getOutputStream());
+            logger.debug(String.format("image [%s] downloaded",fileName));
         }catch (IOException e){
-            logger.warn(e);
+            logger.warn(String.format("failed to download image [%s]", fileName),e);
         }
     }
 }

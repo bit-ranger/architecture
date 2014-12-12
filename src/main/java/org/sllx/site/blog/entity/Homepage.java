@@ -1,6 +1,9 @@
 package org.sllx.site.blog.entity;
 
-public class Homepage {
+import java.io.Serializable;
+
+public class Homepage implements Serializable{
+    private static final long serialVersionUID = -4249768246129830780L;
     private Integer userid;
     private String keyword;
     private String description;
