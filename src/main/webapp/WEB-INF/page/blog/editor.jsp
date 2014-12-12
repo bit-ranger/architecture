@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <link href="${styles}/home.css" rel="stylesheet" type="text/css">
-    <title>hello</title>
+    <title>Editor</title>
     <script src="${scripts}/loginCheck.js" type="text/javascript"></script>
     <script src="${scripts}/editor/ckeditor.js" type="text/javascript"></script>
     <script type="text/javascript">

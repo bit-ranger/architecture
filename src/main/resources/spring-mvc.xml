@@ -24,7 +24,7 @@
         <property name="interceptors">
             <list>
                 <!-- 必须确保GlobalParameterInterceptor最后执行 -->
-                <bean class="org.sllx.site.core.interceptor.GlobalParameterInterceptor" />
+                <bean class="org.sllx.site.core.interceptor.GlobalParameterExceptionInterceptor" />
             </list>
         </property>
     </bean>
@@ -40,7 +40,7 @@
     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="defaultErrorView" value="global/500"/>
         <property name="defaultStatusCode" value="500"/>
-        <property name="warnLogCategory" value="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"/>
+        <property name="warnLogCategory" value="org.sllx.site"/>
     </bean>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -57,8 +57,5 @@
     <!-- 若使用的Spring版本为4.0,Servlet版本为3.0,且已配置multipartFilter,在DispatcherServlet下已配置开启<multipart-config/>,
         则该过滤器会自动创建filterMultipartResolver,无需任何配置 -->
 
-    <bean class="org.sllx.site.core.util.StaticResourceHolder"  lazy-init="false">
-        <!--<property name="fileStorage" value="saestor:////snowynight"/>-->
-        <property name="fileStorage" value="E:/tmp"/>
-    </bean>
+    <bean class="org.sllx.site.core.util.StaticResourceHolder"  lazy-init="false" />
 </beans>

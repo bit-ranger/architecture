@@ -2,6 +2,7 @@ package org.sllx.site.core;
 
 import org.sllx.core.util.StringUtils;
 import org.sllx.site.core.base.BaseController;
+import org.sllx.site.core.util.StaticResourceHolder;
 import org.sllx.site.user.entity.User;
 import org.sllx.site.user.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,7 @@ public class GlobalController extends BaseController{
     public String login(ModelMap modelMap, String redirectURL){
         modelMap.addAttribute("redirectURL",redirectURL);
         modelMap.addAttribute("landingURL",selfURL("landing"));
+        modelMap.addAttribute("logoutURL",selfURL("logout"));
         return "/login";
     }
 
@@ -56,7 +58,7 @@ public class GlobalController extends BaseController{
         if(user == null){
             String datas = "";
             if(hasRedirect){
-                redirectURL = URLEncoder.encode(redirectURL,"UTF-8");
+                redirectURL = URLEncoder.encode(redirectURL,StaticResourceHolder.URL_ENCODING);
                 datas += "?redirectURL=" + redirectURL;
             }
             return "redirect:/login" + datas;
@@ -69,7 +71,14 @@ public class GlobalController extends BaseController{
 
     @RequestMapping("loginCheck")
     public @ResponseBody boolean loginCheck(HttpSession session){
-        return session.getAttribute("user") != null;
+        return session.getAttribute(StaticResourceHolder.USER_SESSION_NAME) != null;
+    }
+
+    @RequestMapping(value = "logout", method = RequestMethod.GET)
+    public String logout(HttpSession session, ModelMap modelMap){
+        modelMap.clear();
+        session.removeAttribute(StaticResourceHolder.USER_SESSION_NAME);
+        return "redirect:/";
     }
 
 }

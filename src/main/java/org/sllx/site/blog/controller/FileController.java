@@ -1,10 +1,9 @@
 package org.sllx.site.blog.controller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sllx.core.util.FileUtils;
+import org.sllx.core.util.IOUtils;
+import org.sllx.site.blog.entity.Archive;
+import org.sllx.site.blog.service.ArchiveService;
 import org.sllx.site.core.base.BaseController;
-import org.sllx.site.core.util.StaticResourceHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,44 +15,28 @@ import java.util.UUID;
 @RequestMapping("file")
 public class FileController extends BaseController {
 
-    protected static final Log logger = LogFactory.getLog(FileController.class);
+    @javax.annotation.Resource(name = "archiveService")
+    private ArchiveService archiveService;
 
-    private static File fileDir = new File(StaticResourceHolder.getFileStorage());;
-
-    static {
-        try {
-            FileUtils.forceMkdir(fileDir);
-            logger.debug(String.format("directory [%s] created",fileDir));
-        } catch (IOException e) {
-            logger.error(String.format("failed to create directory [%s]", fileDir),e);
-        }
-    }
-
-    /**
-     * 上传文件
-     * @param upload
-     * @return
-     * @throws java.io.IOException
-     */
     @RequestMapping(method = RequestMethod.POST)
-    public void upload(@RequestParam MultipartFile upload, int CKEditorFuncNum, HttpServletResponse response) throws IOException {
+    public void upload(@RequestParam MultipartFile upload, int CKEditorFuncNum, Archive archive, HttpServletResponse response) throws IOException {
         String fileName = UUID.randomUUID().toString();
-        File img = new File(fileDir,fileName);
-        upload.transferTo(img);
-        logger.debug(String.format("image [%s] uploaded",fileName));
+
+        archive.setName(fileName);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        IOUtils.copy(upload.getInputStream(), bos);
+        archive.setBody(bos.toByteArray());
+
+        archiveService.insert(archive);
         PrintWriter out = response.getWriter();
         String script = String.format("<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(%s,'%s/%s','');</script>",CKEditorFuncNum,selfURL(),fileName);
         out.println(script);
     }
 
     @RequestMapping(value = "{fileName:.*}",method = RequestMethod.GET)
-    public void download(@PathVariable String fileName,HttpServletResponse response) throws IOException {
-        File img = new File(fileDir,fileName);
-        try{
-            FileUtils.copyFileToOutputStream(img,response.getOutputStream());
-            logger.debug(String.format("image [%s] downloaded",fileName));
-        }catch (IOException e){
-            logger.warn(String.format("failed to download image [%s]", fileName),e);
-        }
+    public void download(@PathVariable String fileName, Archive archive, HttpServletResponse response) throws IOException {
+        archive.setName(fileName);
+        archive = archiveService.get(archive);
+        IOUtils.write(archive.getBody(), response.getOutputStream());
     }
 }

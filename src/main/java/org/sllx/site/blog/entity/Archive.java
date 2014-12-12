@@ -1,13 +1,13 @@
 package org.sllx.site.blog.entity;
 
-import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class Archive implements Serializable{
 
     private static final long serialVersionUID = -6265714340584955008L;
     private String name;
-    private File body;
+    private byte[] body;
 
     public String getName() {
         return name;
@@ -17,11 +17,11 @@ public class Archive implements Serializable{
         this.name = name;
     }
 
-    public File getBody() {
+    public byte[] getBody() {
         return body;
     }
 
-    public void setBody(File archive) {
+    public void setBody(byte[] archive) {
         this.body = archive;
     }
 
@@ -32,7 +32,7 @@ public class Archive implements Serializable{
 
         Archive other = (Archive) o;
 
-        if (body != null ? !body.equals(other.body) : other.body != null ) return false;
+        if (body != null ? !Arrays.equals(body,other.body) : other.body != null ) return false;
         if (name != null ? !name.equals(other.name) : other.name != null) return false;
 
         return true;
@@ -41,7 +41,7 @@ public class Archive implements Serializable{
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (body != null ? body.hashCode() : 0);
+        result = 31 * result + (body != null ? Arrays.hashCode(body) : 0);
         return result;
     }
 }

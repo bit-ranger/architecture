@@ -1,5 +1,6 @@
 package org.sllx.site.core.interceptor;
 
+import org.sllx.site.core.util.StaticResourceHolder;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,9 +12,9 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
-        if(session.getAttribute("user") == null){
+        if(session.getAttribute(StaticResourceHolder.USER_SESSION_NAME) == null){
             String redirectURL = request.getRequestURL().toString();
-            redirectURL = URLEncoder.encode(redirectURL,"UTF-8");
+            redirectURL = URLEncoder.encode(redirectURL,StaticResourceHolder.URL_ENCODING);
             response.sendRedirect("/login?redirectURL=" + redirectURL);
             return false;
         }

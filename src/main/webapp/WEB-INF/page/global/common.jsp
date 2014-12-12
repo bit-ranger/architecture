@@ -3,4 +3,4 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="s" uri="http://www.springframework.org/tags/form" %>
 <script src="${scripts}/jquery.min.js" type="text/javascript"></script>
-<link rel="favicon" href="${resources}/favicon.ico"/>
+<link rel="icon" href="${resources}/favicon.ico"/>

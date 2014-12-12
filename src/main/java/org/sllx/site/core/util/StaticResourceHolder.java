@@ -11,13 +11,19 @@ import javax.servlet.ServletContext;
 
 public class StaticResourceHolder implements ApplicationContextAware,ServletConfigAware,ServletContextAware {
 
+    public final static String USER_SESSION_NAME = "user";
+
+    public final static String URL_ENCODING = "UTF-8";
+
+    public final static String MAX_SIZE_PARAM = "maxUploadSize";
+
+    public final static String APP_LOG_NAME = "org.sllx.site";
+
     private static ApplicationContext applicationContext;
 
     private static ServletConfig servletConfig;
 
     private static ServletContext servletContext;
-
-    private static String fileStorage;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -46,11 +52,4 @@ public class StaticResourceHolder implements ApplicationContextAware,ServletConf
         return applicationContext;
     }
 
-    public  void setFileStorage(String fileStorage) {
-        this.fileStorage = fileStorage;
-    }
-
-    public static String getFileStorage() {
-        return fileStorage;
-    }
 }

@@ -13,7 +13,7 @@ drop table if exists user;
 /*==============================================================*/
 create table archive
 (
-   name                 varchar(32) not null comment '文件名',
+   name                 varchar(36) not null comment '文件名',
    body                 mediumblob not null comment '二进制文件',
    primary key (name)
 );
@@ -29,7 +29,7 @@ create table article
    classid              int not null comment '分类id',
    userid               int not null comment '发表用户id',
    title                varchar(128) not null comment '标题',
-   content              longtext not null comment '内容',
+   content              mediumtext not null comment '内容',
    releasetime          datetime not null comment '发布时间',
    sort                 int not null comment '排序号',
    state                int not null comment '状态，{0:正常;1:隐藏}',

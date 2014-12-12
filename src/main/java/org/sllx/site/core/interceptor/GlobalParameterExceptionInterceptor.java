@@ -3,16 +3,14 @@ package org.sllx.site.core.interceptor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
+import org.sllx.site.core.util.StaticResourceHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class GlobalParameterInterceptor extends HandlerInterceptorAdapter{
-
-    protected static final Log logger = LogFactory.getLog(GlobalParameterInterceptor.class);
+public class GlobalParameterExceptionInterceptor extends HandlerInterceptorAdapter{
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
@@ -24,6 +22,14 @@ public class GlobalParameterInterceptor extends HandlerInterceptorAdapter{
         request.setAttribute("resources",resources);
         request.setAttribute("styles",styles);
         request.setAttribute("scripts",scripts);
-        logger.debug(String.format("view name : [%s]; root : [%s]",modelAndView.getViewName(),root));
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        if(ex == null){
+            return;
+        }
+        Log log = LogFactory.getLog(StaticResourceHolder.APP_LOG_NAME);
+        log.warn(ex);
     }
 }

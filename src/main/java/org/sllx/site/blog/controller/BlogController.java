@@ -6,6 +6,7 @@ import org.sllx.site.blog.entity.Articleclass;
 import org.sllx.site.blog.service.BlogService;
 import org.sllx.site.core.GlobalController;
 import org.sllx.site.core.base.BaseController;
+import org.sllx.site.core.util.StaticResourceHolder;
 import org.sllx.site.user.entity.User;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +57,7 @@ public class BlogController extends BaseController {
     @RequestMapping(value = "release", method = RequestMethod.POST)
     public String release(Article article, HttpSession session, ModelMap modelMap){
         modelMap.clear();
-        Object userObj = session.getAttribute("user");
+        Object userObj = session.getAttribute(StaticResourceHolder.USER_SESSION_NAME);
         if(userObj == null){
             return "redirect:/login";
         }

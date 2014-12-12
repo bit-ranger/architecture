@@ -6,4 +6,7 @@
 		<property name="ardticleDao" ref="ardticleDao"/>
         <property name="articleclassDao" ref="articleclassDao"/>
     </bean>
+    <bean id="archiveService" class="org.sllx.site.blog.service.impl.ArchiveServiceImpl">
+        <property name="archiveDao" ref="archiveDao"/>
+    </bean>
 </beans>

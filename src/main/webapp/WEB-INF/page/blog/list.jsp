@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <link href="${styles}/home.css" rel="stylesheet" type="text/css">
 
-    <title>不知道起啥名</title>
+    <title>Snowy Night</title>
 
 </head>
 　　
@@ -18,14 +18,14 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">不知道起啥名</a>
+            <a class="navbar-brand" href="#">Snowy Night</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a href="#">Blog</a></li>
-                <li ><a href="https://github.com/dubuyuye/site" target="_blank">github</a></li>
+                <li ><a href="https://github.com/dubuyuye/site" target="_blank">Github</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
