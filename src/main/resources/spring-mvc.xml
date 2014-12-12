@@ -40,7 +40,7 @@
     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="defaultErrorView" value="global/500"/>
         <property name="defaultStatusCode" value="500"/>
-        <property name="warnLogCategory" value="org.sllx.site"/>
+        <property name="warnLogCategory" value="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"/>
     </bean>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
