@@ -3185,10 +3185,10 @@ TableComment 0 新宋体,8,N</a:FontList>
 <a:Code>content</a:Code>
 <a:CreationDate>1417058628</a:CreationDate>
 <a:Creator>zhangbin</a:Creator>
-<a:ModificationDate>1417067194</a:ModificationDate>
-<a:Modifier>zhangbin</a:Modifier>
+<a:ModificationDate>1418451842</a:ModificationDate>
+<a:Modifier>dubuyuye</a:Modifier>
 <a:Comment>内容</a:Comment>
-<a:DataType>longtext</a:DataType>
+<a:DataType>mediumtext</a:DataType>
 <a:Mandatory>1</a:Mandatory>
 </o:Column>
 <o:Column Id="o42">
@@ -3262,11 +3262,11 @@ TableComment 0 新宋体,8,N</a:FontList>
 <a:Code>name</a:Code>
 <a:CreationDate>1418364864</a:CreationDate>
 <a:Creator>zhangbin</a:Creator>
-<a:ModificationDate>1418364967</a:ModificationDate>
-<a:Modifier>zhangbin</a:Modifier>
+<a:ModificationDate>1418452117</a:ModificationDate>
+<a:Modifier>dubuyuye</a:Modifier>
 <a:Comment>文件名</a:Comment>
-<a:DataType>varchar(32)</a:DataType>
-<a:Length>32</a:Length>
+<a:DataType>varchar(36)</a:DataType>
+<a:Length>36</a:Length>
 <a:Mandatory>1</a:Mandatory>
 </o:Column>
 <o:Column Id="o47">
