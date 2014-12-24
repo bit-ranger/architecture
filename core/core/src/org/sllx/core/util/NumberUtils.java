@@ -599,7 +599,7 @@ public class NumberUtils {
     }
 
     /**
-     * <p>Utility method for {@link #createNumber(java.lang.String)}.</p>
+     * <p>Utility method for {@link #createNumber(String)}.</p>
      *
      * <p>Returns <code>true</code> if s is <code>null</code>.</p>
      *

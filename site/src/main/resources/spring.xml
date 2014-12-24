@@ -41,10 +41,11 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 
-        <!-- JAE -->
+        <!-- JAE
         <property name="url" value="jdbc:mysql://mysql.jae.jd.com:4066/dubuyuyem_mysql_n35t3ipl"/>
         <property name="username" value="pC4lp7GM" />
         <property name="password" value="ynLDv5B6E0qa" />
+        -->
 
         <!-- SAE
         <property name="url" value="jdbc:mysql://w.rdc.sae.sina.com.cn:3307/app_snowynight"/>
@@ -52,11 +53,11 @@
         <property name="password" value="01ij34w0154zlky05l3x3m43w4mj43lz2x0lm24j" />
         -->
 
-        <!-- local
+        <!-- local -->
         <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
         <property name="username" value="sllx" />
         <property name="password" value="331320" />
-        -->
+
 
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="maxActive" value="100" />

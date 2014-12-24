@@ -42,7 +42,7 @@ public class ObjectUtils {
      * <code>null</code> has another meaning.</p>
      *
      * <p>For example, in a <code>HashMap</code> the
-     * {@link java.util.HashMap#get(java.lang.Object)} method returns
+     * {@link java.util.HashMap#get(Object)} method returns
      * <code>null</code> if the <code>Map</code> contains
      * <code>null</code> or if there is no matching key. The
      * <code>Null</code> placeholder can be used to distinguish between
@@ -284,7 +284,7 @@ public class ObjectUtils {
      * has another meaning.</p>
      *
      * <p>For example, in a <code>HashMap</code> the
-     * {@link java.util.HashMap#get(java.lang.Object)} method returns
+     * {@link java.util.HashMap#get(Object)} method returns
      * <code>null</code> if the <code>Map</code> contains
      * <code>null</code> or if there is no matching key. The
      * <code>Null</code> placeholder can be used to distinguish between

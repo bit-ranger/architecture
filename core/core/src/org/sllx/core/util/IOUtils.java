@@ -91,9 +91,9 @@ public class IOUtils {
 
     /**
      * The default buffer size to use for 
-     * {@link #copyLarge(InputStream, OutputStream)}
+     * {@link #copyLarge(java.io.InputStream, java.io.OutputStream)}
      * and
-     * {@link #copyLarge(Reader, Writer)}
+     * {@link #copyLarge(java.io.Reader, java.io.Writer)}
      */
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
@@ -117,7 +117,7 @@ public class IOUtils {
     /**
      * Unconditionally close a <code>Closeable</code>.
      * <p>
-     * Equivalent to {@link Closeable#close()}, except any exceptions will be ignored.
+     * Equivalent to {@link java.io.Closeable#close()}, except any exceptions will be ignored.
      * This is typically used in finally blocks.
      * <p>
      * Example code:
@@ -150,7 +150,7 @@ public class IOUtils {
     /**
      * Unconditionally close a <code>Socket</code>.
      * <p>
-     * Equivalent to {@link Socket#close()}, except any exceptions will be ignored.
+     * Equivalent to {@link java.net.Socket#close()}, except any exceptions will be ignored.
      * This is typically used in finally blocks.
      * <p>
      * Example code:
@@ -192,7 +192,7 @@ public class IOUtils {
      * @param input  the <code>InputStream</code> to read from
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      */
     public static byte[] toByteArray(InputStream input) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -210,7 +210,7 @@ public class IOUtils {
      * @param input  the <code>Reader</code> to read from
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      */
     public static byte[] toByteArray(Reader input) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -232,7 +232,7 @@ public class IOUtils {
      * @param encoding  the encoding to use, null means platform default
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static byte[] toByteArray(Reader input, String encoding)
@@ -255,7 +255,7 @@ public class IOUtils {
      * @param is  the <code>InputStream</code> to read from
      * @return the requested character array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static char[] toCharArray(InputStream is) throws IOException {
@@ -278,7 +278,7 @@ public class IOUtils {
      * @param encoding  the encoding to use, null means platform default
      * @return the requested character array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static char[] toCharArray(InputStream is, String encoding)
@@ -297,7 +297,7 @@ public class IOUtils {
      * @param input  the <code>Reader</code> to read from
      * @return the requested character array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static char[] toCharArray(Reader input) throws IOException {
@@ -319,7 +319,7 @@ public class IOUtils {
      * @param input  the <code>InputStream</code> to read from, not null
      * @return the list of Strings, never null
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static List<String> readLines(InputStream input) throws IOException {
@@ -341,7 +341,7 @@ public class IOUtils {
      * @param encoding  the encoding to use, null means platform default
      * @return the list of Strings, never null
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static List<String> readLines(InputStream input, String encoding) throws IOException {
@@ -363,7 +363,7 @@ public class IOUtils {
      * @param input  the <code>Reader</code> to read from, not null
      * @return the list of Strings, never null
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static List<String> readLines(Reader input) throws IOException {
@@ -400,7 +400,7 @@ public class IOUtils {
      *
      * @param input the CharSequence to convert
      * @param encoding the encoding to use, null means platform default
-     * @throws IOException if the encoding is invalid
+     * @throws java.io.IOException if the encoding is invalid
      * @return an input stream
      * @since Commons IO 2.0
      */
@@ -431,7 +431,7 @@ public class IOUtils {
      *
      * @param input the string to convert
      * @param encoding the encoding to use, null means platform default
-     * @throws IOException if the encoding is invalid
+     * @throws java.io.IOException if the encoding is invalid
      * @return an input stream
      * @since Commons IO 1.1
      */
@@ -449,7 +449,7 @@ public class IOUtils {
      * null ignored
      * @param output  the <code>OutputStream</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(byte[] data, OutputStream output)
@@ -469,7 +469,7 @@ public class IOUtils {
      * null ignored
      * @param output  the <code>Writer</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(byte[] data, Writer output) throws IOException {
@@ -492,7 +492,7 @@ public class IOUtils {
      * @param output  the <code>Writer</code> to write to
      * @param encoding  the encoding to use, null means platform default
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(byte[] data, Writer output, String encoding)
@@ -516,7 +516,7 @@ public class IOUtils {
      * null ignored
      * @param output  the <code>Writer</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(char[] data, Writer output) throws IOException {
@@ -536,7 +536,7 @@ public class IOUtils {
      * null ignored
      * @param output  the <code>OutputStream</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(char[] data, OutputStream output)
@@ -561,7 +561,7 @@ public class IOUtils {
      * @param output  the <code>OutputStream</code> to write to
      * @param encoding  the encoding to use, null means platform default
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(char[] data, OutputStream output, String encoding)
@@ -583,7 +583,7 @@ public class IOUtils {
      * @param data  the <code>CharSequence</code> to write, null ignored
      * @param output  the <code>Writer</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 2.0
      */
     public static void write(CharSequence data, Writer output) throws IOException {
@@ -602,7 +602,7 @@ public class IOUtils {
      * @param data  the <code>CharSequence</code> to write, null ignored
      * @param output  the <code>OutputStream</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 2.0
      */
     public static void write(CharSequence data, OutputStream output)
@@ -625,7 +625,7 @@ public class IOUtils {
      * @param output  the <code>OutputStream</code> to write to
      * @param encoding  the encoding to use, null means platform default
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 2.0
      */
     public static void write(CharSequence data, OutputStream output, String encoding)
@@ -643,7 +643,7 @@ public class IOUtils {
      * @param data  the <code>String</code> to write, null ignored
      * @param output  the <code>Writer</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(String data, Writer output) throws IOException {
@@ -662,7 +662,7 @@ public class IOUtils {
      * @param data  the <code>String</code> to write, null ignored
      * @param output  the <code>OutputStream</code> to write to
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(String data, OutputStream output)
@@ -685,7 +685,7 @@ public class IOUtils {
      * @param output  the <code>OutputStream</code> to write to
      * @param encoding  the encoding to use, null means platform default
      * @throws NullPointerException if output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void write(String data, OutputStream output, String encoding)
@@ -718,7 +718,7 @@ public class IOUtils {
      * @param output  the <code>OutputStream</code> to write to
      * @return the number of bytes copied, or -1 if &gt; Integer.MAX_VALUE
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static int copy(InputStream input, OutputStream output) throws IOException {
@@ -740,7 +740,7 @@ public class IOUtils {
      * @param output  the <code>OutputStream</code> to write to
      * @return the number of bytes copied
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.3
      */
     public static long copyLarge(InputStream input, OutputStream output)
@@ -762,12 +762,12 @@ public class IOUtils {
      * This method buffers the input internally, so there is no need to use a
      * <code>BufferedInputStream</code>.
      * <p>
-     * This method uses {@link InputStreamReader}.
+     * This method uses {@link java.io.InputStreamReader}.
      *
      * @param input  the <code>InputStream</code> to read from
      * @param output  the <code>Writer</code> to write to
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void copy(InputStream input, Writer output)
@@ -786,13 +786,13 @@ public class IOUtils {
      * Character encoding names can be found at
      * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
      * <p>
-     * This method uses {@link InputStreamReader}.
+     * This method uses {@link java.io.InputStreamReader}.
      *
      * @param input  the <code>InputStream</code> to read from
      * @param output  the <code>Writer</code> to write to
      * @param encoding  the encoding to use, null means platform default
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void copy(InputStream input, Writer output, String encoding)
@@ -822,7 +822,7 @@ public class IOUtils {
      * @param output  the <code>Writer</code> to write to
      * @return the number of characters copied, or -1 if &gt; Integer.MAX_VALUE
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static int copy(Reader input, Writer output) throws IOException {
@@ -843,7 +843,7 @@ public class IOUtils {
      * @param output  the <code>Writer</code> to write to
      * @return the number of characters copied
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.3
      */
     public static long copyLarge(Reader input, Writer output) throws IOException {
@@ -868,12 +868,12 @@ public class IOUtils {
      * Due to the implementation of OutputStreamWriter, this method performs a
      * flush.
      * <p>
-     * This method uses {@link OutputStreamWriter}.
+     * This method uses {@link java.io.OutputStreamWriter}.
      *
      * @param input  the <code>Reader</code> to read from
      * @param output  the <code>OutputStream</code> to write to
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void copy(Reader input, OutputStream output)
@@ -899,13 +899,13 @@ public class IOUtils {
      * Due to the implementation of OutputStreamWriter, this method performs a
      * flush.
      * <p>
-     * This method uses {@link OutputStreamWriter}.
+     * This method uses {@link java.io.OutputStreamWriter}.
      *
      * @param input  the <code>Reader</code> to read from
      * @param output  the <code>OutputStream</code> to write to
      * @param encoding  the encoding to use, null means platform default
      * @throws NullPointerException if the input or output is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static void copy(Reader input, OutputStream output, String encoding)
@@ -935,7 +935,7 @@ public class IOUtils {
      * @return true if the content of the streams are equal or they both don't
      * exist, false otherwise
      * @throws NullPointerException if either input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      */
     public static boolean contentEquals(InputStream input1, InputStream input2)
             throws IOException {
@@ -971,7 +971,7 @@ public class IOUtils {
      * @return true if the content of the readers are equal or they both don't
      * exist, false otherwise
      * @throws NullPointerException if either input is null
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      * @since Commons IO 1.1
      */
     public static boolean contentEquals(Reader input1, Reader input2)
@@ -1000,15 +1000,15 @@ public class IOUtils {
      * Skip bytes from an input byte stream.
      * This implementation guarantees that it will read as many bytes
      * as possible before giving up; this may not always be the case for
-     * subclasses of {@link Reader}.
+     * subclasses of {@link java.io.Reader}.
      *
      * @param input byte stream to skip
      * @param toSkip number of bytes to skip.
      * @return number of bytes actually skipped.
      *
-     * @see InputStream#skip(long)
+     * @see java.io.InputStream#skip(long)
      *
-     * @throws IOException if there is a problem reading the file
+     * @throws java.io.IOException if there is a problem reading the file
      * @throws IllegalArgumentException if toSkip is negative
      * @since Commons IO 2.0
      */
@@ -1041,15 +1041,15 @@ public class IOUtils {
      * Skip characters from an input character stream.
      * This implementation guarantees that it will read as many characters
      * as possible before giving up; this may not always be the case for
-     * subclasses of {@link Reader}.
+     * subclasses of {@link java.io.Reader}.
      *
      * @param input character stream to skip
      * @param toSkip number of characters to skip.
      * @return number of characters actually skipped.
      *
-     * @see Reader#skip(long)
+     * @see java.io.Reader#skip(long)
      *
-     * @throws IOException if there is a problem reading the file
+     * @throws java.io.IOException if there is a problem reading the file
      * @throws IllegalArgumentException if toSkip is negative
      * @since Commons IO 2.0
      */
@@ -1081,16 +1081,16 @@ public class IOUtils {
     /**
      * Skip the requested number of bytes or fail if there are not enough left.
      * <p>
-     * This allows for the possibility that {@link InputStream#skip(long)} may
+     * This allows for the possibility that {@link java.io.InputStream#skip(long)} may
      * not skip as many bytes as requested (most likely because of reaching EOF).
      *
      * @param input stream to skip
      * @param toSkip the number of bytes to skip
-     * @see InputStream#skip(long)
+     * @see java.io.InputStream#skip(long)
      *
-     * @throws IOException if there is a problem reading the file
+     * @throws java.io.IOException if there is a problem reading the file
      * @throws IllegalArgumentException if toSkip is negative
-     * @throws EOFException if the number of bytes skipped was incorrect 
+     * @throws java.io.EOFException if the number of bytes skipped was incorrect
      * @since Commons IO 2.0
      */
     public static void skipFully(InputStream input, long toSkip) throws IOException {
@@ -1106,16 +1106,16 @@ public class IOUtils {
     /**
      * Skip the requested number of characters or fail if there are not enough left.
      * <p>
-     * This allows for the possibility that {@link Reader#skip(long)} may
+     * This allows for the possibility that {@link java.io.Reader#skip(long)} may
      * not skip as many characters as requested (most likely because of reaching EOF).
      *
      * @param input stream to skip
      * @param toSkip the number of characters to skip
-     * @see Reader#skip(long)
+     * @see java.io.Reader#skip(long)
      *
-     * @throws IOException if there is a problem reading the file
+     * @throws java.io.IOException if there is a problem reading the file
      * @throws IllegalArgumentException if toSkip is negative
-     * @throws EOFException if the number of characters skipped was incorrect
+     * @throws java.io.EOFException if the number of characters skipped was incorrect
      * @since Commons IO 2.0
      */
     public static void skipFully(Reader input, long toSkip) throws IOException {

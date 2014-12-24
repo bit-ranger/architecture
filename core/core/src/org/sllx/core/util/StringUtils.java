@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * <p>Operations on {@link java.lang.String} that are
+ * <p>Operations on {@link String} that are
  * <code>null</code> safe.</p>
  *
  * <ul>
@@ -98,7 +98,7 @@ import java.util.Locale;
  * <p>Methods in this class give sample code to explain their operation.
  * The symbol <code>*</code> is used to indicate any input including <code>null</code>.</p>
  *
- * @see java.lang.String
+ * @see String
  * @author Apache Software Foundation
  * @author <a href="http://jakarta.apache.org/turbine/">Apache Jakarta Turbine</a>
  * @author <a href="mailto:jon@latchkey.com">Jon S. Stevens</a>
@@ -623,7 +623,7 @@ public class StringUtils {
      * StringUtils.equals("abc", "ABC") = false
      * </pre>
      *
-     * @see java.lang.String#equals(Object)
+     * @see String#equals(Object)
      * @param str1  the first String, may be null
      * @param str2  the second String, may be null
      * @return <code>true</code> if the Strings are equal, case sensitive, or
@@ -648,7 +648,7 @@ public class StringUtils {
      * StringUtils.equalsIgnoreCase("abc", "ABC") = true
      * </pre>
      *
-     * @see java.lang.String#equalsIgnoreCase(String)
+     * @see String#equalsIgnoreCase(String)
      * @param str1  the first String, may be null
      * @param str2  the second String, may be null
      * @return <code>true</code> if the Strings are equal, case insensitive, or
@@ -4676,8 +4676,8 @@ public class StringUtils {
      *
      * <p><strong>Note:</strong> As described in the documentation for {@link String#toUpperCase()},
      * the result of this method is affected by the current locale.
-     * For platform-independent case transformations, the method {@link #lowerCase(String, Locale)}
-     * should be used with a specific locale (e.g. {@link Locale#ENGLISH}).</p>
+     * For platform-independent case transformations, the method {@link #lowerCase(String, java.util.Locale)}
+     * should be used with a specific locale (e.g. {@link java.util.Locale#ENGLISH}).</p>
      *
      * @param str  the String to upper case, may be null
      * @return the upper cased String, <code>null</code> if null String input
@@ -4690,7 +4690,7 @@ public class StringUtils {
     }
 
     /**
-     * <p>Converts a String to upper case as per {@link String#toUpperCase(Locale)}.</p>
+     * <p>Converts a String to upper case as per {@link String#toUpperCase(java.util.Locale)}.</p>
      *
      * <p>A <code>null</code> input String returns <code>null</code>.</p>
      *
@@ -4725,8 +4725,8 @@ public class StringUtils {
      *
      * <p><strong>Note:</strong> As described in the documentation for {@link String#toLowerCase()},
      * the result of this method is affected by the current locale.
-     * For platform-independent case transformations, the method {@link #lowerCase(String, Locale)}
-     * should be used with a specific locale (e.g. {@link Locale#ENGLISH}).</p>
+     * For platform-independent case transformations, the method {@link #lowerCase(String, java.util.Locale)}
+     * should be used with a specific locale (e.g. {@link java.util.Locale#ENGLISH}).</p>
      *
      * @param str  the String to lower case, may be null
      * @return the lower cased String, <code>null</code> if null String input
@@ -4739,7 +4739,7 @@ public class StringUtils {
     }
 
     /**
-     * <p>Converts a String to lower case as per {@link String#toLowerCase(Locale)}.</p>
+     * <p>Converts a String to lower case as per {@link String#toLowerCase(java.util.Locale)}.</p>
      *
      * <p>A <code>null</code> input String returns <code>null</code>.</p>
      *
@@ -5186,7 +5186,7 @@ public class StringUtils {
      * StringUtils.defaultIfEmpty("", null)      = null
      * </pre>
      *
-     * @see StringUtils#defaultString(String, String)
+     * @see org.sllx.core.util.StringUtils#defaultString(String, String)
      * @param str  the String to check, may be null
      * @param defaultStr  the default String to return
      *  if the input is empty ("") or <code>null</code>, may be null
@@ -5777,7 +5777,7 @@ public class StringUtils {
      * StringUtils.startsWith("ABCDEF", "abc") = false
      * </pre>
      *
-     * @see java.lang.String#startsWith(String)
+     * @see String#startsWith(String)
      * @param str  the String to check, may be null
      * @param prefix the prefix to find, may be null
      * @return <code>true</code> if the String starts with the prefix, case sensitive, or
@@ -5802,7 +5802,7 @@ public class StringUtils {
      * StringUtils.startsWithIgnoreCase("ABCDEF", "abc") = true
      * </pre>
      *
-     * @see java.lang.String#startsWith(String)
+     * @see String#startsWith(String)
      * @param str  the String to check, may be null
      * @param prefix the prefix to find, may be null
      * @return <code>true</code> if the String starts with the prefix, case insensitive, or
@@ -5816,7 +5816,7 @@ public class StringUtils {
     /**
      * <p>Check if a String starts with a specified prefix (optionally case insensitive).</p>
      *
-     * @see java.lang.String#startsWith(String)
+     * @see String#startsWith(String)
      * @param str  the String to check, may be null
      * @param prefix the prefix to find, may be null
      * @param ignoreCase inidicates whether the compare should ignore case
@@ -5884,7 +5884,7 @@ public class StringUtils {
      * StringUtils.endsWith("ABCDEF", "cde") = false
      * </pre>
      *
-     * @see java.lang.String#endsWith(String)
+     * @see String#endsWith(String)
      * @param str  the String to check, may be null
      * @param suffix the suffix to find, may be null
      * @return <code>true</code> if the String ends with the suffix, case sensitive, or
@@ -5910,7 +5910,7 @@ public class StringUtils {
      * StringUtils.endsWithIgnoreCase("ABCDEF", "cde") = false
      * </pre>
      *
-     * @see java.lang.String#endsWith(String)
+     * @see String#endsWith(String)
      * @param str  the String to check, may be null
      * @param suffix the suffix to find, may be null
      * @return <code>true</code> if the String ends with the suffix, case insensitive, or
@@ -5924,7 +5924,7 @@ public class StringUtils {
     /**
      * <p>Check if a String ends with a specified suffix (optionally case insensitive).</p>
      *
-     * @see java.lang.String#endsWith(String)
+     * @see String#endsWith(String)
      * @param str  the String to check, may be null
      * @param suffix the suffix to find, may be null
      * @param ignoreCase inidicates whether the compare should ignore case
