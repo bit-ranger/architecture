@@ -9,5 +9,9 @@
 
     <bean id="storageService" class="org.sllx.storage.StorageServiceImpl"/>
 
-    <jaxws:endpoint id="storage" implementor="#storageService" address="/storage"/>
+    <jaxws:endpoint id="storage" implementor="#storageService" address="/storage">
+        <jaxws:properties>
+            <entry key="mtom-enabled" value="true"/>
+        </jaxws:properties>
+    </jaxws:endpoint>
 </beans>
