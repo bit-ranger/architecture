@@ -12,6 +12,17 @@ import java.io.Serializable;
 public class Archive implements Serializable{
 
     private static final long serialVersionUID = -6265714340584955008L;
+    
+    
+    public  Archive(){
+        
+        
+    }
+    
+    public Archive(String name){
+        this.name = name;
+    }
+    
     private String name;
 
     @XmlMimeType("application/octet-stream")
