@@ -9,6 +9,8 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
 	default-autowire="byName">
 
+    <import resource="spring-cxf.xml"/>
+
 	<aop:config>
 		<aop:advisor advice-ref="transactionAdvice" pointcut="execution(public * org.sllx.mvc.ServiceBasicSupport.*(..)) or execution(public * org.sllx.site..service..*.*(..))"/>
 	</aop:config>

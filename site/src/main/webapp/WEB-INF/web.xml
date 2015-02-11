@@ -6,6 +6,16 @@
 
     <display-name>sllxsite</display-name>
 
+    <!-- cxf -->
+    <servlet>
+        <servlet-name>cxf</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cxf</servlet-name>
+        <url-pattern>/ws/*</url-pattern>
+    </servlet-mapping>
+
     <!-- encoding -->
     <filter>
         <filter-name>encodingFilter</filter-name>
@@ -24,20 +34,6 @@
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
         <url-pattern>*</url-pattern>
-    </filter-mapping>
-
-    <!-- CKEditor 必须放在multipartFilter之前-->
-    <filter>
-        <filter-name>CKEditorUpload</filter-name>
-        <filter-class>org.sllx.site.core.util.CKEditorUploadMaxSizeFilter</filter-class>
-        <init-param>
-            <param-name>maxUploadSize</param-name>
-            <param-value>204800</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>CKEditorUpload</filter-name>
-        <url-pattern>/file</url-pattern>
     </filter-mapping>
 
     <!-- multipart解析过滤器,默认beanid为"filterMultipartResolver" -->
@@ -98,6 +94,11 @@
     </context-param>
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+
+    <!-- Introspector -->
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
     </listener>
 
     <session-config>

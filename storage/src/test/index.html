@@ -52,8 +52,9 @@
     $(function() {
         $.ajax({
             type: 'get',
-            url: 'http://localhost:8080/ws/rest/products',
-            dataType: 'json',
+            url: 'http://localhost/storage',
+            dataType: 'jsonp',
+            jsonp: '_jsonp',
             success: function(data) {
                 var template = $("#product_table_template").html();
                 var render = Handlebars.compile(template);
@@ -65,6 +66,10 @@
         });
     });
 </script>
-
+<form action="http://localhost/storage" enctype="multipart/form-data" method="post">
+    <input type="text" name="name"/>
+    <input type="file" name="body"/>
+    <input type="submit"/>
+</form>
 </body>
 </html>

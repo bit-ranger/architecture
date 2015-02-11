@@ -11,6 +11,7 @@
     <properties>
         <spring.version>4.0.0.RELEASE</spring.version>
         <jackson.version>2.4.0</jackson.version>
+        <cxf.version>3.0.0</cxf.version>
     </properties>
 
 	<dependencies>
@@ -100,6 +101,32 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- cxf -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <!-- Wadl -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-service-description</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <!-- Cxf-jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <!-- Jsonp -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-extension-providers</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+
 
         <!-- Test -->
         <dependency>

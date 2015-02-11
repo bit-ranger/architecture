@@ -11,16 +11,14 @@
        http://cxf.apache.org/core
        http://cxf.apache.org/schemas/core.xsd">
 
-    <bean id="storageService" class="org.sllx.storage.StorageServiceImpl"/>
-
     <!-- ws的root路径可以查看所有可用的webService，如果address设为""，将会覆盖这个路径；
     此时若再次访问ws的root路径，该请求将被解析为从address子目录中寻找service，而不是列举可用的webService -->
-    <jaxrs:server address="/storage">
+    <jaxrs:server address="/user">
         <jaxrs:features>
             <cxf:logging />
         </jaxrs:features>
         <jaxrs:serviceBeans>
-            <ref bean="storageService"/>
+            <ref bean="userService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
