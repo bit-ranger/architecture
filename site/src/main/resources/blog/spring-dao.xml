@@ -3,13 +3,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
-    <bean id="archiveDao" class="org.sllx.site.blog.dao.impl.ArchiveDaoImpl" parent="commonDao"/>
-
-	<bean id="ardticleDao" class="org.sllx.site.blog.dao.impl.ArticleDaoImpl" parent="commonDao"/>
-
-    <bean id="articleclassDao" class="org.sllx.site.blog.dao.impl.ArticleclassDaoImpl" parent="commonDao"/>
-
-    <bean id="commonDao" class="org.sllx.site.core.base.BaseDaoImpl">
+    <bean id="archiveDao" class="org.sllx.site.blog.dao.impl.ArchiveDaoImpl" >
         <property name="sqlSession" ref="sqlSessionTemplate"/>
     </bean>
+	<bean id="ardticleDao" class="org.sllx.site.blog.dao.impl.ArticleDaoImpl" >
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
+    </bean>
+
+    <bean id="articleclassDao" class="org.sllx.site.blog.dao.impl.ArticleclassDaoImpl">
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
+    </bean>
+
 </beans>

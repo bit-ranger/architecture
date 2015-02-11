@@ -102,32 +102,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- cxf -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <!-- Wadl -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-service-description</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <!-- Cxf-jackson -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <!-- Jsonp -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-extension-providers</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-
-
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

@@ -1,11 +1,11 @@
 package org.sllx.site.blog.dao;
 
+import org.sllx.mvc.Dao;
 import org.sllx.site.blog.entity.Article;
-import org.sllx.site.core.base.BaseDao;
 
 import java.util.List;
 
-public interface ArticleDao extends BaseDao<Article>{
+public interface ArticleDao extends Dao<Article> {
 
     Article getFull(Article article);
 

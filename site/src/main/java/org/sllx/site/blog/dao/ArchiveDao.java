@@ -1,7 +1,7 @@
 package org.sllx.site.blog.dao;
 
+import org.sllx.mvc.Dao;
 import org.sllx.site.blog.entity.Archive;
-import org.sllx.site.core.base.BaseDao;
 
-public interface ArchiveDao extends BaseDao<Archive>{
+public interface ArchiveDao extends Dao<Archive> {
 }

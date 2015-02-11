@@ -1,13 +1,13 @@
 package org.sllx.site.blog.service;
 
 import org.sllx.core.Page;
+import org.sllx.mvc.Service;
 import org.sllx.site.blog.entity.Article;
 import org.sllx.site.blog.entity.Articleclass;
-import org.sllx.site.core.base.BaseService;
 
 import java.util.List;
 
-public interface BlogService extends BaseService<Article>{
+public interface BlogService extends Service<Article> {
 
     Article getFull(Article obj);
 
