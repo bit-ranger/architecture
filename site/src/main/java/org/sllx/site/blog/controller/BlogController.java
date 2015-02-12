@@ -8,6 +8,7 @@ import org.sllx.site.core.GlobalController;
 import org.sllx.site.core.base.BaseController;
 import org.sllx.site.core.util.StaticResourceHolder;
 import org.sllx.site.user.entity.User;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,9 @@ public class BlogController extends BaseController {
 
     @javax.annotation.Resource(name = "blogService")
     private BlogService blogService;
+
+    @javax.annotation.Resource(name = "blogAssembler")
+    private ResourceAssembler resourceAssembler;
 
     @ModelAttribute("loginURL")
     public String loginURL(){

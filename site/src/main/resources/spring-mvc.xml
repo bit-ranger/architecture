@@ -58,4 +58,5 @@
         则该过滤器会自动创建filterMultipartResolver,无需任何配置 -->
 
     <bean class="org.sllx.site.core.util.StaticResourceHolder"  lazy-init="false" />
+    <bean id="linkBuilderFactory" class="org.springframework.hateoas.mvc.ControllerLinkBuilderFactory"  lazy-init="false" />
 </beans>

@@ -34,7 +34,7 @@
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:*/mapper/*.xml"/>
+        <property name="mapperLocations" value="classpath:*/mapper/*-mapper.xml"/>
         <!-- 避免混乱,mapper中不使用别名,使用全限定名
             <property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>
         -->
