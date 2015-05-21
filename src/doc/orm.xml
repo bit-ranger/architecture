@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+        version="2.0">
+
+
+    <entity class="top.rainynight.site.blog.entity.Article">
+        <table name="article" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="articleid">
+                <column name="articleid"/>
+            </id>
+            <basic name="classid">
+                <column name="classid"/>
+            </basic>
+            <basic name="userid">
+                <column name="userid"/>
+            </basic>
+            <basic name="title">
+                <column name="title"/>
+            </basic>
+            <basic name="content">
+                <column name="content"/>
+            </basic>
+            <basic name="releasetime">
+                <column name="releasetime"/>
+            </basic>
+            <basic name="sort">
+                <column name="sort"/>
+            </basic>
+            <basic name="state">
+                <column name="state"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="top.rainynight.site.blog.entity.Articleclass">
+        <table name="articleclass" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="classid">
+                <column name="classid"/>
+            </id>
+            <basic name="userid">
+                <column name="userid"/>
+            </basic>
+            <basic name="name">
+                <column name="name"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="top.rainynight.site.blog.entity.Homepage">
+        <table name="homepage" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="userid">
+                <column name="userid"/>
+            </id>
+            <basic name="keyword">
+                <column name="keyword"/>
+            </basic>
+            <basic name="description">
+                <column name="description"/>
+            </basic>
+            <basic name="name">
+                <column name="name"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="top.rainynight.site.user.entity.User">
+        <table name="user" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="userid">
+                <column name="userid"/>
+            </id>
+            <basic name="name">
+                <column name="name"/>
+            </basic>
+            <basic name="password">
+                <column name="password"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity class="top.rainynight.site.blog.entity.Archive">
+        <table name="archive" schema="" catalog="sllxsite"/>
+        <attributes>
+            <id name="name">
+                <column name="name"/>
+            </id>
+            <basic name="body">
+                <column name="body"/>
+            </basic>
+        </attributes>
+    </entity>
+</entity-mappings>

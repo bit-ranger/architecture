@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+	default-lazy-init="true">
+
+    <context:component-scan base-package="top.rainynight.site" />
+
+    <mvc:resources mapping="/favicon.ico" location="/resources/"/>
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/**"/>
+            <bean class="top.rainynight.site.core.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="defaultErrorView" value="global/500"/>
+        <property name="defaultStatusCode" value="500"/>
+        <property name="warnLogCategory" value="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"/>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="contentType" value="text/html; charset=UTF-8"/>
+        <property name="prefix" value="/WEB-INF/page/"/>
+        <property name="suffix" value=".jsp"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    </bean>
+
+    <!-- 解析操作交给org.springframework.web.servlet.DispatcherServlet处理时id必须为multipartResolver -->
+    <!-- 解析操作交给org.springframework.web.multipart.support.MultipartFilter处理时id必须为filterMultipartResolver,
+        且该Bean必须配置在web.xml中contextConfigLocation的指定文件中 -->
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>-->
+    <!-- 若使用的Spring版本为4.0,Servlet版本为3.0,且已配置multipartFilter,在DispatcherServlet下已配置开启<multipart-config/>,
+        则该过滤器会自动创建filterMultipartResolver,无需任何配置 -->
+
+    <bean class="top.rainynight.site.core.util.StaticResourceHolder"  lazy-init="false" />
+    <bean id="linkBuilderFactory" class="org.springframework.hateoas.mvc.ControllerLinkBuilderFactory"  lazy-init="false" />
+</beans>
