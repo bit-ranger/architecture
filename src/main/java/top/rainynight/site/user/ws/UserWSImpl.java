@@ -1,0 +1,28 @@
+package top.rainynight.site.user.ws;
+
+import org.springframework.stereotype.Component;
+import top.rainynight.foundation.util.Page;
+import top.rainynight.site.user.entity.User;
+import top.rainynight.site.user.service.UserService;
+
+import java.util.List;
+
+
+@Component("userWS")
+public class UserWSImpl implements UserWS {
+
+    @javax.annotation.Resource(name = "userService")
+    private UserService userService;
+
+    @Override
+    public List<User> browse() {
+        return userService.list(new User(), new Page());
+    }
+
+    @Override
+    public User lookOver(int id) {
+        User user = new User();
+        user.setUserid(id);
+        return userService.get(user);
+    }
+}

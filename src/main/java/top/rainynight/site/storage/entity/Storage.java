@@ -1,13 +1,13 @@
-package top.rainynight.site.blog.entity;
+package top.rainynight.site.storage.entity;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class Archive implements Serializable{
+public class Storage implements Serializable {
 
     private static final long serialVersionUID = -6265714340584955008L;
     private String name;
-    private byte[] body;
+    private  byte[] body;
 
     public String getName() {
         return name;
@@ -17,11 +17,11 @@ public class Archive implements Serializable{
         this.name = name;
     }
 
-    public byte[] getBody() {
+    public  byte[] getBody() {
         return body;
     }
 
-    public void setBody(byte[] archive) {
+    public void setBody( byte[] archive) {
         this.body = archive;
     }
 
@@ -30,9 +30,9 @@ public class Archive implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Archive other = (Archive) o;
+        Storage other = (Storage) o;
 
-        if (body != null ? !Arrays.equals(body,other.body) : other.body != null ) return false;
+        if (body != null ? !Arrays.equals(body, other.body) : other.body != null ) return false;
         if (name != null ? !name.equals(other.name) : other.name != null) return false;
 
         return true;

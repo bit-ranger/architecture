@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
+    <security:http auto-config="true">
+        <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+        <security:form-login />
+        <security:logout />
+    </security:http>
+
+    <!-- 认证管理器。用户名密码都集成在配置文件中 -->
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <!-- InMemoryDaoImpl -->
+            <security:user-service>
+                <security:user name="sharp" password="sharp" authorities="ROLE_USER"/>
+            </security:user-service>
+        </security:authentication-provider>
+        <!--<security:authentication-provider>
+            &lt;!&ndash; JdbcDaoImpl &ndash;&gt;
+            <security:jdbc-user-service data-source-ref="dataSource"/>
+        </security:authentication-provider>-->
+    </security:authentication-manager>
+</beans>

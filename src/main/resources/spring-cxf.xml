@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+    <!-- ws-security 暂不可用
+    <bean id="serverAuthCallbackHandler" class="top.rainynight.sitews.ServerAuthCallbackHandler"/>
+    
+    <bean id="wss4jInInterceptor" class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+        <constructor-arg>
+            <map>
+                <entry key="action" value="UsernameToken"/>
+                <entry key="passwordType" value="PasswordText"/>
+                <entry key="passwordCallbackRef" value-ref="serverAuthCallbackHandler"/>
+            </map>
+        </constructor-arg>
+    </bean>
+    -->
+
+    <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+        </cxf:features>
+    </cxf:bus>
+
+    <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+    <bean id="jsonpPreStreamInterceptor" class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPreStreamInterceptor"/>
+    <bean id="jsonpInInterceptor" class="org.apache.cxf.jaxrs.provider.jsonp.JsonpInInterceptor"/>
+    <bean id="jsonpPostStreamInterceptor" class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPostStreamInterceptor"/>
+
+    <context:component-scan base-package="top.rainynight.site.blog.ws,top.rainynight.site.storage.ws,top.rainynight.site.user.ws" >
+        <!-- 扫描符合@Controller的类 -->
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+    </context:component-scan>
+
+    <jaxws:endpoint implementor="#blogWS" address="/ws/blog" />
+    <!-- ws的root路径可以查看所有可用的webService，如果address设为""，将会覆盖这个路径；
+    此时若再次访问ws的root路径，该请求将被解析为从address子目录中寻找service，而不是列举可用的webService -->
+    <jaxrs:server address="/rs/blog">
+        <jaxrs:serviceBeans>
+            <ref bean="blogWS"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jacksonJsonProvider"/>
+            <ref bean="jsonpPreStreamInterceptor"/>
+        </jaxrs:providers>
+        <jaxrs:inInterceptors>
+            <ref bean="jsonpInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <ref bean="jsonpPostStreamInterceptor"/>
+        </jaxrs:outInterceptors>
+    </jaxrs:server>
+
+
+    <jaxws:endpoint implementor="#storageWS" address="/ws/storage" />
+    <!-- ws的root路径可以查看所有可用的webService，如果address设为""，将会覆盖这个路径；
+    此时若再次访问ws的root路径，该请求将被解析为从address子目录中寻找service，而不是列举可用的webService -->
+    <jaxrs:server address="/rs/storage">
+        <jaxrs:serviceBeans>
+            <ref bean="storageWS"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jacksonJsonProvider"/>
+            <ref bean="jsonpPreStreamInterceptor"/>
+        </jaxrs:providers>
+        <jaxrs:inInterceptors>
+            <ref bean="jsonpInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <ref bean="jsonpPostStreamInterceptor"/>
+        </jaxrs:outInterceptors>
+    </jaxrs:server>
+
+
+
+    <!-- 下面的方法更简单
+    <jaxws:server address="/ws/user">
+        <jaxws:serviceBean>
+            <ref bean="userWS"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
+    -->
+
+    <jaxws:endpoint implementor="#userWS" address="/ws/user" >
+        <!-- 存在ehcache异常，暂时放弃
+        <jaxws:inInterceptors>
+            <ref bean="wss4jInInterceptor"/>
+        </jaxws:inInterceptors>
+        -->
+    </jaxws:endpoint>
+
+
+    <jaxrs:server address="/rs/user">
+        <jaxrs:serviceBeans>
+            <ref bean="userWS"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jacksonJsonProvider"/>
+            <ref bean="jsonpPreStreamInterceptor"/>
+        </jaxrs:providers>
+        <jaxrs:inInterceptors>
+            <ref bean="jsonpInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <ref bean="jsonpPostStreamInterceptor"/>
+        </jaxrs:outInterceptors>
+    </jaxrs:server>
+
+
+
+</beans>

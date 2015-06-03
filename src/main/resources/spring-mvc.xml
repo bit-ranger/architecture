@@ -7,7 +7,10 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
 	default-lazy-init="true">
 
-    <context:component-scan base-package="top.rainynight.site" />
+    <context:component-scan base-package="top.rainynight.site.core,top.rainynight.site.blog.controller,top.rainynight.site.user.controller">
+        <!-- 扫描符合@Controller的类 -->
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
 
     <mvc:resources mapping="/favicon.ico" location="/resources/"/>
     <mvc:resources mapping="/resources/**" location="/resources/" />

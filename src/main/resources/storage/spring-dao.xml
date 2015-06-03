@@ -2,8 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
-	<bean id="blogService" class="top.rainynight.site.blog.service.impl.BlogServiceImpl">
-		<property name="ardticleDao" ref="ardticleDao"/>
-        <property name="articleclassDao" ref="articleclassDao"/>
+
+    <bean id="storageDao" class="top.rainynight.site.storage.dao.impl.StorageDaoImpl" >
+        <property name="sqlSession" ref="sqlSessionTemplate"/>
     </bean>
+
 </beans>

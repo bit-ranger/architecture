@@ -9,8 +9,11 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
 	default-autowire="byName">
 
-    <import resource="classpath:blog/spring*.xml" />
-    <import resource="classpath:user/spring*.xml" />
+    <import resource="classpath:blog/spring-*.xml"/>
+    <import resource="classpath:storage/spring-*.xml"/>
+    <import resource="classpath:user/spring-*.xml"/>
+    <import resource="classpath:spring-cxf.xml"/>
+    <import resource="spring-security.xml"/>
 
 	<aop:config>
         <aop:pointcut id="transactionPointcut" expression="execution(public * top.rainynight.foundation.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
