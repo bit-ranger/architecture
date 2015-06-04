@@ -1,7 +1,6 @@
 package top.rainynight.foundation;
 
 
-import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import top.rainynight.foundation.util.Page;
 
@@ -107,6 +106,12 @@ public abstract class DaoMyBatisSupport<T>  implements Dao<T> {
     }
 
     public List<T> list(T obj, Page page){
-        return sqlSession.selectList(makeIdFullName(SQLID_SELECT), obj, new RowBounds(page.getOffset(), page.getPageSize()));
+        return sqlSession.selectList(makeIdFullName(SQLID_SELECT), obj);
+    }
+
+    protected class MybatisParam{
+        protected MybatisParam(T t, Page page){
+
+        }
     }
 }

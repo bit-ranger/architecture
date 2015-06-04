@@ -8,9 +8,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.PublicKey;
+
 
 public class TestAction extends JUnitActionBase {
-    @Test
+    //@Test
     public void test() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -21,6 +23,7 @@ public class TestAction extends JUnitActionBase {
         // 执行URI对应的action
         final ModelAndView mav = this.excuteAction(request, response);
     }
+
 
 //    @Test
 //    public void test2() throws Exception{

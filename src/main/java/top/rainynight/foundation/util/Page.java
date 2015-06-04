@@ -2,111 +2,114 @@ package top.rainynight.foundation.util;
 
 public class Page {
 
-    private static final int DEFAULT_PAGE_SIZE = 50;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
-    private int currentPage = 1;// 当前页
-    private int pageSize = DEFAULT_PAGE_SIZE;// 每页记录数
-    private int allRow;// 总记录数
-    private int totalPage;// 总页数
+    private int pageNumber = 1;// 当前页
+    private int start = 1;
+    private int size = DEFAULT_PAGE_SIZE;// 每页记录数
+    private int recordsCount;// 总记录数
+    private int pagesCount;// 总页数
+
 
     /**
-     * 计算总页数,静态方法,供外部直接通过类名调用 　　
-     * @param pageSize 每页记录数 　　
-     * @param allRow 总记录数 　　
-     * @return 总页数 　　
+     * @param pageNumber 当前页码
      */
-    public static int countTotalPage(final int pageSize, final int allRow) {
-        return allRow % pageSize == 0 ? allRow / pageSize : allRow / pageSize + 1;
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber < 1 ? 1 : pageNumber;
+        start = size * (pageNumber - 1) + 1;
     }
 
     /**
-     *计算当前页开始记录 　　
-     *@param pageSize 每页记录数 　　
-     *@param currentPage 当前第几页
-     *@return 当前页开始记录号 　　
+     * 该方法会同时计算总页数，请确保此前已经设置 size，否则将使用缺省 size
+     * @param recordsCount 数据总条数
      */
-    public static int countOffset(final int pageSize, final int currentPage) {
-        return pageSize * (currentPage - 1);
+    public void setRecordsCount(int recordsCount) {
+        this.recordsCount = recordsCount;
+        pagesCount = recordsCount % size == 0 ? recordsCount / size : recordsCount / size + 1;
     }
 
+    /**
+     * @param size 每页记录条数
+     */
+    public void setSize(int size) {
+        this.size = size < 1 ? DEFAULT_PAGE_SIZE : size;
+        setPageNumber(pageNumber);
+        setRecordsCount(recordsCount);
+    }
 
     /**
      * @return 总页数
      */
-    public int getTotalPage() {return totalPage; }
-
-    /**
-     * @return 偏移量(当前页第一条记录的index)
-     */
-    public int getOffset(){ return countOffset(getPageSize(), getCurrentPage()); }
+    public int getPagesCount() {return pagesCount; }
 
     /**
      * @return 数据总条数
      */
-    public int getAllRow() {return allRow; }
-
-    /**
-     * 该方法会同时计算总页数，请确保此前已经设置 pageSize，否则将使用缺省 pageSize
-     * @param allRow 数据总条数
-     */
-    public void setAllRow(int allRow) {
-        this.allRow = allRow;
-        this.totalPage = countTotalPage(getPageSize(), getAllRow());
-    }
+    public int getRecordsCount() {return recordsCount; }
 
     /**
      * @return 当前页码
      */
-    public int getCurrentPage() {
-         return currentPage;}
-
-    /**
-     * @param currentPage 当前页码
-     */
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage < 1 ? 1 : currentPage;
-    }
+    public int getPageNumber() {return pageNumber; }
 
     /**
      * @return 每页记录条数
      */
-    public int getPageSize() {return pageSize; }
+    public int getSize() {return size; }
 
-    /**
-     * @param pageSize 每页记录条数
-     */
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize < 1 ? DEFAULT_PAGE_SIZE : pageSize;
-
-    }
+    public int getStart() {return start; }
 
     public boolean getIsFirst() {
-        return currentPage == 1;// 如是当前页是第1页
+        return pageNumber == 1;// 如是当前页是第1页
     }
 
     public boolean getIsLast() {
-        return currentPage == totalPage;// 如果当前页是最后一页
+        return pageNumber == pagesCount;// 如果当前页是最后一页
     }
 
     public boolean getHasPrev() {
-        return currentPage != 1;// 只要当前页不是第1页
+        return pageNumber != 1;// 只要当前页不是第1页
     }
 
     public boolean getHasNext() {
-        return currentPage != totalPage;// 只要当前页不是最后1页
+        return pageNumber != pagesCount;// 只要当前页不是最后1页
     }
 
-    /**
-     * 设置当前页码，包含从String到int的类型转换,若输入异常数据，页码为1
-     * @param pn 当前页码
-     */
-    public void setPn(String pn){
-        int n;
-        try{
-            n = Integer.parseInt(pn);
-        } catch (NumberFormatException e){
-            n = 1;
-        }
-        setCurrentPage(n);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Page)) return false;
+
+        Page page = (Page) o;
+
+        if (pageNumber != page.pageNumber) return false;
+        if (pagesCount != page.pagesCount) return false;
+        if (recordsCount != page.recordsCount) return false;
+        if (size != page.size) return false;
+        if (start != page.start) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pageNumber;
+        result = 31 * result + start;
+        result = 31 * result + size;
+        result = 31 * result + recordsCount;
+        result = 31 * result + pagesCount;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("pageNumber:").append(pageNumber).append(",");
+        sb.append("size:").append(size).append(",");
+        sb.append("start:").append(start).append(",");
+        sb.append("recordsCount:").append(recordsCount).append(",");
+        sb.append("pagesCount:").append(pagesCount);
+        sb.append("}");
+        return sb.toString();
     }
 }
