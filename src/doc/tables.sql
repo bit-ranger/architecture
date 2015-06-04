@@ -1,24 +1,10 @@
-drop table if exists archive;
-
 drop table if exists article;
 
 drop table if exists articleclass;
 
-drop table if exists homepage;
+drop table if exists file;
 
 drop table if exists user;
-
-/*==============================================================*/
-/* Table: archive                                               */
-/*==============================================================*/
-create table archive
-(
-   name                 varchar(36) not null comment '文件名',
-   body                 mediumblob not null comment '二进制文件',
-   primary key (name)
-);
-
-alter table archive comment '文件';
 
 /*==============================================================*/
 /* Table: article                                               */
@@ -31,8 +17,6 @@ create table article
    title                varchar(128) not null comment '标题',
    content              mediumtext not null comment '内容',
    releasetime          datetime not null comment '发布时间',
-   sort                 int not null comment '排序号',
-   state                int not null comment '状态，{0:正常;1:隐藏}',
    primary key (articleid)
 );
 
@@ -52,18 +36,17 @@ create table articleclass
 alter table articleclass comment '文章分类';
 
 /*==============================================================*/
-/* Table: homepage                                              */
+/* Table: file                                                  */
 /*==============================================================*/
-create table homepage
+create table file
 (
-   userid               int not null comment '用户ID',
-   keyword              varchar(128) comment '关键字，以英文逗号分隔',
-   description          varchar(128) comment '描述',
-   name                 varchar(32) not null comment '名称',
-   primary key (userid)
+   id                   varchar(36) not null comment '文件id',
+   name                 varchar(50) not null comment '文件名',
+   body                 mediumblob not null comment '二进制文件',
+   primary key (id)
 );
 
-alter table homepage comment '主页';
+alter table file comment '文件';
 
 /*==============================================================*/
 /* Table: user                                                  */
@@ -86,7 +69,4 @@ alter table article add constraint FK_Reference_4 foreign key (userid)
       references user (userid) on delete restrict on update restrict;
 
 alter table articleclass add constraint FK_Reference_1 foreign key (userid)
-      references user (userid) on delete restrict on update restrict;
-
-alter table homepage add constraint FK_Reference_2 foreign key (userid)
       references user (userid) on delete restrict on update restrict;

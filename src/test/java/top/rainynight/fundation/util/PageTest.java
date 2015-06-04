@@ -2,7 +2,7 @@ package top.rainynight.fundation.util;
 
 import org.junit.Assert;
 import org.junit.Test;
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 
 
 public class PageTest {

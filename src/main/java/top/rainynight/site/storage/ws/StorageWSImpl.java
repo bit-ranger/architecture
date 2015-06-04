@@ -28,7 +28,7 @@ public class StorageWSImpl implements StorageWS{
             e.printStackTrace();
         }
         storage.setBody(baos.toByteArray());
-        storageService.insert(storage);
+        storageService.save(storage);
         return id;
     }
 

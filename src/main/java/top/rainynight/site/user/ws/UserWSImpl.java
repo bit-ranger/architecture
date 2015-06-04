@@ -1,7 +1,7 @@
 package top.rainynight.site.user.ws;
 
 import org.springframework.stereotype.Component;
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 import top.rainynight.site.user.entity.User;
 import top.rainynight.site.user.service.UserService;
 
@@ -16,7 +16,7 @@ public class UserWSImpl implements UserWS {
 
     @Override
     public List<User> browse() {
-        return userService.list(new User(), new Page());
+        return userService.get(new User(), new Page());
     }
 
     @Override

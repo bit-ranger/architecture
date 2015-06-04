@@ -1,6 +1,6 @@
 package top.rainynight.site.blog.controller;
 
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.entity.Articleclass;
 import top.rainynight.site.blog.service.BlogService;
@@ -24,7 +24,7 @@ public class BlogController{
     @RequestMapping(method = {RequestMethod.GET,RequestMethod.HEAD})
     public String list(Page page, ModelMap modelMap){
         Article article = new Article();
-        List<Article> articleList = blogService.list(article,page);
+        List<Article> articleList = blogService.get(article,page);
         modelMap.addAttribute("articleList",articleList);
         return "blog/list";
     }
@@ -47,8 +47,6 @@ public class BlogController{
         User user = (User)userObj;
         article.setUserid(user.getUserid());
         article.setReleasetime(new Date());
-        article.setSort(1);
-        article.setState(0);
         blogService.save(article);
         return "redirect:/";
     }
@@ -56,7 +54,7 @@ public class BlogController{
     @RequestMapping(value="{id:[0-9]{1,9}}" , method = RequestMethod.GET)
     public String view(@PathVariable Integer id, Article article, ModelMap modelMap){
         article.setArticleid(id);
-        article = blogService.getFull(article);
+        article = blogService.get(article);
         if(article == null){
             modelMap.clear();
             return "redirect:/404";

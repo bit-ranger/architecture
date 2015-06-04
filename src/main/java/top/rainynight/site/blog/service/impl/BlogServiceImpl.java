@@ -1,7 +1,7 @@
 package top.rainynight.site.blog.service.impl;
 
-import top.rainynight.foundation.util.Page;
-import top.rainynight.foundation.ServiceBasicSupport;
+import top.rainynight.core.util.Page;
+import top.rainynight.core.ServiceBasicSupport;
 import top.rainynight.site.blog.dao.ArticleDao;
 import top.rainynight.site.blog.dao.ArticleclassDao;
 import top.rainynight.site.blog.entity.Article;
@@ -26,22 +26,7 @@ public class BlogServiceImpl extends ServiceBasicSupport<Article> implements Blo
     }
 
     @Override
-    public Article getFull(Article article) {
-        return ardticleDao.getFull(article);
-    }
-
-    @Override
-    public List<Article> listFull(Article article,Page page) {
-        return ardticleDao.listFull(article);
-    }
-
-    @Override
     public List<Articleclass> listArticleclass(Articleclass articleclass) {
-        return articleclassDao.list(articleclass,new Page());
-    }
-
-    @Override
-    public void save(Article article) {
-        ardticleDao.insert(article);
+        return articleclassDao.select(articleclass,new Page());
     }
 }

@@ -1,4 +1,4 @@
-package top.rainynight.foundation;
+package top.rainynight.core;
 
 
 /**

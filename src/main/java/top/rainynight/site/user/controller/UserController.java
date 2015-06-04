@@ -1,6 +1,6 @@
 package top.rainynight.site.user.controller;
 
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 import top.rainynight.site.user.entity.User;
 import top.rainynight.site.user.service.UserService;
 import org.springframework.ui.ModelMap;
@@ -26,7 +26,7 @@ public class UserController{
      */
     @RequestMapping(method = RequestMethod.GET)
     public String list(User user, Page page, ModelMap model) throws IllegalAccessException {
-        List<User> users = userService.list(user, page);
+        List<User> users = userService.get(user, page);
         model.addAttribute("users", users);
         return "user/user";
     }
@@ -56,7 +56,7 @@ public class UserController{
     @RequestMapping(method = RequestMethod.POST)
     public String post(User user, ModelMap modelMap){
         modelMap.clear();
-        userService.insert(user);
+        userService.save(user);
         return "redirect:/user";
     }
 
@@ -73,7 +73,7 @@ public class UserController{
     public String put(@PathVariable int id, User user, ModelMap modelMap) throws InvocationTargetException, IllegalAccessException {
         modelMap.clear();
         user.setUserid(id);
-        userService.update(user);
+        userService.save(user);
         return "redirect:/user";
     }
 
@@ -87,7 +87,7 @@ public class UserController{
     @RequestMapping(value = "{id:[0-9]{1,9}}", method = RequestMethod.DELETE)
     public @ResponseBody String delete(@PathVariable Integer id, User user){
         user.setUserid(id);
-        userService.delete(user);
+        userService.remove(user);
         return "success";
     }
 

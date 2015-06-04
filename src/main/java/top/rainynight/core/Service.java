@@ -1,7 +1,7 @@
-package top.rainynight.foundation;
+package top.rainynight.core;
 
 
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 
 import java.util.List;
 
@@ -11,25 +11,18 @@ import java.util.List;
  */
 public interface Service<T> {
     /**
-     * 添加一个对象
+     * 保存一个对象
      * @param obj 将被添加的对象
      * @return 受影响的对象个数
      */
-    int insert(T obj);
+    int save(T obj);
 
     /**
      * 删除一个对象
      * @param obj 将被删除的对象
      * @return 受影响的对象个数
      */
-    int delete(T obj);
-
-    /**
-     * 更新一个对象
-     * @param obj 将被更新的对象
-     * @return 受影响的对象个数
-     */
-    int update(T obj);
+    int remove(T obj);
 
     /**
      * 获取一个对象
@@ -44,5 +37,5 @@ public interface Service<T> {
      * @param page 分页信息
      * @return 对象列表
      */
-    List<T> list(T obj, Page page);
+    List<T> get(T obj, Page page);
 }

@@ -16,7 +16,7 @@
     <import resource="spring-security.xml"/>
 
 	<aop:config>
-        <aop:pointcut id="transactionPointcut" expression="execution(public * top.rainynight.foundation.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
+        <aop:pointcut id="transactionPointcut" expression="execution(public * top.rainynight.core.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>
 
         <aop:aspect ref="logRecorder" >
@@ -26,16 +26,19 @@
 
 	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
-			<tx:method name="insert*" propagation="REQUIRED" />
-			<tx:method name="delete*" propagation="REQUIRED" />
-			<tx:method name="update*" propagation="REQUIRED" />
 			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true"/>
 		</tx:attributes>
 	</tx:advice>
 	
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>
+        <property name="basePackage" value="top.rainynight.site.blog.dao"/>
     </bean>
 
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
@@ -86,5 +89,5 @@
         <!-- <property name="maxUploadSize" value="204800"/> -->
     </bean>
 
-    <bean id="logRecorder" class="top.rainynight.foundation.util.LogRecorder"/>
+    <bean id="logRecorder" class="top.rainynight.core.util.LogRecorder"/>
 </beans>

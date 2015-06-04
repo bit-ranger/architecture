@@ -1,4 +1,4 @@
-package top.rainynight.foundation.util;
+package top.rainynight.core.util;
 
 
 public class LogRecorder {

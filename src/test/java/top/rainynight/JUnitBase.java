@@ -1,6 +1,9 @@
+package top.rainynight;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.BeforeClass;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -11,23 +14,29 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-public class JUnitActionBase {
-    private static HandlerMapping handlerMapping;
-    private static HandlerAdapter handlerAdapter;
+public class JUnitBase {
+    protected static XmlWebApplicationContext context;
+    protected static HandlerMapping handlerMapping;
+    protected static HandlerAdapter handlerAdapter;
+
     /**
      * 读取spring3 MVC配置文件
      */
     @BeforeClass
     public static void setUp() {
-        if (handlerMapping == null) {
-            String[] configs = { "file:site/main/resources/spring-foundation.xml",
+        if(context == null){
+            context = new XmlWebApplicationContext();
+
+            String[] configs = {
                     "file:site/main/resources/spring.xml",
-                    "file:site/main/resources/user/spring-dao.xml",
-                    "file:site/main/resources/user/spring-service.xml",
+                   // "file:site/main/resources/user/spring-dao.xml",
+                    //"file:site/main/resources/user/spring-service.xml",
                     "file:site/main/resources/blog/spring-dao.xml",
-                    "file:site/main/resources/blog/spring-service.xml"};
-            XmlWebApplicationContext context = new XmlWebApplicationContext();
+                    "file:site/main/resources/blog/spring-service.xml"
+            };
             context.setConfigLocations(configs);
+        }
+        if (handlerMapping == null) {
             MockServletContext msc = new MockServletContext();
             context.setServletContext(msc);			context.refresh();
             msc.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
@@ -50,4 +59,5 @@ public class JUnitActionBase {
         final ModelAndView model = handlerAdapter.handle(request, response, chain.getHandler());
         return model;
     }
+
 }

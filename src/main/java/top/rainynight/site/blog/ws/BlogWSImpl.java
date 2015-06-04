@@ -2,7 +2,7 @@ package top.rainynight.site.blog.ws;
 
 
 import org.springframework.stereotype.Component;
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.service.BlogService;
 
@@ -17,7 +17,7 @@ public class BlogWSImpl implements BlogWS{
 
     @Override
     public List<Article> list() {
-        return blogService.list(new Article(), new Page());
+        return blogService.get(new Article(), new Page());
     }
 
     @Override
@@ -35,9 +35,7 @@ public class BlogWSImpl implements BlogWS{
         article.setReleasetime(new Date());
         article.setClassid(classId);
         article.setUserid(1);
-        article.setSort(1);
-        article.setState(0);
-        return blogService.insert(article) > 0;
+        return blogService.save(article) > 0;
     }
 
 

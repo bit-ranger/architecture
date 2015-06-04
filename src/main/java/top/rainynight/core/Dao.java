@@ -1,6 +1,6 @@
-package top.rainynight.foundation;
+package top.rainynight.core;
 
-import top.rainynight.foundation.util.Page;
+import top.rainynight.core.util.Page;
 
 import java.util.List;
 
@@ -32,17 +32,10 @@ public interface Dao<T> {
     int update(T obj);
 
     /**
-     * 获取一个对象
-     * @param obj 存放查询信息的对象
-     * @return 获取的对象
-     */
-    T get(T obj);
-
-    /**
      * 获取一组对象
      * @param obj 存放查询信息的对象
      * @param page 分页信息
      * @return 对象列表
      */
-    List<T> list(T obj, Page page);
+    List<T> select(T obj, Page page);
 }

@@ -1,17 +1,11 @@
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpMethod;
+package top.rainynight;
+
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.security.PublicKey;
 
-
-public class TestAction extends JUnitActionBase {
+public class TestAction extends JUnitBase {
     //@Test
     public void test() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
