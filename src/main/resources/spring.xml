@@ -35,7 +35,7 @@
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <property name="basePackage" value="top.rainynight.site.blog.dao"/>
+        <property name="basePackage" value="top.rainynight.site.blog.dao,top.rainynight.site.user.dao"/>
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -58,9 +58,9 @@
         -->
 
         <!-- local -->
-        <property name="url" value="jdbc:mysql://localhost:3306/test"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
         <property name="username" value="sllx" />
-        <property name="password" value="123456" />
+        <property name="password" value="331320" />
 
 
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />

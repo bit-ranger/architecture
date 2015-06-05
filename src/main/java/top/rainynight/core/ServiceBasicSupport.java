@@ -1,7 +1,5 @@
 package top.rainynight.core;
 
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 import top.rainynight.core.util.BeanMapConvertor;
 import top.rainynight.core.util.Page;
@@ -26,7 +24,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     @Transactional
     public int save(T obj) {
         int count = 0;
-        List<T> pojoList = dao.select(obj,null);
+        List<T> pojoList = _get(obj, new Page());
         if(pojoList == null || pojoList.isEmpty()){
             count = dao.insert(obj);
         }else{
@@ -43,17 +41,20 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
 
     @Override
     public T get(T obj) {
-        List<T> pojoList = dao.select(obj);
+        List<T> pojoList = _get(obj, new Page());
         if(pojoList == null || pojoList.isEmpty()){
             return null;
         }
         return pojoList.get(0);
     }
 
-    @Override
-    public List<T> get(T obj, Page page) {
-        Map<String,Object> params = BeanMapConvertor.toMap(obj);
-        params.putAll(BeanMapConvertor.toMap(page));
+    private List<T> _get(T obj, Page page) {
+        Map<String,Object> params = BeanMapConvertor.merge(obj,page);
         return dao.select(params);
+    }
+
+    @Override
+    public List<T> get(T obj, Page page){
+        return _get(obj,page);
     }
 }

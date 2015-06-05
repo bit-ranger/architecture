@@ -57,4 +57,12 @@ public class BeanMapConvertor {
         return returnMap;
     }
 
+    public static Map<String,Object> merge(Object... objs){
+        Map<String,Object> map = new HashMap<String, Object>();
+        for (Object obj : objs) {
+            Map<String,Object> m = BeanMapConvertor.toMap(obj);
+            map.putAll(m);
+        }
+        return map;
+    }
 }

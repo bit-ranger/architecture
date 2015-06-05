@@ -1,6 +1,7 @@
 package top.rainynight.site.blog.service.impl;
 
 import org.springframework.stereotype.Service;
+import top.rainynight.core.util.BeanMapConvertor;
 import top.rainynight.core.util.Page;
 import top.rainynight.core.ServiceBasicSupport;
 import top.rainynight.site.blog.dao.ArticleDao;
@@ -11,6 +12,7 @@ import top.rainynight.site.blog.service.BlogService;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Service("blogService")
 public class BlogServiceImpl extends ServiceBasicSupport<Article> implements BlogService {
@@ -32,6 +34,7 @@ public class BlogServiceImpl extends ServiceBasicSupport<Article> implements Blo
 
     @Override
     public List<Articleclass> listArticleclass(Articleclass articleclass) {
-        return articleclassDao.select(articleclass,new Page());
+        Map<String,Object> params = BeanMapConvertor.merge(articleclass, new Page());
+        return articleclassDao.select(params);
     }
 }

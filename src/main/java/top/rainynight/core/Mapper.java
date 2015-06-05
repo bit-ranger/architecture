@@ -8,7 +8,7 @@ import java.util.Map;
  * 数据访问顶层接口
  * @param <T>
  */
-public interface Dao<T> {
+public interface Mapper<T> {
 
     /**
      * 添加一个对象
@@ -35,5 +35,5 @@ public interface Dao<T> {
      * 获取一组对象
      * @return 对象列表
      */
-    List<T> select(Map<String,Object> params);
+    List<T> select(Map<String, Object> params);
 }

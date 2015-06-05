@@ -6,5 +6,5 @@ import top.rainynight.site.blog.entity.Article;
 import java.util.List;
 
 public interface ArticleDao extends Dao<Article> {
-    List<Article> listWithArticleclass();
+    List<Article> selectRelevance();
 }
