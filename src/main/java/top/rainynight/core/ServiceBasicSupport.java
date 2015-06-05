@@ -1,9 +1,13 @@
 package top.rainynight.core;
 
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
+import top.rainynight.core.util.BeanMapConvertor;
 import top.rainynight.core.util.Page;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 实现了{@link Service}中所有方法的默认实现类
@@ -19,6 +23,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
     @Override
+    @Transactional
     public int save(T obj) {
         int count = 0;
         List<T> pojoList = dao.select(obj,null);
@@ -31,13 +36,14 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
     @Override
+    @Transactional
     public int remove(T obj) {
         return dao.delete(obj);
     }
 
     @Override
     public T get(T obj) {
-        List<T> pojoList = dao.select(obj, null);
+        List<T> pojoList = dao.select(obj);
         if(pojoList == null || pojoList.isEmpty()){
             return null;
         }
@@ -46,6 +52,8 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
 
     @Override
     public List<T> get(T obj, Page page) {
-        return dao.select(obj,page);
+        Map<String,Object> params = BeanMapConvertor.toMap(obj);
+        params.putAll(BeanMapConvertor.toMap(page));
+        return dao.select(params);
     }
 }

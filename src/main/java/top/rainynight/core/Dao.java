@@ -1,8 +1,8 @@
 package top.rainynight.core;
 
-import top.rainynight.core.util.Page;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据访问顶层接口
@@ -33,9 +33,9 @@ public interface Dao<T> {
 
     /**
      * 获取一组对象
-     * @param obj 存放查询信息的对象
-     * @param page 分页信息
      * @return 对象列表
      */
-    List<T> select(T obj, Page page);
+    List<T> select(Map<String,Object> params);
+
+    List<T> select(T obj);
 }

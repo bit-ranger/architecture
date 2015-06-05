@@ -2,7 +2,6 @@ package top.rainynight.core;
 
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
 import top.rainynight.core.util.GenericUtils;
 import top.rainynight.core.util.Page;
 import java.util.List;

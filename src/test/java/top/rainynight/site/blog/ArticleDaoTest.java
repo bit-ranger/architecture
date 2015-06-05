@@ -14,13 +14,15 @@ import javax.annotation.Resource;
  * Created by sllx on 2015-06-04.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring.xml","classpath:blog/spring-dao.xml"})
+@ContextConfiguration(locations = {"classpath:spring.xml"})
 public class ArticleDaoTest extends AbstractJUnit4SpringContextTests {
 
     @Resource
     private ArticleDao articleDao;
 
+    @Test
     public void listWithArticleclass() {
+        articleDao.listWithArticleclass();
     }
 
     public void insert() {
@@ -33,9 +35,7 @@ public class ArticleDaoTest extends AbstractJUnit4SpringContextTests {
     public void update() {
     }
 
-    @Test
     public void select() {
-        articleDao.delete(new Article());
     }
 
     public void list() {

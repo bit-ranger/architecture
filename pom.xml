@@ -6,9 +6,17 @@
 	<packaging>war</packaging>
 	<version>1.0</version>
 	<name>site</name>
-    <url>http://maven.oschina.net/content/groups/public/</url>
 
-
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
     <properties>
         <spring.version>4.1.6.RELEASE</spring.version>

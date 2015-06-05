@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.rainynight.site.blog.entity.Articleclass">
+<mapper namespace="top.rainynight.site.blog.dao.ArticleclassDao">
 
     <select id="select" resultType="top.rainynight.site.blog.entity.Articleclass" parameterType="top.rainynight.site.blog.entity.Articleclass">
         select * from articleclass

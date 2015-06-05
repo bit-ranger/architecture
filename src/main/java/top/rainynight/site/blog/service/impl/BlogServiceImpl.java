@@ -1,5 +1,6 @@
 package top.rainynight.site.blog.service.impl;
 
+import org.springframework.stereotype.Service;
 import top.rainynight.core.util.Page;
 import top.rainynight.core.ServiceBasicSupport;
 import top.rainynight.site.blog.dao.ArticleDao;
@@ -8,19 +9,23 @@ import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.entity.Articleclass;
 import top.rainynight.site.blog.service.BlogService;
 
+import javax.annotation.Resource;
 import java.util.List;
 
+@Service("blogService")
 public class BlogServiceImpl extends ServiceBasicSupport<Article> implements BlogService {
 
     private ArticleclassDao articleclassDao;
 
-    private ArticleDao ardticleDao;
+    private ArticleDao articleDao;
 
-    public void setArdticleDao(ArticleDao ardticleDao) {
-        setDao(ardticleDao);
-        this.ardticleDao = ardticleDao;
+    @Resource
+    public void setArticleDao(ArticleDao articleDao) {
+        setDao(articleDao);
+        this.articleDao = articleDao;
     }
 
+    @Resource
     public void setArticleclassDao(ArticleclassDao articleclassDao) {
         this.articleclassDao = articleclassDao;
     }

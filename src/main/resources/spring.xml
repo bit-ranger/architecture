@@ -4,53 +4,43 @@
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
-	default-autowire="byName">
+    default-autowire="byName">
 
-    <import resource="classpath:blog/spring-*.xml"/>
-    <import resource="classpath:storage/spring-*.xml"/>
-    <import resource="classpath:user/spring-*.xml"/>
     <import resource="classpath:spring-cxf.xml"/>
     <import resource="spring-security.xml"/>
 
-	<aop:config>
-        <aop:pointcut id="transactionPointcut" expression="execution(public * top.rainynight.core.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
-		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>
+    <context:component-scan base-package="top.rainynight.site">
+        <!-- 扫描符合@Service的类 -->
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+    </context:component-scan>
 
+	<aop:config>
+        <aop:pointcut id="loginPointcut" expression="execution(public * top.rainynight.core.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
         <aop:aspect ref="logRecorder" >
-            <aop:after-returning pointcut-ref="transactionPointcut" method="record" arg-names="object" returning="object"/>
+            <aop:after-returning pointcut-ref="loginPointcut" method="record" arg-names="object" returning="object"/>
         </aop:aspect>
 	</aop:config>
 
-	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="save*" propagation="REQUIRED" />
-			<tx:method name="remove*" propagation="REQUIRED" />
-			<tx:method name="*" read-only="true"/>
-		</tx:attributes>
-	</tx:advice>
-	
+    <!-- enables scanning for @Transactional annotations -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
         <property name="basePackage" value="top.rainynight.site.blog.dao"/>
-    </bean>
-
-    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0" ref="sqlSessionFactory"/>
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:*/mapper/*-mapper.xml"/>
-        <!-- 避免混乱,mapper中不使用别名,使用全限定名
-            <property name="typeAliasesPackage" value="org.sllx.site.user.entity,org.sllx.site.blog.entity"/>
-        -->
+        <!--<property name="mapperLocations" value="classpath:top/rainynight/site/**/*.xml"/>-->
     </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
@@ -68,9 +58,9 @@
         -->
 
         <!-- local -->
-        <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/test"/>
         <property name="username" value="sllx" />
-        <property name="password" value="331320" />
+        <property name="password" value="123456" />
 
 
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
