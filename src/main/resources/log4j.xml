@@ -13,7 +13,7 @@
 
     <appender name="LOG.DEBUG" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="../logs/sitews/debug.log"/>
+        <param name="File" value="E:/logs/site/debug.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -27,7 +27,7 @@
 
     <appender name="LOG.INFO" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="../logs/sitews/info.log"/>
+        <param name="File" value="E:/logs/site/info.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -41,7 +41,7 @@
 
     <appender name="LOG.WARN" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="../logs/sitews/warn.log"/>
+        <param name="File" value="E:/logs/site/warn.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -55,7 +55,7 @@
 
     <appender name="LOG.ERROR" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="../logs/sitews/error.log"/>
+        <param name="File" value="E:/logs/site/error.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -69,7 +69,7 @@
 
     <appender name="LOG.FATAL" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="../logs/sitews/fatal.log"/>
+        <param name="File" value="E:/logs/site/fatal.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -82,12 +82,13 @@
     </appender>
 
     <root>
-        <priority value="WARN"/>
-        <appender-ref ref="LOG.Console" />
+        <level value="WARN"/>
+        <appender-ref ref="LOG.Console"/>
         <appender-ref ref="LOG.DEBUG"/>
         <appender-ref ref="LOG.INFO"/>
         <appender-ref ref="LOG.WARN"/>
         <appender-ref ref="LOG.ERROR"/>
         <appender-ref ref="LOG.FATAL"/>
     </root>
+
 </log4j:configuration>

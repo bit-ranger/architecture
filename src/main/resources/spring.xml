@@ -8,10 +8,9 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
-    default-autowire="byName">
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-    <import resource="classpath:spring-cxf.xml"/>
+    <import resource="spring-cxf.xml"/>
     <import resource="spring-security.xml"/>
 
     <context:component-scan base-package="top.rainynight.site">
@@ -19,12 +18,16 @@
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
     </context:component-scan>
 
-	<aop:config>
-        <aop:pointcut id="loginPointcut" expression="execution(public * top.rainynight.core.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
+    <context:property-placeholder location="classpath*:system.properties"/>
+
+    <aop:config>
+        <aop:pointcut id="loginPointcut" expression="execution(public * top.rainynight.site..service..*.*(..))"/>
         <aop:aspect ref="logRecorder" >
-            <aop:after-returning pointcut-ref="loginPointcut" method="record" arg-names="object" returning="object"/>
+            <aop:after-returning pointcut-ref="loginPointcut" method="record" returning="returnValue"/>
         </aop:aspect>
-	</aop:config>
+    </aop:config>
+
+    <bean id="logRecorder" class="top.rainynight.core.util.LogRecorder"/>
 
     <!-- enables scanning for @Transactional annotations -->
     <tx:annotation-driven transaction-manager="transactionManager" />
@@ -44,33 +47,17 @@
     </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-
-        <!-- JAE
-        <property name="url" value="jdbc:mysql://mysql.jae.jd.com:4066/dubuyuyem_mysql_n35t3ipl"/>
-        <property name="username" value="pC4lp7GM" />
-        <property name="password" value="ynLDv5B6E0qa" />
-        -->
-
-        <!-- SAE
-        <property name="url" value="jdbc:mysql://w.rdc.sae.sina.com.cn:3307/app_snowynight"/>
-        <property name="username" value="jyw2ym5n4j" />
-        <property name="password" value="01ij34w0154zlky05l3x3m43w4mj43lz2x0lm24j" />
-        -->
-
-        <!-- local -->
-        <property name="url" value="jdbc:mysql://localhost:3306/sllxsite"/>
-        <property name="username" value="sllx" />
-        <property name="password" value="331320" />
-
-
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="maxActive" value="100" />
-        <property name="maxIdle" value="30" />
-        <property name="maxWait" value="1000" />
-        <property name="defaultAutoCommit" value="true" />
-        <property name="removeAbandoned" value="true" />
-        <property name="removeAbandonedTimeout" value="80" />
-        <property name="validationQuery" value="select 1 from dual" />
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="maxActive" value="${connection_pools.maxActive}" />
+        <property name="maxIdle" value="${connection_pools.maxIdle}" />
+        <property name="maxWait" value="${connection_pools.maxWait}" />
+        <property name="defaultAutoCommit" value="${connection_pools.defaultAutoCommit}" />
+        <property name="removeAbandoned" value="${connection_pools.removeAbandoned}" />
+        <property name="removeAbandonedTimeout" value="${connection_pools.removeAbandonedTimeout}" />
+        <property name="validationQuery" value="${connection_pools.validationQuery}" />
     </bean>
 
     <!--@see{ org.springframework.web.multipart.support.MultipartFilter#DEFAULT_MULTIPART_RESOLVER_BEAN_NAME }-->
@@ -78,6 +65,4 @@
         <!-- one of the properties available; the maximum file size in bytes -->
         <!-- <property name="maxUploadSize" value="204800"/> -->
     </bean>
-
-    <bean id="logRecorder" class="top.rainynight.core.util.LogRecorder"/>
 </beans>

@@ -90,7 +90,7 @@ public class ArticleDaoTest extends AbstractTransactionalJUnit4SpringContextTest
         articleDao.delete(article);
     }
 
-    //@Test
+    @Test
     @Rollback
     public void update() {
         article.setArticleid(0);

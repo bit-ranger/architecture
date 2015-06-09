@@ -46,11 +46,11 @@
         update article
         <set>
              articleid=#{articleid}
-             <if test="classid!=null">classid=#{classid}</if>
-             <if test="userid!=null">userid=#{userid}</if>
-             <if test="title!=null">title=#{title}</if>
-             <if test="content!=null">content=#{content}</if>
-             <if test="releasetime!=null">releasetime=#{releasetime}</if>
+             <if test="classid!=null">,classid=#{classid}</if>
+             <if test="userid!=null">,userid=#{userid}</if>
+             <if test="title!=null">,title=#{title}</if>
+             <if test="content!=null">,content=#{content}</if>
+             <if test="releasetime!=null">,releasetime=#{releasetime}</if>
          </set>
          where articleid=#{articleid}
     </update>
