@@ -4,16 +4,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.rainynight.site.blog.dao.ArticleDao">
 
+    <cache eviction="FIFO"
+            flushInterval="60000"
+            size="512"
+            readOnly="true"/>
+
     <resultMap id="relevance" type="top.rainynight.site.blog.entity.Article" autoMapping="true">
+        <id column="articleid" property="articleid"/>
         <association property="user" javaType="top.rainynight.site.user.entity.User">
-            <result column="userid" property="userid"/>
-            <result column="username" property="name" />
+            <id column="userid" property="userid"/>
+            <result column="uName" property="name" />
             <result column="password" property="password" />
          </association>
         <association property="articleclass" javaType="top.rainynight.site.blog.entity.Articleclass">
-            <result column="classid" property="classid" />
+            <id column="classid" property="classid" />
             <result column="userid" property="userid" />
-            <result column="articleclassname" property="name" />
+            <result column="cName" property="name" />
         </association>
     </resultMap>
 
@@ -56,7 +62,7 @@
     </update>
 
     <select id="selectRelevance" resultMap="relevance">
-        select *,articleclass.name as articleclassname,user.name as username from article left join articleclass on article.classid=articleclass.classid left join user on article.userid=user.userid
+        select *,C.name as cName, U.name as uName from article as A left join articleclass as C on A.classid=C.classid left join user as U on A.userid=U.userid
         <include refid="whereClause"/>
     </select>
 </mapper>

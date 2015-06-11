@@ -1,5 +1,6 @@
 package top.rainynight.site.blog;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -18,6 +19,7 @@ import top.rainynight.site.user.entity.User;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 必须注意继承的类
@@ -68,8 +70,14 @@ public class ArticleDaoTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     @Test
+    @Rollback
+    @Transactional
     public void listWithArticleclass() {
-        articleDao.selectRelevance();
+        insert();
+        List<Article> list = articleDao.selectRelevance();
+        Assert.assertNotNull(list.get(0));
+        Assert.assertNotNull(list.get(0).getUser());
+        Assert.assertNotNull(list.get(0).getClass());
     }
 
     @Test
@@ -81,6 +89,8 @@ public class ArticleDaoTest extends AbstractTransactionalJUnit4SpringContextTest
         articleclassDao.insert(articleclass);
         setArticle(user, articleclass);
         articleDao.insert(article);
+        Assert.assertEquals(user.getUserid(), articleclass.getUserid());
+        Assert.assertEquals(articleclass.getClassid(), article.getClassid());
     }
 
     @Test
