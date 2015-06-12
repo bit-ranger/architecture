@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@page contentType="text/html;charset=UTF-8" %>
 <%@include file="../global/common.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -41,6 +42,27 @@
             </s:form>
         </div>
     </div>
+
+    <spring:hasBindErrors name="article">
+        <c:if test="${errors.fieldErrorCount > 0}">
+            字段错误：<br/>
+            <c:forEach items="${errors.fieldErrors}" var="error">
+                <spring:message var="message" code="${error.code}" arguments="${error.arguments}" text="${error.defaultMessage}"/>
+                ${error.field}------${message}<br/>
+            </c:forEach>
+        </c:if>
+
+        <c:if test="${errors.globalErrorCount > 0}">
+            全局错误：<br/>
+            <c:forEach items="${errors.globalErrors}" var="error">
+                <spring:message var="message" code="${error.code}" arguments="${error.arguments}" text="${error.defaultMessage}"/>
+                <c:if test="${not empty message}">
+                    ${message}<br/>
+                </c:if>
+            </c:forEach>
+        </c:if>
+    </spring:hasBindErrors>
+
 
 </body>
 </html>

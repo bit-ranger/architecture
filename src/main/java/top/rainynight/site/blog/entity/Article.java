@@ -1,20 +1,21 @@
 package top.rainynight.site.blog.entity;
 
+import org.hibernate.validator.constraints.NotBlank;
 import top.rainynight.site.user.entity.User;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 public class Article implements Serializable{
     private static final long serialVersionUID = -7076464179594028194L;
     private Integer articleid;
+
     private Integer classid;
     private Integer userid;
     private String title;
     private String content;
     private Date releasetime;
-    private Integer sort;
-    private Integer state;
 
     public Integer getArticleid() {
         return articleid;
@@ -24,6 +25,7 @@ public class Article implements Serializable{
         this.articleid = articleid;
     }
 
+    @NotNull(message = "{article.classid.null}")
     public Integer getClassid() {
         return classid;
     }
@@ -40,14 +42,16 @@ public class Article implements Serializable{
         this.userid = userid;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @NotBlank(message = "{article.title.blank}")
+    public String getTitle() {
+        return title;
+    }
+
+    @NotBlank(message = "{article.content.blank}")
     public String getContent() {
         return content;
     }
@@ -64,21 +68,6 @@ public class Article implements Serializable{
         this.releasetime = releasetime;
     }
 
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -89,8 +78,6 @@ public class Article implements Serializable{
 
         if (articleid != article.articleid) return false;
         if (classid != article.classid) return false;
-        if (sort != article.sort) return false;
-        if (state != article.state) return false;
         if (userid != article.userid) return false;
         if (content != null ? !content.equals(article.content) : article.content != null) return false;
         if (releasetime != null ? !releasetime.equals(article.releasetime) : article.releasetime != null) return false;
@@ -101,14 +88,12 @@ public class Article implements Serializable{
 
     @Override
     public int hashCode() {
-        int result = articleid;
+        int result = articleid != null ? articleid : 0;
         result = 31 * result + (classid != null ? classid : 0);
         result = 31 * result + (userid != null ? userid : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + (releasetime != null ? releasetime.hashCode() : 0);
-        result = 31 * result + (sort != null ? sort : 0);
-        result = 31 * result + (state != null ? state : 0);
         return result;
     }
 

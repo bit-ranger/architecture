@@ -1,12 +1,13 @@
 package top.rainynight.site.user.service.impl;
 
 
-import top.rainynight.foundation.ServiceBasicSupport;
+import org.springframework.stereotype.Service;
+import top.rainynight.core.ServiceBasicSupport;
 import top.rainynight.site.user.dao.UserDao;
 import top.rainynight.site.user.entity.User;
 import top.rainynight.site.user.service.UserService;
 
-
+@Service("userService")
 public class UserServiceImpl extends ServiceBasicSupport<User> implements UserService {
 	private UserDao userDao;
 	public void setUserDao(UserDao userDao) {

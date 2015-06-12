@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
-	default-lazy-init="true">
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <context:component-scan base-package="top.rainynight.site.core,top.rainynight.site.blog.controller,top.rainynight.site.user.controller">
+    <mvc:annotation-driven validator="validator"/>
+
+    <context:component-scan base-package="top.rainynight.site.*.controller" use-default-filters="false">
         <!-- 扫描符合@Controller的类 -->
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
@@ -15,27 +17,10 @@
     <mvc:resources mapping="/favicon.ico" location="/resources/"/>
     <mvc:resources mapping="/resources/**" location="/resources/" />
 
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/user/**"/>
-            <bean class="top.rainynight.site.core.interceptor.LoginInterceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
-
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
-
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-        <property name="messageConverters">
-            <list>
-                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
-            </list>
-        </property>
-    </bean>
-
     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="defaultErrorView" value="global/500"/>
         <property name="defaultStatusCode" value="500"/>
-        <property name="warnLogCategory" value="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"/>
+        <property name="warnLogCategory" value="top.rainynight.site"/>
     </bean>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -51,7 +36,32 @@
     <!--<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>-->
     <!-- 若使用的Spring版本为4.0,Servlet版本为3.0,且已配置multipartFilter,在DispatcherServlet下已配置开启<multipart-config/>,
         则该过滤器会自动创建filterMultipartResolver,无需任何配置 -->
+    <!--@see{ org.springframework.web.multipart.support.MultipartFilter#DEFAULT_MULTIPART_RESOLVER_BEAN_NAME }-->
+    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <!-- <property name="maxUploadSize" value="204800"/> -->
+    </bean>
 
-    <bean class="top.rainynight.site.core.util.StaticResourceHolder"  lazy-init="false" />
-    <bean id="linkBuilderFactory" class="org.springframework.hateoas.mvc.ControllerLinkBuilderFactory"  lazy-init="false" />
+    <!-- 以下 validator  ConversionService 在使用 mvc:annotation-driven 会 自动注册-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+        <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
+        <property name="validationMessageSource" ref="messageSource"/>
+    </bean>
+
+    <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
+                <value>classpath:messages</value>
+                <value>classpath:org/hibernate/validator/ValidationMessages</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+
+    <bean class="top.rainynight.site.core.GlobalController"/>
 </beans>

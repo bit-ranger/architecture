@@ -23,31 +23,16 @@
         <fileset id="web springmvc servlet context" name="MVC springmvc servlet context" removed="true">
           <file>file://$MODULE_DIR$/src/main/resources/spring-mvc.xml</file>
         </fileset>
-        <fileset id="fileset2" name="Spring MVC Application Context " removed="false">
-          <dependency>fileset</dependency>
-          <file>file://$MODULE_DIR$/src/main/resources/spring-mvc.xml</file>
-        </fileset>
-        <fileset id="fileset4" name="Spring CXF Application Context" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/spring-cxf.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/storage/spring-cxf.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/user/spring-cxf.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/blog/spring-cxf.xml</file>
-        </fileset>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/blog/spring-dao.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/user/spring-dao.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/blog/spring-service.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/user/spring-service.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/spring.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/storage/spring-service.xml</file>
-          <file>file://$MODULE_DIR$/src/main/resources/storage/spring-dao.xml</file>
-        </fileset>
-        <fileset id="fileset3" name="Spring Security Application Context " removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/spring-security.xml</file>
-        </fileset>
         <fileset id="web springMvc servlet context" name="MVC springMvc servlet context" removed="true">
           <dependency>web application context</dependency>
           <file>file://$MODULE_DIR$/src/main/resources/spring-mvc.xml</file>
+        </fileset>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/src/main/resources/spring.xml</file>
+          <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/springMvc-servlet.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/spring-security.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/spring-mvc.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/spring-cxf.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -125,8 +110,13 @@
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate:hibernate-validator:5.0.2.Final" level="project" />
+    <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.1.1.GA" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml:classmate:1.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:3.0.0.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-mock:2.0.8" level="project" />
   </component>
 </module>
