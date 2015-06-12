@@ -1,5 +1,6 @@
 package top.rainynight.site.blog.controller;
 
+import org.springframework.validation.BindingResult;
 import top.rainynight.core.util.Page;
 import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.entity.Articleclass;
@@ -10,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +40,10 @@ public class BlogController{
     }
 
     @RequestMapping(value = "release", method = RequestMethod.POST)
-    public String release(Article article, HttpSession session, ModelMap modelMap){
+    public String release(@Valid Article article, BindingResult bindingResult, HttpSession session, ModelMap modelMap){
+        if(bindingResult.hasErrors()){
+            return editor(new Articleclass(),modelMap);
+        }
         modelMap.clear();
         Object userObj = session.getAttribute(StaticResourceHolder.USER_SESSION_NAME);
         if(userObj == null){

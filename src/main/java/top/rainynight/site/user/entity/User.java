@@ -50,7 +50,7 @@ public class User implements Serializable{
 
     @Override
     public int hashCode() {
-        int result = userid;
+        int result = userid != null ? userid : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;

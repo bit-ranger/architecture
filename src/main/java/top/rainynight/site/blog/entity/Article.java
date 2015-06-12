@@ -1,13 +1,16 @@
 package top.rainynight.site.blog.entity;
 
+import org.hibernate.validator.constraints.NotBlank;
 import top.rainynight.site.user.entity.User;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 public class Article implements Serializable{
     private static final long serialVersionUID = -7076464179594028194L;
     private Integer articleid;
+
     private Integer classid;
     private Integer userid;
     private String title;
@@ -22,6 +25,7 @@ public class Article implements Serializable{
         this.articleid = articleid;
     }
 
+    @NotNull(message = "{article.classid.null}")
     public Integer getClassid() {
         return classid;
     }
@@ -38,14 +42,16 @@ public class Article implements Serializable{
         this.userid = userid;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @NotBlank(message = "{article.title.blank}")
+    public String getTitle() {
+        return title;
+    }
+
+    @NotBlank(message = "{article.content.blank}")
     public String getContent() {
         return content;
     }
@@ -82,7 +88,7 @@ public class Article implements Serializable{
 
     @Override
     public int hashCode() {
-        int result = articleid;
+        int result = articleid != null ? articleid : 0;
         result = 31 * result + (classid != null ? classid : 0);
         result = 31 * result + (userid != null ? userid : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);

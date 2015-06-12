@@ -8,6 +8,8 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
 	default-lazy-init="true">
 
+    <mvc:annotation-driven validator="validator"/>
+
     <context:component-scan base-package="top.rainynight.site">
         <!-- 扫描符合@Controller的类 -->
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />

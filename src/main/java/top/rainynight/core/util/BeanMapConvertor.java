@@ -47,11 +47,7 @@ public class BeanMapConvertor {
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
-                if (result != null) {
-                    returnMap.put(propertyName, result);
-                } else {
-                    returnMap.put(propertyName, "");
-                }
+                returnMap.put(propertyName, result);
             }
         }
         return returnMap;

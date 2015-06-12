@@ -81,8 +81,19 @@
         </filter>
     </appender>
 
-    <root>
+    <logger name="top.rainynight"  >
+        <level value="DEBUG"/>
+    </logger>
+
+    <logger name="org.springframework">
         <level value="WARN"/>
+    </logger>
+    <logger name="org.apache">
+        <level value="WARN"/>
+    </logger>
+
+    <root>
+        <level value="DEBUG"/>
         <appender-ref ref="LOG.Console"/>
         <appender-ref ref="LOG.DEBUG"/>
         <appender-ref ref="LOG.INFO"/>

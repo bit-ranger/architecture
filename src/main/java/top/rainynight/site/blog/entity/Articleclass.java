@@ -48,7 +48,7 @@ public class Articleclass implements Serializable{
 
     @Override
     public int hashCode() {
-        int result = classid;
+        int result = classid != null ? classid : 0;
         result = 31 * result + userid;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
