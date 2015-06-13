@@ -5,11 +5,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
+    <security:http security="none" pattern="/favicon.ico" />
+    <security:http security="none" pattern="/resources/**" />
+
     <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
     <security:http auto-config="true">
         <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-        <security:form-login />
+        <!--<security:form-login />-->
+        <security:http-basic/>
         <security:logout />
     </security:http>
 
