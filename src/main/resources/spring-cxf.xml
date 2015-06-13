@@ -36,9 +36,9 @@
     <bean id="jsonpInInterceptor" class="org.apache.cxf.jaxrs.provider.jsonp.JsonpInInterceptor"/>
     <bean id="jsonpPostStreamInterceptor" class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPostStreamInterceptor"/>
 
-    <context:component-scan base-package="top.rainynight.site.blog.ws,top.rainynight.site.storage.ws,top.rainynight.site.user.ws" >
+    <context:component-scan base-package="top.rainynight.site.*.ws" use-default-filters="false">
         <!-- 扫描符合@Controller的类 -->
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+        <context:include-filter type="annotation" expression="javax.jws.WebService" />
     </context:component-scan>
 
     <jaxws:endpoint implementor="#blogWS" address="/ws/blog" />

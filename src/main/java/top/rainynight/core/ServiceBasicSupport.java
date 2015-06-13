@@ -40,6 +40,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public T get(T obj) {
         List<T> pojoList = _get(obj, new Page());
         if(pojoList == null || pojoList.isEmpty()){
@@ -54,6 +55,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<T> get(T obj, Page page){
         return _get(obj,page);
     }

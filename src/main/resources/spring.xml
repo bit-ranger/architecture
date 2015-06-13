@@ -10,24 +10,25 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
+    <import resource="spring-mvc.xml"/>
     <import resource="spring-cxf.xml"/>
     <import resource="spring-security.xml"/>
 
-    <context:component-scan base-package="top.rainynight.site">
+    <context:property-placeholder location="classpath:system.properties"/>
+
+    <context:component-scan base-package="top.rainynight.site.*.service" use-default-filters="false">
         <!-- 扫描符合@Service的类 -->
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
     </context:component-scan>
 
-    <context:property-placeholder location="classpath*:system.properties"/>
-
     <aop:config>
-        <aop:pointcut id="loginPointcut" expression="execution(public * top.rainynight.site..service..*.*(..))"/>
+        <aop:pointcut id="loginPointcut" expression="execution(public * top.rainynight.core.ServiceBasicSupport.*(..)) or execution(public * top.rainynight.site..service..*.*(..))"/>
         <aop:aspect ref="logRecorder" >
             <aop:after-returning pointcut-ref="loginPointcut" method="record" returning="returnValue"/>
         </aop:aspect>
     </aop:config>
 
-    <bean id="logRecorder" class="top.rainynight.core.util.LogRecorder"/>
+    <bean id="logRecorder" class="top.rainynight.site.core.util.LogRecorder"/>
 
     <!-- enables scanning for @Transactional annotations -->
     <tx:annotation-driven transaction-manager="transactionManager" />
@@ -38,12 +39,12 @@
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <property name="basePackage" value="top.rainynight.site.blog.dao,top.rainynight.site.user.dao"/>
+        <property name="basePackage" value="top.rainynight.site.*.dao"/>
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <!--<property name="mapperLocations" value="classpath:top/rainynight/site/**/*.xml"/>-->
+        <property name="mapperLocations" value="classpath:top/rainynight/site/**/dao/*.xml"/>
     </bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
@@ -60,9 +61,4 @@
         <property name="validationQuery" value="${connection_pools.validationQuery}" />
     </bean>
 
-    <!--@see{ org.springframework.web.multipart.support.MultipartFilter#DEFAULT_MULTIPART_RESOLVER_BEAN_NAME }-->
-    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <!-- one of the properties available; the maximum file size in bytes -->
-        <!-- <property name="maxUploadSize" value="204800"/> -->
-    </bean>
 </beans>

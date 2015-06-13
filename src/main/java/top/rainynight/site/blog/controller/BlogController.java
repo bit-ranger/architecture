@@ -1,5 +1,6 @@
 package top.rainynight.site.blog.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import top.rainynight.core.util.Page;
 import top.rainynight.site.blog.entity.Article;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 
-@org.springframework.stereotype.Controller
+@Controller
 @RequestMapping("blog")
 public class BlogController{
 

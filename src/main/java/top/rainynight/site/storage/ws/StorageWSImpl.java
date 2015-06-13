@@ -5,12 +5,14 @@ import org.springframework.stereotype.Component;
 import top.rainynight.site.storage.entity.Storage;
 import top.rainynight.site.storage.service.StorageService;
 
+import javax.jws.WebService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
 
 @Component("storageWS")
+@WebService
 public class StorageWSImpl implements StorageWS{
 
     @javax.annotation.Resource(name = "storageService")

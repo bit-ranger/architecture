@@ -1,5 +1,6 @@
 package top.rainynight.site.user.controller;
 
+import org.springframework.stereotype.Controller;
 import top.rainynight.core.util.Page;
 import top.rainynight.site.user.entity.User;
 import top.rainynight.site.user.service.UserService;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-@org.springframework.stereotype.Controller
+@Controller
 @RequestMapping("user")
 public class UserController{
 

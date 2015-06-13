@@ -7,17 +7,17 @@
     <appender name="LOG.Console" class="org.apache.log4j.ConsoleAppender">
         <param name="Encoding" value="UTF-8" />
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyy-MM-dd HH:mm:ss} [%-5p] %c {%F:%L} - %m%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n"/>
         </layout>
     </appender>
 
     <appender name="LOG.DEBUG" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="E:/logs/site/debug.log"/>
+        <param name="File" value="/home/sllx/Develop/log/site/debug.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyy-MM-dd HH:mm:ss} [%-5p] %c {%F:%L} - %m%n"/>
+            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="DEBUG"/>
@@ -27,11 +27,11 @@
 
     <appender name="LOG.INFO" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="E:/logs/site/info.log"/>
+        <param name="File" value="/home/sllx/Develop/log/site/info.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyy-MM-dd HH:mm:ss} [%-5p] %c {%F:%L} - %m%n"/>
+            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="INFO"/>
@@ -41,11 +41,11 @@
 
     <appender name="LOG.WARN" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="E:/logs/site/warn.log"/>
+        <param name="File" value="/home/sllx/Develop/log/site/warn.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyy-MM-dd HH:mm:ss} [%-5p] %c {%F:%L} - %m%n"/>
+            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="WARN"/>
@@ -55,11 +55,11 @@
 
     <appender name="LOG.ERROR" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="E:/logs/site/error.log"/>
+        <param name="File" value="/home/sllx/Develop/log/site/error.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyy-MM-dd HH:mm:ss} [%-5p] %c {%F:%L} - %m%n"/>
+            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="ERROR"/>
@@ -69,11 +69,11 @@
 
     <appender name="LOG.FATAL" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="E:/logs/site/fatal.log"/>
+        <param name="File" value="/home/sllx/Develop/log/site/fatal.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{yyy-MM-dd HH:mm:ss} [%-5p] %c {%F:%L} - %m%n"/>
+            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="FATAL"/>

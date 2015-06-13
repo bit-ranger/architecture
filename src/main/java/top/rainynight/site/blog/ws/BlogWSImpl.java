@@ -6,10 +6,12 @@ import top.rainynight.core.util.Page;
 import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.service.BlogService;
 
+import javax.jws.WebService;
 import java.util.Date;
 import java.util.List;
 
 @Component("blogWS")
+@WebService
 public class BlogWSImpl implements BlogWS{
 
     @javax.annotation.Resource(name = "blogService")
