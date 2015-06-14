@@ -11,7 +11,7 @@
     <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
     <security:http auto-config="true">
         <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
-        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_BASIC')"/>
         <!--<security:form-login />-->
         <security:http-basic/>
         <security:logout />
@@ -22,12 +22,41 @@
         <security:authentication-provider>
             <!-- InMemoryDaoImpl -->
             <security:user-service>
-                <security:user name="sharp" password="sharp" authorities="ROLE_USER"/>
+                <security:user name="sharp" password="sharp2" authorities="ROLE_TEST"/>
             </security:user-service>
         </security:authentication-provider>
-        <!--<security:authentication-provider>
-            &lt;!&ndash; JdbcDaoImpl &ndash;&gt;
-            <security:jdbc-user-service data-source-ref="dataSource"/>
-        </security:authentication-provider>-->
+        <security:authentication-provider user-service-ref="userdetailsJdbcDaoImpl"/>
     </security:authentication-manager>
+
+    <bean id="userdetailsJdbcDaoImpl" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="rolePrefix" value="ROLE_"/>
+            <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
+            <property name="authoritiesByUsernameQuery"
+                      value="SELECT u.name,authority.authorityname FROM (select userid,name FROM user WHERE name = ?) AS u
+                                INNER JOIN user_authority ON u.userid = user_authority.userid
+                                INNER JOIN authority ON user_authority.authorityid = authority.authorityid"/>
+            <property name="enableGroups" value="true"/>
+            <property name="groupAuthoritiesByUsernameQuery"
+                      value="SELECT usergroup.groupid,usergroup.groupname,authority.authorityname FROM
+                              (SELECT groupid FROM group_user INNER JOIN
+                                (SELECT userid FROM user WHERE name = ?) AS u ON u.userid = group_user.userid) AS g
+                              INNER JOIN usergroup ON g.groupid = usergroup.groupid
+                              INNER JOIN group_authority ON usergroup.groupid = group_authority.groupid
+                              INNER JOIN authority ON group_authority.authorityid = authority.authorityid"/>
+    </bean>
+
+    <bean id="securityMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
+                <value>classpath:messages/securityMessages</value>
+                <value>classpath:org/springframework/security/messages</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
 </beans>
+

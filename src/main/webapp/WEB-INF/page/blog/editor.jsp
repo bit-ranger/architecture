@@ -1,7 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8" %>
 <%@include file="../global/common.jsp"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-AU">
+<!DOCTYPE HTML>
+<html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
@@ -28,10 +28,10 @@
     </nav>
 
     <div class="row center" style="padding-top: 100px;">
-        <div class="col-lg-12">
+        <div class="col-lg-12 text-center">
             <sf:form action="${ctx}/blog/release" method="post" id="loginCheck">
-                <input type="text" name="title" class="elongated" title="title"/>
-                <textarea id="editor" name="content" rows="10" cols="6" title="content">content</textarea>
+                <input type="text" name="title" class="elongated" title="title" placeholder="Please enter a title"/>
+                <textarea id="editor" name="content" rows="20" cols="100" title="content" placeholder="Please enter the content"></textarea>
                 <select name="classid" title="class">
                     <c:forEach items="${requestScope.articleclassList}" var="articleclass">
                         <option value="${articleclass.classid}">${articleclass.name}</option>

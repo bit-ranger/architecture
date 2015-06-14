@@ -1,20 +1,24 @@
+drop table if exists file;
+
 drop table if exists article;
 
 drop table if exists articleclass;
 
-drop table if exists authority;
+drop table if exists group_user;
 
-drop table if exists file;
-
-drop table if exists group;
+drop table if exists user_authority;
 
 drop table if exists group_authority;
 
-drop table if exists group_user;
-
 drop table if exists user;
 
-drop table if exists user_authority;
+drop table if exists usergroup;
+
+drop table if exists authority;
+
+
+
+
 
 /*==============================================================*/
 /* Table: article                                               */
@@ -72,9 +76,9 @@ create table file
 alter table file comment '文件';
 
 /*==============================================================*/
-/* Table: group                                                 */
+/* Table: usergroup                                                 */
 /*==============================================================*/
-create table group
+create table usergroup
 (
    groupid              int not null auto_increment comment '用户组ID',
    groupname            varchar(50) not null comment '用户组名称',
@@ -82,7 +86,7 @@ create table group
    unique key UK_groupname (groupname)
 );
 
-alter table group comment '用户组';
+alter table usergroup comment '用户组';
 
 /*==============================================================*/
 /* Table: group_authority                                       */
@@ -151,13 +155,13 @@ alter table articleclass add constraint FK_Reference_1 foreign key (userid)
       references user (userid) on delete restrict on update restrict;
 
 alter table group_authority add constraint FK_Reference_7 foreign key (groupid)
-      references group (groupid) on delete restrict on update restrict;
+      references usergroup (groupid) on delete restrict on update restrict;
 
 alter table group_authority add constraint FK_Reference_8 foreign key (authorityid)
       references authority (authorityid) on delete restrict on update restrict;
 
 alter table group_user add constraint FK_Reference_10 foreign key (groupid)
-      references group (groupid) on delete restrict on update restrict;
+      references usergroup (groupid) on delete restrict on update restrict;
 
 alter table group_user add constraint FK_Reference_9 foreign key (userid)
       references user (userid) on delete restrict on update restrict;
