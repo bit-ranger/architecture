@@ -1,22 +1,20 @@
 drop table if exists file;
 
-drop table if exists article;
-
 drop table if exists articleclass;
 
-drop table if exists group_user;
+drop table if exists article;
 
-drop table if exists user_authority;
+drop table if exists user_colony;
 
-drop table if exists group_authority;
+drop table if exists user_role;
 
 drop table if exists user;
 
-drop table if exists usergroup;
+drop table if exists role;
 
-drop table if exists authority;
+drop table if exists colony;
 
-
+drop table if exists colony_role;
 
 
 
@@ -50,17 +48,32 @@ create table articleclass
 alter table articleclass comment '文章分类';
 
 /*==============================================================*/
-/* Table: authority                                             */
+/* Table: colony                                                */
 /*==============================================================*/
-create table authority
+create table colony
 (
-   authorityid          int not null auto_increment comment '权限ID',
-   authorityname        varchar(50) not null comment '权限名称',
-   primary key (authorityid),
-   unique key UK_authorityname (authorityname)
+   id                   int not null auto_increment comment 'ID',
+   name                 varchar(50) not null comment '名称',
+   description          varchar(100) not null comment '描述',
+   primary key (id),
+   unique key UK_colony (name)
 );
 
-alter table authority comment '权限';
+alter table colony comment '群体';
+
+/*==============================================================*/
+/* Table: colony_role                                           */
+/*==============================================================*/
+create table colony_role
+(
+   id                   int not null auto_increment comment 'ID',
+   role_id              int not null comment '角色ID',
+   colony_id            int not null comment '群体ID',
+   primary key (id),
+   unique key UK_colony_role (role_id, colony_id)
+);
+
+alter table colony_role comment '群体角色';
 
 /*==============================================================*/
 /* Table: file                                                  */
@@ -76,98 +89,85 @@ create table file
 alter table file comment '文件';
 
 /*==============================================================*/
-/* Table: usergroup                                                 */
+/* Table: role                                                  */
 /*==============================================================*/
-create table usergroup
+create table role
 (
-   groupid              int not null auto_increment comment '用户组ID',
-   groupname            varchar(50) not null comment '用户组名称',
-   primary key (groupid),
-   unique key UK_groupname (groupname)
+   id                   int not null auto_increment comment 'ID',
+   name                 varchar(50) not null comment '名称',
+   description          varchar(100) not null comment '描述',
+   primary key (id),
+   unique key UK_role (name)
 );
 
-alter table usergroup comment '用户组';
-
-/*==============================================================*/
-/* Table: group_authority                                       */
-/*==============================================================*/
-create table group_authority
-(
-   group_authority_id   int not null auto_increment comment '用户组权限ID',
-   groupid              int not null comment '用户组ID',
-   authorityid          int not null comment '权限ID',
-   primary key (group_authority_id),
-   unique key UK_groupid_authorityid (groupid, authorityid)
-);
-
-alter table group_authority comment '用户组权限';
-
-/*==============================================================*/
-/* Table: group_user                                            */
-/*==============================================================*/
-create table group_user
-(
-   group_user_id        int not null auto_increment comment '用户组成员ID',
-   userid               int not null comment '用户ID',
-   groupid              int not null comment '用户组ID',
-   primary key (group_user_id),
-   unique key UK_userid_groupid (userid, groupid)
-);
-
-alter table group_user comment '用户组成员';
+alter table role comment '角色';
 
 /*==============================================================*/
 /* Table: user                                                  */
 /*==============================================================*/
 create table user
 (
-   userid               int not null auto_increment comment '用户ID',
+   id                   int not null auto_increment comment 'ID',
    name                 varchar(16) not null comment '用户名',
    password             varchar(16) not null comment '密码',
    enabled              boolean not null comment 'true : 可用,  false : 不可用',
-   primary key (userid),
+   primary key (id),
    unique key UK_name (name)
 );
 
 alter table user comment '用户';
 
 /*==============================================================*/
-/* Table: user_authority                                        */
+/* Table: user_colony                                           */
 /*==============================================================*/
-create table user_authority
+create table user_colony
 (
-   user_authority_id    int not null auto_increment comment '用户权限ID',
-   userid               int not null comment '用户ID',
-   authorityid          int not null comment '权限ID',
-   primary key (user_authority_id),
-   unique key UK_userid_authorityid (userid, authorityid)
+   id                   int not null auto_increment comment 'ID',
+   user_id              int not null comment '用户ID',
+   colony_id            int not null comment '群体ID',
+   primary key (id),
+   unique key UK_user_colony (user_id, colony_id)
 );
 
-alter table user_authority comment '用户权限';
+alter table user_colony comment '用户群体';
 
-alter table article add constraint FK_Reference_3 foreign key (classid)
+/*==============================================================*/
+/* Table: user_role                                             */
+/*==============================================================*/
+create table user_role
+(
+   id                   int not null auto_increment comment 'ID',
+   user_id              int not null comment '用户ID',
+   role_id              int not null comment '角色ID',
+   primary key (id),
+   unique key UK_user_role (user_id, role_id)
+);
+
+alter table user_role comment '用户角色';
+
+alter table article add constraint FK_article_Reference_articleclass foreign key (classid)
       references articleclass (classid) on delete restrict on update restrict;
 
-alter table article add constraint FK_Reference_4 foreign key (userid)
-      references user (userid) on delete restrict on update restrict;
+alter table article add constraint FK_article_Reference_user foreign key (userid)
+      references user (id) on delete restrict on update restrict;
 
-alter table articleclass add constraint FK_Reference_1 foreign key (userid)
-      references user (userid) on delete restrict on update restrict;
+alter table articleclass add constraint FK_articleclass_Reference_user foreign key (userid)
+      references user (id) on delete restrict on update restrict;
 
-alter table group_authority add constraint FK_Reference_7 foreign key (groupid)
-      references usergroup (groupid) on delete restrict on update restrict;
+alter table colony_role add constraint FK_colony_role_Reference_colony foreign key (colony_id)
+      references colony (id) on delete restrict on update restrict;
 
-alter table group_authority add constraint FK_Reference_8 foreign key (authorityid)
-      references authority (authorityid) on delete restrict on update restrict;
+alter table colony_role add constraint FK_colony_role_Reference_role foreign key (role_id)
+      references role (id) on delete restrict on update restrict;
 
-alter table group_user add constraint FK_Reference_10 foreign key (groupid)
-      references usergroup (groupid) on delete restrict on update restrict;
+alter table user_colony add constraint FK_user_colony_Reference_colony foreign key (colony_id)
+      references colony (id) on delete restrict on update restrict;
 
-alter table group_user add constraint FK_Reference_9 foreign key (userid)
-      references user (userid) on delete restrict on update restrict;
+alter table user_colony add constraint FK_user_colony_Reference_user foreign key (user_id)
+      references user (id) on delete restrict on update restrict;
 
-alter table user_authority add constraint FK_Reference_5 foreign key (userid)
-      references user (userid) on delete restrict on update restrict;
+alter table user_role add constraint FK_user_role_Reference_role foreign key (role_id)
+      references role (id) on delete restrict on update restrict;
 
-alter table user_authority add constraint FK_Reference_6 foreign key (authorityid)
-      references authority (authorityid) on delete restrict on update restrict;
+alter table user_role add constraint FK_user_role_Reference_user foreign key (user_id)
+      references user (id) on delete restrict on update restrict;
