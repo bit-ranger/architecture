@@ -11,7 +11,7 @@
     <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
     <security:http auto-config="true">
         <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
-        <security:intercept-url pattern="/**" access="hasRole('ROLE_BASIC')"/>
+        <security:intercept-url pattern="/blog/**" access="hasRole('ROLE_BASIC')" />
         <!--<security:form-login />-->
         <security:http-basic/>
         <security:logout />
