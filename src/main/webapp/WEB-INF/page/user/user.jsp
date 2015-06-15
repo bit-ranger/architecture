@@ -34,15 +34,15 @@
     <table>
         <c:forEach items="${users}" var="user">
             <table>
-                <s:form action="${selfURL}/${user.userid}" method="put" enctype="multipart/form-data">
+                <sf:form action="${selfURL}/${user.id}" method="put" enctype="multipart/form-data">
                     <tr>
                         <td>name<input name="name" type="text" value="${user.name}"/></td>
                         <td>password<input name="password" type="text" value="${user.password}"/></td>
                         <td><input type="submit" value="修改"></td>
-                        <td><a href="javascript:void(0);" onclick="show('${user.userid}');">查看</a></td>
-                        <td><a href="javascript:void(0);" onclick="del('${user.userid}',this.parentNode.parentNode)">删除</a></td>
+                        <td><a href="javascript:void(0);" onclick="show('${user.id}');">查看</a></td>
+                        <td><a href="javascript:void(0);" onclick="del('${user.id}',this.parentNode.parentNode)">删除</a></td>
                     </tr>
-                </s:form>
+                </sf:form>
             </table>
         </c:forEach>
     </table>
@@ -52,7 +52,7 @@
         <table>
             <tr>
                 <td>page<input type="text" name="pn"/></td>
-                <td>id<input name="userid" type="text" /></td>
+                <td>id<input name="id" type="text" /></td>
                 <td>name<input name="name" type="text"/></td>
             </tr>
         </table>

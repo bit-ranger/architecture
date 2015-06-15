@@ -11,7 +11,7 @@
     <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
     <security:http auto-config="true">
         <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
-        <security:intercept-url pattern="/blog/**" access="hasRole('ROLE_BASIC')" />
+        <security:intercept-url pattern="/user/**" access="hasRole('ROLE_userAdmin')" />
         <!--<security:form-login />-->
         <security:http-basic/>
         <security:logout />
@@ -22,28 +22,45 @@
         <security:authentication-provider>
             <!-- InMemoryDaoImpl -->
             <security:user-service>
-                <security:user name="sharp" password="sharp2" authorities="ROLE_TEST"/>
+                <security:user name="sharp" password="sharp" authorities="ROLE_TEST"/>
             </security:user-service>
         </security:authentication-provider>
-        <security:authentication-provider user-service-ref="userdetailsJdbcDaoImpl"/>
+        <security:authentication-provider user-service-ref="userDetailsService" >
+            <security:password-encoder base64="true" hash="md5">
+                <security:salt-source user-property="username"/>
+            </security:password-encoder>
+        </security:authentication-provider>
     </security:authentication-manager>
 
-    <bean id="userdetailsJdbcDaoImpl" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+    <!-- 可以缓存UserDetails的UserDetailsService -->
+    <bean id="userDetailsService" class="org.springframework.security.config.authentication.CachingUserDetailsService">
+        <!-- 真正加载UserDetails的UserDetailsService -->
+        <constructor-arg ref="userDetailsServiceJdbcDao"/>
+        <!-- 缓存UserDetails的UserCache -->
+        <property name="userCache" ref="userCache"/>
+    </bean>
+
+    <bean id="userCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">
+        <!-- 用于真正缓存的Ehcache对象 -->
+        <property name="cache" ref="ehCache"/>
+    </bean>
+
+    <bean id="userDetailsServiceJdbcDao" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
             <property name="dataSource" ref="dataSource"/>
             <property name="rolePrefix" value="ROLE_"/>
             <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
             <property name="authoritiesByUsernameQuery"
-                      value="SELECT u.name,authority.authorityname FROM (select userid,name FROM user WHERE name = ?) AS u
-                                INNER JOIN user_authority ON u.userid = user_authority.userid
-                                INNER JOIN authority ON user_authority.authorityid = authority.authorityid"/>
+                      value="SELECT u.name as username,role.name as rolename FROM (select id,name FROM user WHERE name = ?) AS u
+                                INNER JOIN user_role ON u.id = user_role.user_id
+                                INNER JOIN role ON user_role.role_id = role.id"/>
             <property name="enableGroups" value="true"/>
             <property name="groupAuthoritiesByUsernameQuery"
-                      value="SELECT usergroup.groupid,usergroup.groupname,authority.authorityname FROM
-                              (SELECT groupid FROM group_user INNER JOIN
-                                (SELECT userid FROM user WHERE name = ?) AS u ON u.userid = group_user.userid) AS g
-                              INNER JOIN usergroup ON g.groupid = usergroup.groupid
-                              INNER JOIN group_authority ON usergroup.groupid = group_authority.groupid
-                              INNER JOIN authority ON group_authority.authorityid = authority.authorityid"/>
+                      value="SELECT colony.name as colonyname,colony.description as colonydesc,role.name as rolename FROM
+                                (SELECT colony_id FROM (SELECT id FROM user WHERE name = ?) as u
+                                INNER JOIN user_colony ON u.id = user_colony.user_id) AS g
+                                INNER JOIN colony ON g.colony_id = colony.id
+                                INNER JOIN colony_role ON colony.id = colony_role.colony_id
+                                INNER JOIN role ON colony_role.role_id = role.id"/>
     </bean>
 
     <bean id="securityMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">

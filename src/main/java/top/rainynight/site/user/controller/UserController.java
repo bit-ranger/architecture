@@ -42,7 +42,7 @@ public class UserController{
      */
     @RequestMapping(value  = "{id:[0-9]{1,9}}", method = RequestMethod.GET)
     public String get(@PathVariable Integer id, User user, ModelMap model){
-        user.setUserid(id);
+        user.setId(id);
         user = userService.get(user);
         model.addAttribute("user", user);
         return "user/user";
@@ -73,7 +73,7 @@ public class UserController{
     @RequestMapping(value  = "{id:[0-9]{1,9}}", method = RequestMethod.PUT)
     public String put(@PathVariable int id, User user, ModelMap modelMap) throws InvocationTargetException, IllegalAccessException {
         modelMap.clear();
-        user.setUserid(id);
+        user.setId(id);
         userService.save(user);
         return "redirect:/user";
     }
@@ -87,7 +87,7 @@ public class UserController{
      */
     @RequestMapping(value = "{id:[0-9]{1,9}}", method = RequestMethod.DELETE)
     public @ResponseBody String delete(@PathVariable Integer id, User user){
-        user.setUserid(id);
+        user.setId(id);
         userService.remove(user);
         return "success";
     }
@@ -100,7 +100,7 @@ public class UserController{
      */
     @RequestMapping(value  = "json/{id:[0-9]{1,9}}", method = RequestMethod.GET)
     public @ResponseBody User json(@PathVariable Integer id, User user){
-        user.setUserid(id);
+        user.setId(id);
         return userService.get(user);
     }
 

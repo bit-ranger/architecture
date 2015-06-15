@@ -1,6 +1,7 @@
 package top.rainynight.site.user.service.impl;
 
 
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,15 @@ public class UserServiceImpl extends ServiceBasicSupport<User> implements UserSe
     public User currentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return new User();
+    }
+
+    @Override
+    public int save(User obj) {
+        validate(obj);
+//        Md5PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
+//        passwordEncoder.setEncodeHashAsBase64(true);
+//        String encodedPasswrod = passwordEncoder.encodePassword(obj.getPassword(),obj.getName());
+//        obj.setPassword(encodedPasswrod);
+        return super.save(obj);
     }
 }

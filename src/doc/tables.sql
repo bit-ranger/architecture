@@ -1,20 +1,20 @@
-drop table if exists file;
-
-drop table if exists articleclass;
-
-drop table if exists article;
-
 drop table if exists user_colony;
 
 drop table if exists user_role;
+
+drop table if exists colony_role;
+
+drop table if exists file;
+
+drop table if exists article;
+
+drop table if exists articleclass;
 
 drop table if exists user;
 
 drop table if exists role;
 
 drop table if exists colony;
-
-drop table if exists colony_role;
 
 
 

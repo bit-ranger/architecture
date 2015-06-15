@@ -57,13 +57,13 @@ public class ArticleDaoTest extends AbstractTransactionalJUnit4SpringContextTest
     }
 
     private void setArticleclass(User user){
-        articleclass.setUserid(user.getUserid());
+        articleclass.setUserid(user.getId());
         articleclass.setName("测试");
     }
 
     private void setArticle(User user, Articleclass articleclass){
         article.setClassid(articleclass.getClassid());
-        article.setUserid(user.getUserid());
+        article.setUserid(user.getId());
         article.setTitle("测试");
         article.setContent("测试");
         article.setReleasetime(new Date());
@@ -89,7 +89,7 @@ public class ArticleDaoTest extends AbstractTransactionalJUnit4SpringContextTest
         articleclassDao.insert(articleclass);
         setArticle(user, articleclass);
         articleDao.insert(article);
-        Assert.assertEquals(user.getUserid(), articleclass.getUserid());
+        Assert.assertEquals(user.getId(), articleclass.getUserid());
         Assert.assertEquals(articleclass.getClassid(), article.getClassid());
     }
 

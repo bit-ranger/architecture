@@ -24,7 +24,7 @@ public class UserWSImpl implements UserWS {
     @Override
     public User lookOver(int id) {
         User user = new User();
-        user.setUserid(id);
+        user.setId(id);
         return userService.get(user);
     }
 }

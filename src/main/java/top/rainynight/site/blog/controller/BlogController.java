@@ -51,7 +51,7 @@ public class BlogController{
             return "redirect:/login";
         }
         User user = (User)userObj;
-        article.setUserid(user.getUserid());
+        article.setUserid(user.getId());
         article.setReleasetime(new Date());
         blogService.save(article);
         return "redirect:/";
