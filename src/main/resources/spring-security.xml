@@ -5,27 +5,66 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
+
     <security:http security="none" pattern="/favicon.ico" />
     <security:http security="none" pattern="/resources/**" />
 
-    <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
-    <security:http auto-config="true">
-        <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
-        <security:intercept-url pattern="/user/**" access="hasRole('ROLE_userAdmin')" />
+    <security:http pattern="/user/**" use-expressions="true" >
+        <security:port-mappings>
+            <security:port-mapping http="80" https="443"/>
+        </security:port-mappings>
+
         <!--<security:form-login />-->
         <security:http-basic/>
+
         <security:logout />
+
+        <!-- 登录页面应当是不需要认证的 -->
+        <security:intercept-url pattern="/user/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+
+        <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
+        <security:intercept-url pattern="/user/**" access="hasRole('ROLE_userAdmin')" method="POST" requires-channel="https"/>
+
+        <security:custom-filter ref="filterSecurityInterceptor" after="FORM_LOGIN_FILTER"/>
+
+        <security:custom-filter ref="exceptionTranslationFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
     </security:http>
 
+
+    <bean id="filterSecurityInterceptor"
+          class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="accessDecisionManager" ref="accessDecisionManager" />
+        <property name="securityMetadataSource">
+            <security:filter-security-metadata-source>
+                <security:intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
+                <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN" />
+            </security:filter-security-metadata-source>
+        </property>
+    </bean>
+
+    <bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+        <constructor-arg index="0" ref="authenticationEntryPoint" />
+        <property name="accessDeniedHandler" ref="accessDeniedHandler"/>
+    </bean>
+
+    <bean id="authenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <constructor-arg index="0" value="/login.jsp"/>
+    </bean>
+
+    <bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/access_denied.jsp" />
+    </bean>
+
     <!-- 认证管理器。用户名密码都集成在配置文件中 -->
-    <security:authentication-manager>
+    <security:authentication-manager id="authenticationManager">
         <security:authentication-provider>
             <!-- InMemoryDaoImpl -->
             <security:user-service>
                 <security:user name="sharp" password="sharp" authorities="ROLE_TEST"/>
             </security:user-service>
         </security:authentication-provider>
-        <security:authentication-provider user-service-ref="userDetailsService" >
+        <security:authentication-provider user-service-ref="cachingUserDetailsService" >
             <security:password-encoder base64="true" hash="md5">
                 <security:salt-source user-property="username"/>
             </security:password-encoder>
@@ -33,19 +72,18 @@
     </security:authentication-manager>
 
     <!-- 可以缓存UserDetails的UserDetailsService -->
-    <bean id="userDetailsService" class="org.springframework.security.config.authentication.CachingUserDetailsService">
+    <bean id="cachingUserDetailsService" class="org.springframework.security.config.authentication.CachingUserDetailsService">
         <!-- 真正加载UserDetails的UserDetailsService -->
-        <constructor-arg ref="userDetailsServiceJdbcDao"/>
+        <constructor-arg ref="userDetailsService"/>
         <!-- 缓存UserDetails的UserCache -->
         <property name="userCache" ref="userCache"/>
     </bean>
-
     <bean id="userCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">
         <!-- 用于真正缓存的Ehcache对象 -->
-        <property name="cache" ref="ehCache"/>
+        <property name="cache" ref="ehcache"/>
     </bean>
 
-    <bean id="userDetailsServiceJdbcDao" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+    <bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
             <property name="dataSource" ref="dataSource"/>
             <property name="rolePrefix" value="ROLE_"/>
             <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
@@ -63,17 +101,5 @@
                                 INNER JOIN role ON colony_role.role_id = role.id"/>
     </bean>
 
-    <bean id="securityMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <property name="basenames">
-            <list>
-                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
-                <value>classpath:messages/securityMessages</value>
-                <value>classpath:org/springframework/security/messages</value>
-            </list>
-        </property>
-        <property name="useCodeAsDefaultMessage" value="false"/>
-        <property name="defaultEncoding" value="UTF-8"/>
-        <property name="cacheSeconds" value="60"/>
-    </bean>
 </beans>
 
