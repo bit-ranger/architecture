@@ -6,18 +6,23 @@
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
 
+
     <security:http security="none" pattern="/favicon.ico" />
     <security:http security="none" pattern="/resources/**" />
+
+
 
     <security:http pattern="/user/**" use-expressions="true" >
         <security:port-mappings>
             <security:port-mapping http="80" https="443"/>
         </security:port-mappings>
 
+        <security:anonymous enabled="true" key="doesNotMatter" username="anonymousUser" granted-authority="ROLE_ANONYMOUS"/>
+
         <!--<security:form-login />-->
         <security:http-basic/>
 
-        <security:logout />
+        <security:logout logout-success-url="/" logout-url=""/>
 
         <!-- 登录页面应当是不需要认证的 -->
         <security:intercept-url pattern="/user/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -27,7 +32,6 @@
 
         <security:custom-filter ref="filterSecurityInterceptor" after="FORM_LOGIN_FILTER"/>
 
-        <security:custom-filter ref="exceptionTranslationFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
     </security:http>
 
 
@@ -43,18 +47,8 @@
         </property>
     </bean>
 
-    <bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
-        <constructor-arg index="0" ref="authenticationEntryPoint" />
-        <property name="accessDeniedHandler" ref="accessDeniedHandler"/>
-    </bean>
-
-    <bean id="authenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-        <constructor-arg index="0" value="/login.jsp"/>
-    </bean>
-
-    <bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-        <property name="errorPage" value="/access_denied.jsp" />
-    </bean>
+    <!-- 决策管理器 -->
+    <bean id="accessDecisionManager" class="top.rainynight.site.core.CommonAccessDecisionManager" />
 
     <!-- 认证管理器。用户名密码都集成在配置文件中 -->
     <security:authentication-manager id="authenticationManager">
