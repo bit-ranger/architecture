@@ -54,20 +54,17 @@
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
         <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
         <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
-        <property name="validationMessageSource" ref="messageSource"/>
+        <property name="validationMessageSource" ref="validationMessageSource"/>
     </bean>
 
     <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <bean id="validationMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
             <list>
                 <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
-                <!-- validation -->
                 <value>classpath:messages/validationMessages</value>
                 <value>classpath:org/hibernate/validator/ValidationMessages</value>
-                <!-- security -->
-                <value>classpath:messages/securityMessages</value>
-                <value>classpath:org/springframework/security/messages</value></list>
+            </list>
         </property>
         <property name="useCodeAsDefaultMessage" value="false"/>
         <property name="defaultEncoding" value="UTF-8"/>
