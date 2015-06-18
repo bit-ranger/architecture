@@ -26,6 +26,7 @@
 
     </security:http>
 
+    <!-- 自定义过滤器 -->
     <bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
         <property name="securityMetadataSource" ref="securityMetadataSource"/>
         <property name="authenticationManager" ref="authenticationManager"/>
@@ -33,9 +34,12 @@
         <property name="messageSource" ref="securityMessageSource"/>
     </bean>
 
+    <!-- 资源与角色关系元数据 -->
     <bean id="securityMetadataSource" class="org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource">
         <constructor-arg index="0">
-            <bean class="top.rainynight.site.core.RequestMapFactoryBean"/>
+            <bean class="top.rainynight.site.core.RequestMapFactoryBean">
+                <property name="dataSource" ref="dataSource"/>
+            </bean>
         </constructor-arg>
     </bean>
 
@@ -68,7 +72,8 @@
 
     <bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
             <property name="dataSource" ref="dataSource"/>
-            <property name="rolePrefix" value="ROLE_"/>
+            <!-- 查询出的角色名称不添加前缀 -->
+            <property name="rolePrefix" value=""/>
             <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
             <property name="authoritiesByUsernameQuery"
                       value="SELECT u.name as username,role.name as rolename FROM (select id,name FROM user WHERE name = ?) AS u
@@ -91,7 +96,8 @@
             <list>
                <!-- <bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>-->
                 <bean class="org.springframework.security.access.vote.RoleVoter">
-                    <property name="rolePrefix" value="ROLE_"/>
+                    <!-- 支持所有角色名称，无需前缀 -->
+                    <property name="rolePrefix" value=""/>
                 </bean>
                 <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
             </list>
