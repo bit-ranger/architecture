@@ -27,21 +27,17 @@
     </security:http>
 
     <bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
-        <property name="securityMetadataSource">
-            <security:filter-security-metadata-source>
-                <security:intercept-url pattern="/user/**" access="hasRole('ROLE_userAdmin')"/>
-            </security:filter-security-metadata-source>
-        </property>
+        <property name="securityMetadataSource" ref="securityMetadataSource"/>
         <property name="authenticationManager" ref="authenticationManager"/>
         <property name="accessDecisionManager" ref="accessDecisionManager"/>
         <property name="messageSource" ref="securityMessageSource"/>
     </bean>
 
-   <!-- <bean id="filterInvocationSecurityMetadataSource" class="org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource">
+    <bean id="securityMetadataSource" class="org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource">
         <constructor-arg index="0">
-
+            <bean class="top.rainynight.site.core.RequestMapFactoryBean"/>
         </constructor-arg>
-    </bean>-->
+    </bean>
 
     <!-- 认证管理器。用户名密码都集成在配置文件中 -->
     <security:authentication-manager id="authenticationManager">
@@ -93,7 +89,7 @@
         <property name="allowIfAllAbstainDecisions" value="false"/>
         <constructor-arg index="0">
             <list>
-                <bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>
+               <!-- <bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>-->
                 <bean class="org.springframework.security.access.vote.RoleVoter">
                     <property name="rolePrefix" value="ROLE_"/>
                 </bean>
