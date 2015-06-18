@@ -125,8 +125,8 @@ alter table role comment '角色';
 create table user
 (
    id                   int not null auto_increment comment 'ID',
-   name                 varchar(16) not null comment '用户名',
-   password             varchar(16) not null comment '密码',
+   name                 varchar(50) not null comment '用户名',
+   password             varchar(50) not null comment '密码',
    enabled              boolean not null comment 'true : 可用,  false : 不可用',
    primary key (id),
    unique key UK_name (name)

@@ -3197,11 +3197,11 @@ TableComment 0 新宋体,8,N</a:FontList>
 <a:Code>name</a:Code>
 <a:CreationDate>1417055706</a:CreationDate>
 <a:Creator>zhangbin</a:Creator>
-<a:ModificationDate>1417068044</a:ModificationDate>
+<a:ModificationDate>1434626637</a:ModificationDate>
 <a:Modifier>zhangbin</a:Modifier>
 <a:Comment>用户名</a:Comment>
-<a:DataType>varchar(16)</a:DataType>
-<a:Length>16</a:Length>
+<a:DataType>varchar(50)</a:DataType>
+<a:Length>50</a:Length>
 <a:Mandatory>1</a:Mandatory>
 </o:Column>
 <o:Column Id="o51">
@@ -3210,11 +3210,11 @@ TableComment 0 新宋体,8,N</a:FontList>
 <a:Code>password</a:Code>
 <a:CreationDate>1417055782</a:CreationDate>
 <a:Creator>zhangbin</a:Creator>
-<a:ModificationDate>1417066767</a:ModificationDate>
+<a:ModificationDate>1434626637</a:ModificationDate>
 <a:Modifier>zhangbin</a:Modifier>
 <a:Comment>密码</a:Comment>
-<a:DataType>varchar(16)</a:DataType>
-<a:Length>16</a:Length>
+<a:DataType>varchar(50)</a:DataType>
+<a:Length>50</a:Length>
 <a:Mandatory>1</a:Mandatory>
 </o:Column>
 <o:Column Id="o52">
