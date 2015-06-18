@@ -103,7 +103,8 @@
         <property name="basenames">
             <list>
                 <value>classpath:messages/securityMessages</value>
-                <value>classpath:org/springframework/security/messages</value></list>
+                <value>classpath:org/springframework/security/messages</value>
+            </list>
         </property>
         <property name="useCodeAsDefaultMessage" value="false"/>
         <property name="defaultEncoding" value="UTF-8"/>

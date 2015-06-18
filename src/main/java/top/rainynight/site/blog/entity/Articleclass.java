@@ -1,5 +1,8 @@
 package top.rainynight.site.blog.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.Serializable;
 
 public class Articleclass implements Serializable{
@@ -52,5 +55,14 @@ public class Articleclass implements Serializable{
         result = 31 * result + userid;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return super.toString();
+        }
     }
 }

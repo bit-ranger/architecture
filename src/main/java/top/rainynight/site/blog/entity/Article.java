@@ -1,5 +1,8 @@
 package top.rainynight.site.blog.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.cxf.jaxrs.provider.json.utils.JSONUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import top.rainynight.site.user.entity.User;
 
@@ -99,7 +102,11 @@ public class Article implements Serializable{
 
     @Override
     public String toString() {
-        return this.title;
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return super.toString();
+        }
     }
 
     private Articleclass articleclass;

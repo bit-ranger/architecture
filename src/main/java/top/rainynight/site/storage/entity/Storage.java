@@ -1,5 +1,8 @@
 package top.rainynight.site.storage.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -43,5 +46,14 @@ public class Storage implements Serializable {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (body != null ? Arrays.hashCode(body) : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return super.toString();
+        }
     }
 }
