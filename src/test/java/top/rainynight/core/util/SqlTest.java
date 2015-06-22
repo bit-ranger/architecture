@@ -10,11 +10,17 @@ public class SqlTest {
 
     @Test
     public void test(){
-        System.out.println(new SQL(){{
-            SELECT("*");
-            FROM("user");
-        }}.toString());
+        String sql = new SQL(){{
+            SELECT("name");
+            SELECT("password");
+            SELECT("sex");
+            FROM("student s");
+            INNER_JOIN("info i on s.id = i.id");
+            WHERE(String.format("name = '%s'","HanMeiMei"));
+            WHERE("i.sex = 1");
+        }}.toString();
 
+        System.out.println(sql);
         new ExSQL();
     }
 
