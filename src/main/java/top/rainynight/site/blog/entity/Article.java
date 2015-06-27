@@ -1,5 +1,8 @@
 package top.rainynight.site.blog.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.cxf.jaxrs.provider.json.utils.JSONUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import top.rainynight.site.user.entity.User;
 
@@ -25,7 +28,7 @@ public class Article implements Serializable{
         this.articleid = articleid;
     }
 
-    @NotNull(message = "{article.classid.null}")
+    @NotNull
     public Integer getClassid() {
         return classid;
     }
@@ -46,12 +49,12 @@ public class Article implements Serializable{
         this.title = title;
     }
 
-    @NotBlank(message = "{article.title.blank}")
+    @NotBlank
     public String getTitle() {
         return title;
     }
 
-    @NotBlank(message = "{article.content.blank}")
+    @NotBlank
     public String getContent() {
         return content;
     }
@@ -76,9 +79,9 @@ public class Article implements Serializable{
 
         Article article = (Article) o;
 
-        if (articleid != article.articleid) return false;
-        if (classid != article.classid) return false;
-        if (userid != article.userid) return false;
+        if (articleid != null ? !articleid.equals(article.articleid) : article.articleid != null) return false;
+        if (classid != null ? !classid.equals(article.classid) : article.classid != null) return false;
+        if (userid != null ? !userid.equals(article.userid) : article.userid != null) return false;
         if (content != null ? !content.equals(article.content) : article.content != null) return false;
         if (releasetime != null ? !releasetime.equals(article.releasetime) : article.releasetime != null) return false;
         if (title != null ? !title.equals(article.title) : article.title != null) return false;
@@ -99,7 +102,11 @@ public class Article implements Serializable{
 
     @Override
     public String toString() {
-        return this.title;
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return super.toString();
+        }
     }
 
     private Articleclass articleclass;

@@ -1,23 +1,28 @@
 package top.rainynight.site.user.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.validator.constraints.NotBlank;
+
 import java.io.Serializable;
 
 public class User implements Serializable{
 
     private static final long serialVersionUID = 2894257361469960272L;
 
-    private Integer userid;
+    private Integer id;
     private String name;
     private String password;
 
-    public Integer getUserid() {
-        return userid;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUserid(Integer userid) {
-        this.userid = userid;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
+    @NotBlank
     public String getName() {
         return name;
     }
@@ -26,6 +31,7 @@ public class User implements Serializable{
         this.name = name;
     }
 
+    @NotBlank
     public String getPassword() {
         return password;
     }
@@ -41,7 +47,7 @@ public class User implements Serializable{
 
         User user = (User) o;
 
-        if (userid != user.userid) return false;
+        if (id != user.id) return false;
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
         if (password != null ? !password.equals(user.password) : user.password != null) return false;
 
@@ -50,9 +56,18 @@ public class User implements Serializable{
 
     @Override
     public int hashCode() {
-        int result = userid != null ? userid : 0;
+        int result = id != null ? id : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return super.toString();
+        }
     }
 }

@@ -10,11 +10,18 @@ public class SqlTest {
 
     @Test
     public void test(){
-        System.out.println(new SQL(){{
-            SELECT("");
-        }}.toString());
+        String sql = new SQL(){{
+            SELECT("name");
+            SELECT("password");
+            SELECT("sex");
+            FROM("student s");
+            INNER_JOIN("info i on s.id = i.id");
+            WHERE(String.format("name = '%s'","HanMeiMei"));
+            WHERE("i.sex = 1");
+        }}.toString();
 
-        new ExSQL().toString();
+        System.out.println(sql);
+        new ExSQL();
     }
 
     private static class ExSQL extends  SQL{
@@ -23,12 +30,20 @@ public class SqlTest {
             System.out.println("static");
         }
 
-        ExSQL(){
-            System.out.println("construct");
-        }
+        String s = new Object(){
+            @Override
+            public String toString() {
+                System.out.println("field");
+                return super.toString();
+            }
+        }.toString();
 
         {
             System.out.println("dynamic");
         }
+        ExSQL(){
+            System.out.println("construct");
+        }
     }
+
 }

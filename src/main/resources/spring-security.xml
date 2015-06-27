@@ -5,25 +5,117 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <!-- 自动配置模式，拦截所有请求，有ROLE_USER才可以通过 -->
-    <security:http auto-config="true">
-        <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
-        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-        <security:form-login />
-        <security:logout />
+
+    <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
+    <security:http security="none" pattern="/favicon.ico" />
+    <security:http security="none" pattern="/resources/**" />
+    <security:http security="none" pattern="/user/login"/>
+
+
+    <security:http pattern="/user/**"
+                   authentication-manager-ref="authenticationManager"
+                   access-decision-manager-ref="accessDecisionManager"
+                   use-expressions="true">
+
+        <!--<security:form-login />-->
+        <security:http-basic/>
+
+        <security:logout delete-cookies="JSESSIONID" logout-success-url="/" logout-url="/user/logout"/>
+
+        <security:custom-filter ref="filterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR"/>
+
     </security:http>
 
+    <!-- 自定义过滤器 -->
+    <bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <property name="securityMetadataSource" ref="securityMetadataSource"/>
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="accessDecisionManager" ref="accessDecisionManager"/>
+        <property name="messageSource" ref="securityMessageSource"/>
+    </bean>
+
+    <!-- 资源与角色关系元数据 -->
+    <bean id="securityMetadataSource" class="org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource">
+        <constructor-arg index="0">
+            <bean class="top.rainynight.site.core.RequestMapFactoryBean">
+                <property name="dataSource" ref="dataSource"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
     <!-- 认证管理器。用户名密码都集成在配置文件中 -->
-    <security:authentication-manager>
-        <security:authentication-provider>
-            <!-- InMemoryDaoImpl -->
+    <security:authentication-manager id="authenticationManager">
+ <!--       <security:authentication-provider>
+            &lt;!&ndash; InMemoryDaoImpl &ndash;&gt;
             <security:user-service>
-                <security:user name="sharp" password="sharp" authorities="ROLE_USER"/>
+                <security:user name="sharp" password="sharp" authorities="ROLE_TEST"/>
             </security:user-service>
-        </security:authentication-provider>
-        <!--<security:authentication-provider>
-            &lt;!&ndash; JdbcDaoImpl &ndash;&gt;
-            <security:jdbc-user-service data-source-ref="dataSource"/>
         </security:authentication-provider>-->
+        <security:authentication-provider user-service-ref="cachingUserDetailsService" >
+           <!-- <security:password-encoder base64="true" hash="md5">
+                <security:salt-source user-property="username"/>
+            </security:password-encoder>-->
+        </security:authentication-provider>
     </security:authentication-manager>
+
+    <!-- 可以缓存UserDetails的UserDetailsService -->
+    <bean id="cachingUserDetailsService" class="org.springframework.security.config.authentication.CachingUserDetailsService">
+        <!-- 真正加载UserDetails的UserDetailsService -->
+        <constructor-arg ref="userDetailsService"/>
+        <!-- 缓存UserDetails的UserCache -->
+        <property name="userCache" ref="userCache"/>
+    </bean>
+    <bean id="userCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">
+        <!-- 用于真正缓存的Ehcache对象 -->
+        <property name="cache" ref="ehcache"/>
+    </bean>
+
+    <bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+            <property name="dataSource" ref="dataSource"/>
+            <!-- 查询出的角色名称不添加前缀 -->
+            <property name="rolePrefix" value=""/>
+            <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
+            <property name="authoritiesByUsernameQuery"
+                      value="SELECT u.name as username,role.name as rolename FROM (select id,name FROM user WHERE name = ?) AS u
+                                INNER JOIN user_role ON u.id = user_role.user_id
+                                INNER JOIN role ON user_role.role_id = role.id"/>
+            <property name="enableGroups" value="true"/>
+            <property name="groupAuthoritiesByUsernameQuery"
+                      value="SELECT colony.name as colonyname,colony.description as colonydesc,role.name as rolename FROM
+                                (SELECT colony_id FROM (SELECT id FROM user WHERE name = ?) as u
+                                INNER JOIN user_colony ON u.id = user_colony.user_id) AS g
+                                INNER JOIN colony ON g.colony_id = colony.id
+                                INNER JOIN colony_role ON colony.id = colony_role.colony_id
+                                INNER JOIN role ON colony_role.role_id = role.id"/>
+    </bean>
+
+    <!-- 决策管理器 -->
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased" >
+        <property name="allowIfAllAbstainDecisions" value="false"/>
+        <constructor-arg index="0">
+            <list>
+               <!-- <bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>-->
+                <bean class="org.springframework.security.access.vote.RoleVoter">
+                    <!-- 支持所有角色名称，无需前缀 -->
+                    <property name="rolePrefix" value=""/>
+                </bean>
+                <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id="securityMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:messages/securityMessages</value>
+                <value>classpath:org/springframework/security/messages</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+
 </beans>
+

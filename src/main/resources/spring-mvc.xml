@@ -42,26 +42,5 @@
         <!-- <property name="maxUploadSize" value="204800"/> -->
     </bean>
 
-    <!-- 以下 validator  ConversionService 在使用 mvc:annotation-driven 会 自动注册-->
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
-        <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
-        <property name="validationMessageSource" ref="messageSource"/>
-    </bean>
-
-    <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <property name="basenames">
-            <list>
-                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
-                <value>classpath:messages</value>
-                <value>classpath:org/hibernate/validator/ValidationMessages</value>
-            </list>
-        </property>
-        <property name="useCodeAsDefaultMessage" value="false"/>
-        <property name="defaultEncoding" value="UTF-8"/>
-        <property name="cacheSeconds" value="60"/>
-    </bean>
-
     <bean class="top.rainynight.site.core.GlobalController"/>
 </beans>

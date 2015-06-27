@@ -84,7 +84,9 @@
     <logger name="top.rainynight"  >
         <level value="DEBUG"/>
     </logger>
-
+    <logger name="org.springframework.security">
+        <level value="DEBUG"/>
+    </logger>
     <logger name="org.springframework">
         <level value="WARN"/>
     </logger>

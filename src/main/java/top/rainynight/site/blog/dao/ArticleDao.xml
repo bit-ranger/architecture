@@ -12,7 +12,7 @@
     <resultMap id="relevance" type="top.rainynight.site.blog.entity.Article" autoMapping="true">
         <id column="articleid" property="articleid"/>
         <association property="user" javaType="top.rainynight.site.user.entity.User">
-            <id column="userid" property="userid"/>
+            <id column="userid" property="id"/>
             <result column="uName" property="name" />
             <result column="password" property="password" />
          </association>
@@ -62,7 +62,7 @@
     </update>
 
     <select id="selectRelevance" resultMap="relevance">
-        select *,C.name as cName, U.name as uName from article as A left join articleclass as C on A.classid=C.classid left join user as U on A.userid=U.userid
+        select *,C.name as cName, U.name as uName from article as A inner join articleclass as C on A.classid=C.classid inner join user as U on A.userid=U.id
         <include refid="whereClause"/>
     </select>
 </mapper>
