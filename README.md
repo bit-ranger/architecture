@@ -1,11 +1,13 @@
 site
 ====
 
-### Tools
+这是一个J2EE的基础架构，不包含具体业务，不解决具体问题。
+
+## 开发工具
 
 Intellij IDEA
 
-### Libs
+## 开源组件
 
 spring
 
@@ -27,5 +29,6 @@ markdownpapers
 
 ehcache
 
+##其他
 
-
+本项目为标准maven结构
