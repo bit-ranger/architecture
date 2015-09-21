@@ -25,10 +25,14 @@ hibernate-validator
 
 cxf
 
-markdownpapers
+activeMQ
+
+mongodb
 
 ehcache
 
-##其他
+markdownpapers
+
+## 其他
 
 本项目为标准maven结构
