@@ -13,6 +13,7 @@
     <import resource="spring-mvc.xml"/>
     <import resource="spring-cxf.xml"/>
     <import resource="spring-security.xml"/>
+    <import resource="spring-jms.xml"/>
 
     <context:property-placeholder location="classpath:system.properties"/>
 
