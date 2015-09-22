@@ -38,7 +38,7 @@
     <bean id="securityMetadataSource" class="org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource">
         <constructor-arg index="0">
             <bean class="top.rainynight.site.core.RequestMapFactoryBean">
-                <property name="dataSource" ref="dataSource"/>
+                <property name="jdbcTemplate" ref="jdbcTemplate"/>
             </bean>
         </constructor-arg>
     </bean>

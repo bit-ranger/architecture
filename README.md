@@ -15,8 +15,6 @@ spring-webmvc
 
 spring-security
 
-spring-hateoas
-
 spring-test
 
 mybatis
@@ -25,10 +23,30 @@ hibernate-validator
 
 cxf
 
-markdownpapers
+activeMQ
+
+spring-jms
+
+mongodb
 
 ehcache
 
-##其他
+markdownpapers
 
-本项目为标准maven结构
+## 补充说明
+
+项目为标准maven结构
+
+web容器需要支持JTA事务, 例如 `weblogic`,且需要单独部署一台ActiveMQ以实现异步通信。
+
+## 使用方式
+
+1. 新建一个mysql数据库，库名为 `sllxsite`。
+2. 使用 `src/doc/tables.sql` 建表。
+3. 在本机启动ActiveMQ，端口号默认。
+4. 将本项目部署到 `weblogic`。
+
+## 内容
+
+打开 `http://localhost:7001/service` 能够看到导出的 `webservice` 接口。
+

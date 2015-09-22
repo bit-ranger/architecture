@@ -14,7 +14,7 @@ import java.util.*;
 
 public class RequestMapFactoryBean extends JdbcDaoSupport implements FactoryBean<LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>> {
 
-    private final static String METADATA_QUERY = "SELECT w.sequence,w.pattern,r.name FROM webresource w LEFT JOIN securitymetadata s on w.id = s.webResource_id LEFT JOIN role r ON r.id = s.role_id";
+    private final static String METADATA_QUERY = "SELECT w.sequence,w.pattern,r.name FROM web_resource w LEFT JOIN security_metadata s on w.id = s.webresource_id LEFT JOIN role r ON r.id = s.role_id";
 
     private String metadataQuery;
 
