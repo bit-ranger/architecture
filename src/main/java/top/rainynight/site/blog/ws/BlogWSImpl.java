@@ -1,17 +1,16 @@
 package top.rainynight.site.blog.ws;
 
 
-import org.springframework.stereotype.Component;
+
+import org.springframework.stereotype.Service;
 import top.rainynight.core.util.Page;
 import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.service.BlogService;
 
-import javax.jws.WebService;
 import java.util.Date;
 import java.util.List;
 
-@Component("blogWS")
-@WebService
+@Service("blogWS")
 public class BlogWSImpl implements BlogWS{
 
     @javax.annotation.Resource(name = "blogService")

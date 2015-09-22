@@ -38,7 +38,7 @@
 
     <context:component-scan base-package="top.rainynight.site.*.ws" use-default-filters="false">
         <!-- 扫描符合@Controller的类 -->
-        <context:include-filter type="annotation" expression="javax.jws.WebService" />
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
     </context:component-scan>
 
     <jaxws:endpoint implementor="#blogWS" address="/ws/blog" />

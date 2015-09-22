@@ -1,18 +1,16 @@
 package top.rainynight.site.storage.ws;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import top.rainynight.site.storage.entity.Storage;
 import top.rainynight.site.storage.service.StorageService;
 
-import javax.jws.WebService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
 
-@Component("storageWS")
-@WebService
+@Service("storageWS")
 public class StorageWSImpl implements StorageWS{
 
     @javax.annotation.Resource(name = "storageService")

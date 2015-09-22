@@ -1,6 +1,6 @@
 drop table if exists article;
 
-drop table if exists SecurityMetadata;
+drop table if exists security_metadata;
 
 drop table if exists colony_role;
 
@@ -16,7 +16,7 @@ drop table if exists role;
 
 drop table if exists user;
 
-drop table if exists webResource;
+drop table if exists web_resource;
 
 drop table if exists file;
 
@@ -26,7 +26,7 @@ drop table if exists file;
 /*==============================================================*/
 /* Table: SecurityMetadata                                      */
 /*==============================================================*/
-create table SecurityMetadata
+create table security_metadata
 (
    id                   int not null auto_increment comment 'ID',
    webResource_id       int not null comment '资源ID',
@@ -34,6 +34,9 @@ create table SecurityMetadata
    primary key (id),
    unique key UK_SecurityMetadata (webResource_id, role_id)
 );
+
+alter table security_metadata comment '权限元数据';
+
 
 /*==============================================================*/
 /* Table: article                                               */
@@ -165,7 +168,7 @@ alter table user_role comment '用户角色';
 /*==============================================================*/
 /* Table: webResource                                           */
 /*==============================================================*/
-create table webResource
+create table web_resource
 (
    id                   int not null auto_increment comment 'ID',
    pattern              varchar(100) not null comment 'URI模式',
@@ -175,13 +178,13 @@ create table webResource
    unique key UK_sequence (sequence)
 );
 
-alter table webResource comment '系统资源';
+alter table web_resource comment '系统资源';
 
-alter table SecurityMetadata add constraint FK_SecurityMetadata_Reference_role foreign key (role_id)
+alter table security_metadata add constraint FK_SecurityMetadata_Reference_role foreign key (role_id)
       references role (id) on delete restrict on update restrict;
 
-alter table SecurityMetadata add constraint FK_SecurityMetadata_Reference_webResource foreign key (webResource_id)
-      references webResource (id) on delete restrict on update restrict;
+alter table security_metadata add constraint FK_SecurityMetadata_Reference_webResource foreign key (webResource_id)
+      references web_resource (id) on delete restrict on update restrict;
 
 alter table article add constraint FK_article_Reference_articleclass foreign key (classid)
       references articleclass (classid) on delete restrict on update restrict;

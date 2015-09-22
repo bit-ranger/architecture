@@ -12,7 +12,7 @@ import javax.jms.Destination;
  * Created by sllx on 9/22/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-jms.xml"})
+@ContextConfiguration(locations = {"classpath:spring-jms-test.xml"})
 public class MessageConsumerTest {
     @Resource(name = "messageProducer")
     private MessageProducer messageProducer;
@@ -25,9 +25,9 @@ public class MessageConsumerTest {
 
     @Test
     public void run(){
-        for (int i=0; i<5; i++){
+        for (int i=0; i<1; i++){
             messageProducer.sendMessage(queueDestination, "queue message : " + i);
-            messageProducer.sendMessage(topicDestination, "topic message : " + i);
+//            messageProducer.sendMessage(topicDestination, "topic message : " + i);
         }
 
     }

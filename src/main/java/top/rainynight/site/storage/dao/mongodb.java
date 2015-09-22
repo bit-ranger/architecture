@@ -1,6 +1,6 @@
 package top.rainynight.site.storage.dao;
 
-import com.mongodb.MongoClient;
+/*import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -8,14 +8,16 @@ import org.bson.Document;
 
 import java.lang.String;import java.lang.System;import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.stream.IntStream;*/
 
 /**
  * Created by sllx on 9/19/15.
  */
 public class mongodb {
+/*
 
-    public static void main(String[] args) {
+   */
+/* public static void main(String[] args) {
         MongoClient client = new MongoClient();
         MongoDatabase database = client.getDatabase("test");
         MongoCollection<Document> collection = database.getCollection("documents");
@@ -37,7 +39,9 @@ public class mongodb {
 //
 //        collection.deleteMany(new Document());
 
-        client.close();
+        client.close();*//*
+
     }
+*/
 
 }

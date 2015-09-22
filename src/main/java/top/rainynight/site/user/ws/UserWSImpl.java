@@ -1,16 +1,14 @@
 package top.rainynight.site.user.ws;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import top.rainynight.core.util.Page;
 import top.rainynight.site.user.entity.User;
 import top.rainynight.site.user.service.UserService;
 
-import javax.jws.WebService;
 import java.util.List;
 
 
-@Component("userWS")
-@WebService
+@Service("userWS")
 public class UserWSImpl implements UserWS {
 
     @javax.annotation.Resource(name = "userService")
