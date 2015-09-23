@@ -1,7 +1,7 @@
 site
 ====
 
-这是一个J2EE的基础架构实验，不包含具体业务，不解决具体问题。
+这是一个J2EE的架构实验，不包含具体业务，不解决具体问题。
 
 ## 开发工具
 
@@ -13,42 +13,51 @@ spring
 
 spring-webmvc
 
-spring-security
-
-spring-test
-
 mybatis
 
 hibernate-validator
 
-cxf
+spring-security
 
-activeMQ
+cxf
 
 spring-jms
 
-mongodb
-
 ehcache
 
-markdownpapers
+spring-test
+
 
 ## 补充说明
 
-项目为标准maven结构
+项目为 `maven` `web` 结构。
 
-web容器需要支持JTA事务, 例如 `weblogic`,且需要单独部署一台ActiveMQ以实现异步通信。
+应用服务器需要支持 `JNDI` 数据源, 例如 `weblogic`, 且需要单独部署一台 `ActiveMQ` 以实现异步通信。
 
-## 使用方式
+## 使用准备
 
-1. 新建一个mysql数据库，库名为 `sllxsite`。
-2. 使用 `src/doc/tables.sql` 建表。
+1. 启动mysql，新建一个mysql数据库，库名为 `sllxsite`。
+
+2. 使用 `src/doc/tables.sql` 建表，使用 `src/doc/data.sql` 导入数据。
+
 3. 在本机启动ActiveMQ，端口号默认。
-4. 将本项目部署到 `weblogic`。
+
+4. 打开weblogic配置文件 `domains/DOMAIN_NAME/config/config.xml` 关闭自带的 `Basic Authentication`：
+
+    ```xml
+    <security-configuration>
+    ...
+    <enforce-valid-basic-auth-credentials>false</enforce-valid-basic-auth-credentials>
+    </security-configuration>
+    ```
+
+5. 将本项目部署到 `weblogic`。
 
 ## 内容
 
 打开 `http://localhost:7001` 可以看到一个普通页面，这没什么好说的。
+
+打开 `http://localhost:7001/user` 可以看到权限控制。
 
 打开 `http://localhost:7001/service` 能够看到由 `CXF` 导出的 `webservice` 接口。
 
