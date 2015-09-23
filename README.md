@@ -1,7 +1,7 @@
 site
 ====
 
-这是一个J2EE的基础架构，不包含具体业务，不解决具体问题。
+这是一个J2EE的基础架构实验，不包含具体业务，不解决具体问题。
 
 ## 开发工具
 
@@ -48,5 +48,11 @@ web容器需要支持JTA事务, 例如 `weblogic`,且需要单独部署一台Act
 
 ## 内容
 
-打开 `http://localhost:7001/service` 能够看到导出的 `webservice` 接口。
+打开 `http://localhost:7001` 可以看到一个普通页面，这没什么好说的。
+
+打开 `http://localhost:7001/service` 能够看到由 `CXF` 导出的 `webservice` 接口。
+
+打开项目文件 `src/test/java/site/jms/MessageConsumerTest.java` 运行此 Test Case，查看 WebLogic 控制台，
+可以看到web项目接收了一条消息，并且存入了数据库，然后消息与数据库一起回滚，接着再次接受消息并入库，这就是JTA事务。
+
 
