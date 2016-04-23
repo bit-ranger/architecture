@@ -8,8 +8,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import top.rainynight.site.user.entity.User;
-import top.rainynight.site.user.service.UserService;
+import com.rainyalley.common.user.model.entity.User;
+import com.rainyalley.common.user.service.UserService;
 
 import javax.annotation.Resource;
 

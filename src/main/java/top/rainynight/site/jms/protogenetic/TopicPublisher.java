@@ -118,7 +118,7 @@ public class TopicPublisher implements MessageListener {
         for (int i = 0; i < messages; i++) {
             publisher.send(msg);
             if ((i + 1) % 1000 == 0) {
-                System.out.println("Sent " + (i + 1) + " messages");
+                System.out.println("Sent " + (i + 1) + "messages");
             }
         }
 

@@ -1,8 +1,8 @@
 package top.rainynight.site.jms;
 
 import org.springframework.stereotype.Service;
-import top.rainynight.site.user.entity.User;
-import top.rainynight.site.user.service.UserService;
+import com.rainyalley.common.user.model.entity.User;
+import com.rainyalley.common.user.service.UserService;
 
 import javax.annotation.Resource;
 import javax.jms.*;

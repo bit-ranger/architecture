@@ -2,9 +2,8 @@ package top.rainynight.site.blog.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.cxf.jaxrs.provider.json.utils.JSONUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import top.rainynight.site.user.entity.User;
+import com.rainyalley.common.user.model.entity.User;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

@@ -13,8 +13,8 @@ import top.rainynight.site.blog.dao.ArticleDao;
 import top.rainynight.site.blog.dao.ArticleclassDao;
 import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.entity.Articleclass;
-import top.rainynight.site.user.dao.UserDao;
-import top.rainynight.site.user.entity.User;
+import com.rainyalley.common.user.dao.UserDao;
+import com.rainyalley.common.user.model.entity.User;
 
 import javax.annotation.Resource;
 import java.util.Date;

@@ -11,7 +11,7 @@
 
     <resultMap id="relevance" type="top.rainynight.site.blog.entity.Article" autoMapping="true">
         <id column="articleid" property="articleid"/>
-        <association property="user" javaType="top.rainynight.site.user.entity.User">
+        <association property="user" javaType="com.rainyalley.common.user.model.entity.User">
             <id column="userid" property="id"/>
             <result column="uName" property="name" />
             <result column="password" property="password" />

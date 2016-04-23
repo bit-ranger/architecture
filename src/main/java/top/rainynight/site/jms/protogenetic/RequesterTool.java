@@ -75,7 +75,7 @@ public class RequesterTool {
 
             System.out.println("Connecting to URL: " + url);
             System.out.println("Publishing a Message with size " + messageSize + " to " + (topic ? "topic" : "queue") + ": " + subject);
-            System.out.println("Using " + (persistent ? "persistent" : "non-persistent") + " messages");
+            System.out.println("Using " + (persistent ? "persistent" : "non-persistent") + "messages");
             System.out.println("Sleeping between publish " + sleepTime + " ms");
 
             // Create the connection

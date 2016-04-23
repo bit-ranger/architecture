@@ -7,7 +7,7 @@ import top.rainynight.site.blog.entity.Article;
 import top.rainynight.site.blog.entity.Articleclass;
 import top.rainynight.site.blog.service.BlogService;
 import top.rainynight.site.core.util.StaticResourceHolder;
-import top.rainynight.site.user.entity.User;
+import com.rainyalley.common.user.model.entity.User;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
