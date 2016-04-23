@@ -12,36 +12,19 @@
     <security:http security="none" pattern="/user/login"/>
 
 
-    <security:http pattern="/user/**"
-                   authentication-manager-ref="authenticationManager"
-                   access-decision-manager-ref="accessDecisionManager"
-                   use-expressions="true">
+    <security:http
+            pattern="/**"
+            authentication-manager-ref="authenticationManager">
 
-        <!--<security:form-login />-->
+        <!-- 注册BasicAuthenticationEntryPoint -->
         <security:http-basic/>
 
-        <security:logout delete-cookies="JSESSIONID" logout-success-url="/" logout-url="/user/logout"/>
+        <security:logout delete-cookies="JSESSIONID" logout-success-url="/" logout-url="/logout"/>
 
-        <security:custom-filter ref="filterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <security:custom-filter ref="customFilterSecurityInterceptor" after="FILTER_SECURITY_INTERCEPTOR"/>
 
     </security:http>
 
-    <!-- 自定义过滤器 -->
-    <bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
-        <property name="securityMetadataSource" ref="securityMetadataSource"/>
-        <property name="authenticationManager" ref="authenticationManager"/>
-        <property name="accessDecisionManager" ref="accessDecisionManager"/>
-        <property name="messageSource" ref="securityMessageSource"/>
-    </bean>
-
-    <!-- 资源与角色关系元数据 -->
-    <bean id="securityMetadataSource" class="org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource">
-        <constructor-arg index="0">
-            <bean class="com.rainyalley.architecture.web.user.RequestMapFactoryBean">
-                <property name="jdbcTemplate" ref="jdbcTemplate"/>
-            </bean>
-        </constructor-arg>
-    </bean>
 
     <!-- 认证管理器。用户名密码都集成在配置文件中 -->
     <security:authentication-manager id="authenticationManager">
@@ -51,24 +34,13 @@
                 <security:user name="sharp" password="sharp" authorities="ROLE_TEST"/>
             </security:user-service>
         </security:authentication-provider>-->
-        <security:authentication-provider user-service-ref="cachingUserDetailsService" >
+        <security:authentication-provider user-service-ref="userDetailsService" >
            <!-- <security:password-encoder base64="true" hash="md5">
                 <security:salt-source user-property="username"/>
             </security:password-encoder>-->
         </security:authentication-provider>
     </security:authentication-manager>
 
-    <!-- 可以缓存UserDetails的UserDetailsService -->
-    <bean id="cachingUserDetailsService" class="org.springframework.security.config.authentication.CachingUserDetailsService">
-        <!-- 真正加载UserDetails的UserDetailsService -->
-        <constructor-arg ref="userDetailsService"/>
-        <!-- 缓存UserDetails的UserCache -->
-        <property name="userCache" ref="userCache"/>
-    </bean>
-    <bean id="userCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">
-        <!-- 用于真正缓存的Ehcache对象 -->
-        <property name="cache" ref="ehcache"/>
-    </bean>
 
     <bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
             <property name="dataSource" ref="dataSource"/>
@@ -89,32 +61,30 @@
                                 INNER JOIN role ON colony_role.role_id = role.id"/>
     </bean>
 
+    <!-- 自定义拦截器 -->
+    <bean id="customFilterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <property name="securityMetadataSource" ref="customSecurityMetadataSource"/>
+        <property name="observeOncePerRequest" value="false"/>
+        <property name="accessDecisionManager" ref="customAccessDecisionManager"/>
+    </bean>
     <!-- 决策管理器 -->
-    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased" >
+    <bean id="customAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased" >
         <property name="allowIfAllAbstainDecisions" value="false"/>
         <constructor-arg index="0">
             <list>
-               <!-- <bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>-->
                 <bean class="org.springframework.security.access.vote.RoleVoter">
                     <!-- 支持所有角色名称，无需前缀 -->
                     <property name="rolePrefix" value=""/>
                 </bean>
-                <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
             </list>
         </constructor-arg>
     </bean>
 
-
-    <bean id="securityMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <property name="basenames">
-            <list>
-                <value>classpath:messages/securityMessages</value>
-                <value>classpath:org/springframework/security/messages</value>
-            </list>
-        </property>
-        <property name="useCodeAsDefaultMessage" value="false"/>
-        <property name="defaultEncoding" value="UTF-8"/>
-        <property name="cacheSeconds" value="60"/>
+    <!-- 资源与角色关系数据 -->
+    <bean id="customSecurityMetadataSource" class="com.rainyalley.architecture.web.user.JitFilterInvocationSecurityMetadataSource">
+        <constructor-arg index="0">
+            <ref bean="jdbcTemplate"/>
+        </constructor-arg>
     </bean>
 
 </beans>

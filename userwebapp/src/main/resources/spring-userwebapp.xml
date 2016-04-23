@@ -7,4 +7,5 @@
     <import resource="spring-common.xml" />
     <import resource="spring-userwebapp-mvc.xml"/>
     <import resource="spring-userwebapp-cxf.xml"/>
+    <import resource="spring-userwebapp-security.xml"/>
 </beans>
