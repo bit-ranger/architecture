@@ -1,10 +1,10 @@
-package com.rainyalley.common.user.service.impl;
+package com.rainyalley.architecture.common.user.service.impl;
 
 
-import com.rainyalley.common.ServiceBasicSupport;
-import com.rainyalley.common.user.dao.UserDao;
-import com.rainyalley.common.user.model.entity.User;
-import com.rainyalley.common.user.service.UserService;
+import com.rainyalley.architecture.common.ServiceBasicSupport;
+import com.rainyalley.architecture.common.user.dao.UserDao;
+import com.rainyalley.architecture.common.user.model.entity.User;
+import com.rainyalley.architecture.common.user.service.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

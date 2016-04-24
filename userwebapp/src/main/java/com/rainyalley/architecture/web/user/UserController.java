@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.web.user;
 
-import com.rainyalley.common.user.service.UserService;
+import com.rainyalley.architecture.common.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;

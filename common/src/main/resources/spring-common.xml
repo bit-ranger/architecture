@@ -14,7 +14,7 @@
 
     <context:property-placeholder location="classpath:system.properties"/>
 
-    <context:component-scan base-package="com.rainyalley.common.user.service" use-default-filters="false">
+    <context:component-scan base-package="com.rainyalley.architecture.common.user.service" use-default-filters="false">
         <!-- 扫描符合@Service的类 -->
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
@@ -30,11 +30,11 @@
 
     <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <property name="basePackage" value="com.rainyalley.common.user.dao"/>
+        <property name="basePackage" value="com.rainyalley.architecture.common.user.dao"/>
     </bean>
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:com/rainyalley/common/**/dao/**.xml"/>
+        <property name="mapperLocations" value="classpath:com/rainyalley/architecture/common/**/dao/**.xml"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -66,10 +66,10 @@
 
     <aop:config>
         <aop:pointcut id="loginPointcut"
-                      expression="execution(public * com.rainyalley.common.ServiceBasicSupport.*(..)) or execution(public * com.rainyalley.common..service..*.*(..))"/>
+                      expression="execution(public * com.rainyalley.architecture.common.ServiceBasicSupport.*(..)) or execution(public * com.rainyalley.architecture.common..service..*.*(..))"/>
         <aop:aspect ref="logRecorder">
             <aop:after-returning pointcut-ref="loginPointcut" method="record" returning="returnValue"/>
         </aop:aspect>
     </aop:config>
-    <bean id="logRecorder" class="com.rainyalley.common.LogRecorder"/>
+    <bean id="logRecorder" class="com.rainyalley.architecture.common.LogRecorder"/>
 </beans>

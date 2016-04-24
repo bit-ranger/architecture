@@ -1,4 +1,4 @@
-package com.rainyalley.common;
+package com.rainyalley.architecture.common;
 
 
 import com.rainyalley.architecture.core.Page;

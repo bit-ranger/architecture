@@ -1,4 +1,4 @@
-package com.rainyalley.common.user.model.entity;
+package com.rainyalley.architecture.common.user.model.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

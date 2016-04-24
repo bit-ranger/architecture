@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rainyalley.common.user.dao.UserDao">
+<mapper namespace="com.rainyalley.architecture.common.user.dao.UserDao">
 
-    <select id="select" resultType="com.rainyalley.common.user.model.entity.User">
+    <select id="select" resultType="com.rainyalley.architecture.common.user.model.entity.User">
          select * from user
          <where>
              <if test="id!=null">id=#{id}</if>
