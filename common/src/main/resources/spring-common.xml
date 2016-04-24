@@ -65,11 +65,13 @@
     <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"/>
 
     <aop:config>
-        <aop:pointcut id="loginPointcut"
-                      expression="execution(public * com.rainyalley.architecture.common.ServiceBasicSupport.*(..)) or execution(public * com.rainyalley.architecture.common..service..*.*(..))"/>
-        <aop:aspect ref="logRecorder">
-            <aop:after-returning pointcut-ref="loginPointcut" method="record" returning="returnValue"/>
+        <aop:pointcut id="serviceInvocationPointcut"
+                      expression="execution(public * com.rainyalley.architecture.common.ServiceBasicSupport.*(..))
+                              or  execution(public * com.rainyalley.architecture.common..service..*.*(..))"/>
+
+        <aop:aspect ref="serviceInvocationLogger">
+            <aop:after-returning pointcut-ref="serviceInvocationPointcut" method="record" returning="returnValue"/>
         </aop:aspect>
     </aop:config>
-    <bean id="logRecorder" class="com.rainyalley.architecture.common.LogRecorder"/>
+    <bean id="serviceInvocationLogger" class="com.rainyalley.architecture.common.AspectLogger"/>
 </beans>
