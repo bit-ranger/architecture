@@ -20,13 +20,25 @@
     </context:component-scan>
 
     <!-- enables scanning for @Transactional annotations -->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven transaction-manager="transactionManager" order="100"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <jee:jndi-lookup jndi-name="jdbc/mysql" id="dataSource"/>
+    <jee:jndi-lookup jndi-name="jdbc/mysql" id="masterDataSource"/>
+    <jee:jndi-lookup jndi-name="jdbc/mysql" id="slaveDataSource"/>
+
+    <bean id="dataSource" class="com.rainyalley.architecture.common.datasource.KeywordDataSourceRouter">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry key="slave" value-ref="slaveDataSource"/>
+                <entry key="master" value-ref="masterDataSource"/>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="masterDataSource"/>
+        <property name="pointCutContextManager" ref="pointCutContextManager"/>
+    </bean>
 
     <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
@@ -69,9 +81,12 @@
                       expression="execution(public * com.rainyalley.architecture.common.ServiceBasicSupport.*(..))
                               or  execution(public * com.rainyalley.architecture.common..service..*.*(..))"/>
 
-        <aop:aspect ref="serviceInvocationLogger">
-            <aop:after-returning pointcut-ref="serviceInvocationPointcut" method="record" returning="returnValue"/>
+        <aop:aspect ref="pointCutContextManager" order="0">
+            <aop:before pointcut-ref="serviceInvocationPointcut" method="before"/>
+            <aop:after-returning pointcut-ref="serviceInvocationPointcut" method="afterReturning" returning="result"/>
+            <aop:after-throwing pointcut-ref="serviceInvocationPointcut" method="afterThrowing" throwing="throwable"/>
         </aop:aspect>
+
     </aop:config>
-    <bean id="serviceInvocationLogger" class="com.rainyalley.architecture.common.AspectLogger"/>
+    <bean id="pointCutContextManager"  class="com.rainyalley.architecture.common.aop.PointCutContextManager"/>
 </beans>
