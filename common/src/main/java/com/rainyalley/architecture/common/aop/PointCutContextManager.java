@@ -38,7 +38,7 @@ public class PointCutContextManager {
         String method = joinPoint.getSignature().toLongString();
         Object[] args = joinPoint.getArgs();
 
-        if(logger.isDebugEnabled()){
+        if(logger.isErrorEnabled()){
             logger.error(String.format("Invoke interrupt, class : %s, method : %s, args : %s, throwable : %s", clazz, method, args, throwable));
         }
     }
