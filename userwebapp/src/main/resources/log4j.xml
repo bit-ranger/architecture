@@ -7,7 +7,7 @@
     <appender name="LOG.Console" class="org.apache.log4j.ConsoleAppender">
         <param name="Encoding" value="UTF-8" />
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n        ^ %X%n"/>
         </layout>
     </appender>
 
@@ -17,7 +17,7 @@
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n        ^ %X%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="DEBUG"/>
@@ -31,7 +31,7 @@
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n        ^ %X%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="INFO"/>
@@ -45,7 +45,7 @@
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n        ^ %X%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="WARN"/>
@@ -59,7 +59,7 @@
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n        ^ %X%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="ERROR"/>
@@ -73,7 +73,7 @@
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%-5p] %m%n        %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        %C.%M:%L%n"/>
+            <param name="ConversionPattern" value="[%-5p] $ %m%n        # %d{yyy-MM-dd HH:mm:ss} (%r) %c%n        @ %C.%M:%L%n        ^ %X%n"/>
         </layout>
         <filter class="org.apache.log4j.varia.LevelRangeFilter">
             <param name="LevelMin" value="FATAL"/>
@@ -81,19 +81,31 @@
         </filter>
     </appender>
 
-    <logger name="com.rainyalley"  >
+    <appender name="LOG.POINTCUT" class="org.apache.log4j.RollingFileAppender">
+        <param name="Encoding" value="UTF-8" />
+        <param name="File" value="/var/log/architecture/pointcut.log"/>
+        <param name="MaxFileSize" value="5120KB"/>
+        <param name="MaxBackupIndex" value="10"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{yyy-MM-dd HH:mm:ss} (%r) %m%n"/>
+        </layout>
+    </appender>
+
+    <logger name="com.rainyalley.architecture.common.aop.PointCutContextManager" additivity="false">
         <level value="DEBUG"/>
+        <appender-ref ref="LOG.POINTCUT"/>
+        <appender-ref ref="LOG.Console"/>
     </logger>
 
 
     <root>
-        <level value="DEBUG"/>
+        <level value="INFO"/>
         <appender-ref ref="LOG.Console"/>
-        <appender-ref ref="LOG.DEBUG"/>
-        <appender-ref ref="LOG.INFO"/>
-        <appender-ref ref="LOG.WARN"/>
-        <appender-ref ref="LOG.ERROR"/>
-        <appender-ref ref="LOG.FATAL"/>
+        <!--<appender-ref ref="LOG.DEBUG"/>-->
+        <!--<appender-ref ref="LOG.INFO"/>-->
+        <!--<appender-ref ref="LOG.WARN"/>-->
+        <!--<appender-ref ref="LOG.ERROR"/>-->
+        <!--<appender-ref ref="LOG.FATAL"/>-->
     </root>
 
 </log4j:configuration>
