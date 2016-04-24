@@ -13,7 +13,7 @@
 
     <appender name="LOG.DEBUG" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="/home/sllx/Develop/log/site/debug.log"/>
+        <param name="File" value="/var/log/architecture/debug.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -27,7 +27,7 @@
 
     <appender name="LOG.INFO" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="/home/sllx/Develop/log/site/info.log"/>
+        <param name="File" value="/var/log/architecture/info.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -41,7 +41,7 @@
 
     <appender name="LOG.WARN" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="/home/sllx/Develop/log/site/warn.log"/>
+        <param name="File" value="/var/log/architecture/warn.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -55,7 +55,7 @@
 
     <appender name="LOG.ERROR" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="/home/sllx/Develop/log/site/error.log"/>
+        <param name="File" value="/var/log/architecture/error.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -69,7 +69,7 @@
 
     <appender name="LOG.FATAL" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
-        <param name="File" value="/home/sllx/Develop/log/site/fatal.log"/>
+        <param name="File" value="/var/log/architecture/fatal.log"/>
         <param name="MaxFileSize" value="5120KB"/>
         <param name="MaxBackupIndex" value="10"/>
         <layout class="org.apache.log4j.PatternLayout">
@@ -81,18 +81,10 @@
         </filter>
     </appender>
 
-    <logger name="top.rainynight"  >
+    <logger name="com.rainyalley"  >
         <level value="DEBUG"/>
     </logger>
-    <logger name="org.springframework.security">
-        <level value="WARN"/>
-    </logger>
-    <logger name="org.springframework">
-        <level value="WARN"/>
-    </logger>
-    <logger name="org.apache">
-        <level value="WARN"/>
-    </logger>
+
 
     <root>
         <level value="DEBUG"/>

@@ -8,12 +8,11 @@
 
     <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
     <security:http security="none" pattern="/favicon.ico" />
-    <security:http security="none" pattern="/resources/scripts/editor/plugins/link/dialogs" />
-    <security:http security="none" pattern="/user/login"/>
+    <security:http security="none" pattern="/resources/**" />
 
 
     <security:http
-            pattern="/**"
+            pattern="/authority/**"
             authentication-manager-ref="authenticationManager">
 
         <!-- 注册BasicAuthenticationEntryPoint -->
