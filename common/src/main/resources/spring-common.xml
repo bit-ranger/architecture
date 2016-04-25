@@ -5,14 +5,12 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-    <context:property-placeholder location="classpath:system.properties"/>
+    <context:property-placeholder location="classpath:environment.properties"/>
 
     <context:component-scan base-package="com.rainyalley.architecture.common.user.service" use-default-filters="false">
         <!-- 扫描符合@Service的类 -->
@@ -20,14 +18,39 @@
     </context:component-scan>
 
     <!-- enables scanning for @Transactional annotations -->
-    <tx:annotation-driven transaction-manager="transactionManager" order="100"/>
+    <tx:annotation-driven transaction-manager="transactionManager" order="999"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <jee:jndi-lookup jndi-name="jdbc/mysql" id="masterDataSource"/>
-    <jee:jndi-lookup jndi-name="jdbc/mysql" id="slaveDataSource"/>
+    <bean id="masterDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="url" value="${jdbc.master.url}"/>
+        <property name="username" value="${jdbc.master.username}" />
+        <property name="password" value="${jdbc.master.password}" />
+        <property name="driverClassName" value="${jdbc.master.driver}" />
+        <property name="maxActive" value="${connection.pools.master.maxActive}" />
+        <property name="maxIdle" value="${connection.pools.master.maxIdle}" />
+        <property name="maxWait" value="${connection.pools.master.maxWait}" />
+        <property name="defaultAutoCommit" value="${connection.pools.master.defaultAutoCommit}" />
+        <property name="removeAbandoned" value="${connection.pools.master.removeAbandoned}" />
+        <property name="removeAbandonedTimeout" value="${connection.pools.master.removeAbandonedTimeout}" />
+        <property name="validationQuery" value="${connection.pools.master.validationQuery}" />
+    </bean>
+
+    <bean id="slaveDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="url" value="${jdbc.slave.url}"/>
+        <property name="username" value="${jdbc.slave.username}" />
+        <property name="password" value="${jdbc.slave.password}" />
+        <property name="driverClassName" value="${jdbc.slave.driver}" />
+        <property name="maxActive" value="${connection.pools.slave.maxActive}" />
+        <property name="maxIdle" value="${connection.pools.slave.maxIdle}" />
+        <property name="maxWait" value="${connection.pools.slave.maxWait}" />
+        <property name="defaultAutoCommit" value="${connection.pools.slave.defaultAutoCommit}" />
+        <property name="removeAbandoned" value="${connection.pools.slave.removeAbandoned}" />
+        <property name="removeAbandonedTimeout" value="${connection.pools.slave.removeAbandonedTimeout}" />
+        <property name="validationQuery" value="${connection.pools.slave.validationQuery}" />
+    </bean>
 
     <bean id="dataSource" class="com.rainyalley.architecture.common.datasource.KeywordDataSourceRouter">
         <property name="targetDataSources">
@@ -80,8 +103,12 @@
         <aop:pointcut id="serviceInvocationPointcut"
                       expression="execution(public * com.rainyalley.architecture.common.ServiceBasicSupport.*(..))
                               or  execution(public * com.rainyalley.architecture.common..service..*.*(..))"/>
-        
-        <aop:aspect ref="pointContextCollectAspect" order="0">
+
+        <aop:aspect ref="invokeCacheAspect" order="0">
+            <aop:around pointcut-ref="serviceInvocationPointcut" method="around"/>
+        </aop:aspect>
+
+        <aop:aspect ref="pointContextCollectAspect" order="1">
             <aop:before pointcut-ref="serviceInvocationPointcut" method="weave"/>
         </aop:aspect>
 
@@ -93,4 +120,5 @@
     </aop:config>
     <bean id="pointContextCollectAspect"  class="com.rainyalley.architecture.common.aop.PointContextCollectAspect"/>
     <bean id="loggerAspect" class="com.rainyalley.architecture.common.aop.LoggerAspect"/>
+    <bean id="invokeCacheAspect" class="com.rainyalley.architecture.common.aop.InvokeCacheAspect"/>
 </beans>
