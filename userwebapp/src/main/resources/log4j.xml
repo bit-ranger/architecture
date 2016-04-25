@@ -81,7 +81,7 @@
         </filter>
     </appender>
 
-    <appender name="LOG.POINTCUT" class="org.apache.log4j.RollingFileAppender">
+    <appender name="LOG.AOP" class="org.apache.log4j.RollingFileAppender">
         <param name="Encoding" value="UTF-8" />
         <param name="File" value="/var/log/architecture/pointcut.log"/>
         <param name="MaxFileSize" value="5120KB"/>
@@ -91,9 +91,9 @@
         </layout>
     </appender>
 
-    <logger name="com.rainyalley.architecture.common.aop.PointContextCollectAspect" additivity="false">
+    <logger name="com.rainyalley.architecture.common.aop" additivity="false">
         <level value="DEBUG"/>
-        <appender-ref ref="LOG.POINTCUT"/>
+        <appender-ref ref="LOG.AOP"/>
         <appender-ref ref="LOG.Console"/>
     </logger>
 
