@@ -8,7 +8,7 @@ import org.aspectj.lang.reflect.SourceLocation;
 
 import java.lang.reflect.Method;
 
-public class PointCutContext implements JoinPoint{
+public class PointContext implements JoinPoint{
 
     private JoinPoint joinPoint;
 
@@ -16,7 +16,7 @@ public class PointCutContext implements JoinPoint{
 
     private Class<?>[] parameterTypes;
 
-    public PointCutContext(JoinPoint joinPoint) {
+    public PointContext(JoinPoint joinPoint) {
         this.joinPoint = joinPoint;
         parameterTypes = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterTypes();
         method = MethodUtils.getAccessibleMethod(getTarget().getClass(), getSignature().getName(), parameterTypes);

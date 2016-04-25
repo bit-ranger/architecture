@@ -91,7 +91,7 @@
         </layout>
     </appender>
 
-    <logger name="com.rainyalley.architecture.common.aop.PointCutContextManager" additivity="false">
+    <logger name="com.rainyalley.architecture.common.aop.PointContextCollectAspect" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="LOG.POINTCUT"/>
         <appender-ref ref="LOG.Console"/>

@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.common.datasource;
 
-import com.rainyalley.architecture.common.aop.PointCutContext;
-import com.rainyalley.architecture.common.aop.PointCutContextManager;
+import com.rainyalley.architecture.common.aop.PointContext;
+import com.rainyalley.architecture.common.aop.PointContextProvider;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class KeywordDataSourceRouter extends AbstractRoutingDataSource {
 
-    private PointCutContextManager pointCutContextManager;
+    private PointContextProvider pointContextProvider;
 
     private final static String READ_DB_KEY = "slave";
 
@@ -19,12 +19,12 @@ public class KeywordDataSourceRouter extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        List<PointCutContext> joinPoints = pointCutContextManager.trace();
+        List<PointContext> joinPoints = pointContextProvider.trace();
         if(CollectionUtils.isEmpty(joinPoints)){
             return READ_DB_KEY;
         }
 
-        PointCutContext first = joinPoints.get(0);
+        PointContext first = joinPoints.get(0);
         Method method = first.getMethod();
 
         if (method != null && method.isAnnotationPresent(Transactional.class)){
@@ -37,7 +37,7 @@ public class KeywordDataSourceRouter extends AbstractRoutingDataSource {
         return READ_DB_KEY;
     }
 
-    public void setPointCutContextManager(PointCutContextManager pointCutContextManager) {
-        this.pointCutContextManager = pointCutContextManager;
+    public void setPointContextProvider(PointContextProvider pointContextProvider) {
+        this.pointContextProvider = pointContextProvider;
     }
 }

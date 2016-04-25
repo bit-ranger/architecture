@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 
-public class PointCutLogger {
+public class LoggerAspect {
 
     private Log logger = LogFactory.getLog(getClass());
 
