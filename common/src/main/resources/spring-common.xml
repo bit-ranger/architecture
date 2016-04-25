@@ -37,7 +37,7 @@
             </map>
         </property>
         <property name="defaultTargetDataSource" ref="masterDataSource"/>
-        <property name="pointCutContextManager" ref="pointCutContextManager"/>
+        <property name="pointCutContextManager" ref="serviceInvocationPointCutContextManager"/>
     </bean>
 
     <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -80,13 +80,17 @@
         <aop:pointcut id="serviceInvocationPointcut"
                       expression="execution(public * com.rainyalley.architecture.common.ServiceBasicSupport.*(..))
                               or  execution(public * com.rainyalley.architecture.common..service..*.*(..))"/>
+        
+        <aop:aspect ref="serviceInvocationPointCutContextManager" order="0">
+            <aop:before pointcut-ref="serviceInvocationPointcut" method="weave"/>
+        </aop:aspect>
 
-        <aop:aspect ref="pointCutContextManager" order="0">
-            <aop:before pointcut-ref="serviceInvocationPointcut" method="before"/>
+        <aop:aspect ref="pointCutLogger">
             <aop:after-returning pointcut-ref="serviceInvocationPointcut" method="afterReturning" returning="result"/>
             <aop:after-throwing pointcut-ref="serviceInvocationPointcut" method="afterThrowing" throwing="throwable"/>
         </aop:aspect>
 
     </aop:config>
-    <bean id="pointCutContextManager"  class="com.rainyalley.architecture.common.aop.PointCutContextManager"/>
+    <bean id="serviceInvocationPointCutContextManager"  class="com.rainyalley.architecture.common.aop.PointCutContextManager"/>
+    <bean id="pointCutLogger" class="com.rainyalley.architecture.common.aop.PointCutLogger"/>
 </beans>

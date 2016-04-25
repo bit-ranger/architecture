@@ -13,33 +13,18 @@ public class PointCutContextManager {
 
     private static ThreadLocal<List<PointCutContext>> concurrentJoinPoints = new ThreadLocal<List<PointCutContext>>();
 
-
-    public void before(JoinPoint joinPoint) throws Throwable{
+    public void weave(JoinPoint joinPoint) throws Throwable{
         List<PointCutContext> joinPointList = concurrentJoinPoints.get();
         if(joinPointList == null){
             joinPointList = new ArrayList<PointCutContext>(1);
             concurrentJoinPoints.set(joinPointList);
+            if(logger.isDebugEnabled()){
+                logger.debug(String.format("initialize a new PointCutContext stack for thread : %s", Thread.currentThread().getName()));
+            }
         }
         joinPointList.add(new PointCutContext(joinPoint));
-    }
-
-    public void afterReturning(JoinPoint joinPoint, Object result){
-        Class<?> clazz = joinPoint.getTarget().getClass();
-        String method = joinPoint.getSignature().toLongString();
-        Object[] args = joinPoint.getArgs();
-
         if(logger.isDebugEnabled()){
-            logger.debug(String.format("Invoke complete, class : %s, method : %s, args : %s, return : %s", clazz, method, args, result));
-        }
-    }
-
-    public void afterThrowing(JoinPoint joinPoint, Throwable throwable){
-        Class<?> clazz = joinPoint.getTarget().getClass();
-        String method = joinPoint.getSignature().toLongString();
-        Object[] args = joinPoint.getArgs();
-
-        if(logger.isErrorEnabled()){
-            logger.error(String.format("Invoke interrupt, class : %s, method : %s, args : %s, throwable : %s", clazz, method, args, throwable));
+            logger.debug(String.format("add a new PointCutContext for thread : %s", Thread.currentThread().getName()));
         }
     }
 
