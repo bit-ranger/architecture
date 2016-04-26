@@ -7,6 +7,8 @@ import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.util.Assert;
 
+import java.util.MissingResourceException;
+
 public class InvokeCacheAspect {
 
     private Log logger = LogFactory.getLog(getClass());
@@ -19,16 +21,20 @@ public class InvokeCacheAspect {
         PointContext context = new PointContext(joinPoint);
         String key = parseCacheKey(context);
         Class<?> returnType = context.getMethod().getReturnType();
-        Object result =  doGet(key, returnType);
-        if(result != null){
+
+        Object result = null;
+        try{
+            result =  doGet(key, returnType);
             if(logger.isDebugEnabled()){
-                logger.debug(String.format("cache hit, key : <%s>", key));
+                logger.debug(String.format("Cache hit, key : <%s>", key));
             }
             return result;
+        } catch (MissingResourceException e){
+            if(logger.isDebugEnabled()){
+                logger.debug(String.format("Cache missing, key : <%s>", key));
+            }
         }
-        if(logger.isDebugEnabled()){
-            logger.debug(String.format("cache missing, key : <%s>", key));
-        }
+
         result = joinPoint.proceed(joinPoint.getArgs());
         doPut(key, result);
         return result;
@@ -59,7 +65,7 @@ public class InvokeCacheAspect {
 
     public static String string2Unicode(String string) {
 
-        StringBuffer unicode = new StringBuffer();
+        StringBuilder unicode = new StringBuilder();
 
         for (int i = 0; i < string.length(); i++) {
 
@@ -76,11 +82,11 @@ public class InvokeCacheAspect {
     private void doPut(String key, Object value){
         cacheProvider.put(key, value);
         if(logger.isDebugEnabled()){
-            logger.debug(String.format("Put value into cache, key : [%s]", key));
+            logger.debug(String.format("Put value into cache, key : <%s>", key));
         }
     }
 
-    private <V> V doGet(String key, Class<V> type){
+    private <V> V doGet(String key, Class<V> type) throws MissingResourceException{
         return cacheProvider.get(key, type);
     }
 

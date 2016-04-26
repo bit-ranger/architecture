@@ -19,12 +19,12 @@ public class PointContextCollectAspect implements PointContextProvider{
             joinPointList = new ArrayList<PointContext>(1);
             concurrentJoinPoints.set(joinPointList);
             if(logger.isDebugEnabled()){
-                logger.debug(String.format("initialize a new PointCutContext stack for thread : %s", Thread.currentThread().getName()));
+                logger.debug(String.format("Initialize a new PointCutContext stack for thread : %s", Thread.currentThread().getName()));
             }
         }
         joinPointList.add(new PointContext(joinPoint));
         if(logger.isDebugEnabled()){
-            logger.debug(String.format("add a new PointCutContext for thread : %s", Thread.currentThread().getName()));
+            logger.debug(String.format("Add a new PointCutContext for thread : %s", Thread.currentThread().getName()));
         }
     }
 

@@ -120,5 +120,11 @@
     </aop:config>
     <bean id="pointContextCollectAspect"  class="com.rainyalley.architecture.common.aop.PointContextCollectAspect"/>
     <bean id="loggerAspect" class="com.rainyalley.architecture.common.aop.LoggerAspect"/>
-    <bean id="invokeCacheAspect" class="com.rainyalley.architecture.common.aop.InvokeCacheAspect"/>
+    <bean id="invokeCacheAspect" class="com.rainyalley.architecture.common.aop.InvokeCacheAspect">
+        <property name="cacheProvider">
+            <bean class="com.rainyalley.architecture.common.cache.EhCacheProvider">
+                <constructor-arg ref="ehcache"/>
+            </bean>
+        </property>
+    </bean>
 </beans>

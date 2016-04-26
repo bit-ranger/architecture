@@ -3,9 +3,9 @@ package com.rainyalley.architecture.common.aop;
 import com.rainyalley.architecture.common.user.model.entity.User;
 import com.rainyalley.architecture.common.user.service.UserService;
 import com.rainyalley.architecture.core.Page;
-import org.junit.Test;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,6 +43,7 @@ public class InvokeCacheAspectTest {
     */ 
     @Test
     public void testAround() throws Exception {
+        userService.get(new User(), new Page());
         userService.get(new User(), new Page());
     } 
 
