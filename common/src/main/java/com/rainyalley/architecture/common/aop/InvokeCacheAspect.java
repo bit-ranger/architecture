@@ -92,8 +92,8 @@ public class InvokeCacheAspect {
     private static class NullCacheProvider implements CacheProvider{
 
         @Override
-        public void put(String key, Object value) {
-
+        public boolean put(String key, Object value) {
+            return true;
         }
 
         @Override
