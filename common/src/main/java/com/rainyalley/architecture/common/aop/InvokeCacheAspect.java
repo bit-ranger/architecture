@@ -17,7 +17,7 @@ public class InvokeCacheAspect {
 
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
         PointContext context = new PointContext(joinPoint);
-        String key = extraCacheKey(context);
+        String key = parseCacheKey(context);
         System.out.println(key);
         Class<?> returnType = context.getMethod().getReturnType();
         Object result =  doGet(key, returnType);
@@ -35,7 +35,7 @@ public class InvokeCacheAspect {
         return result;
     }
 
-    private String extraCacheKey(PointContext context){
+    protected String parseCacheKey(PointContext context){
         String root = StringUtils.join(context.getTarget().getClass().getName().split("\\."), separator);
         String methodName = context.getMethod().getName();
         String paramText = "";
@@ -45,6 +45,7 @@ public class InvokeCacheAspect {
         if(StringUtils.isNotBlank(paramText)){
             paramText = paramText.substring(1);
         }
+        paramText = "(" + paramText + ")";
 
         String argText = "";
         for (Object object : context.getArgs()) {
@@ -53,6 +54,7 @@ public class InvokeCacheAspect {
         if(StringUtils.isNotBlank(paramText)){
             argText = argText.substring(1);
         }
+        argText = "(" + argText + ")";
         return root + separator + methodName + separator + paramText + separator + argText;
     }
 
