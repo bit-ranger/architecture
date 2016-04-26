@@ -18,7 +18,6 @@ public class InvokeCacheAspect {
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
         PointContext context = new PointContext(joinPoint);
         String key = parseCacheKey(context);
-        System.out.println(key);
         Class<?> returnType = context.getMethod().getReturnType();
         Object result =  doGet(key, returnType);
         if(result != null){
