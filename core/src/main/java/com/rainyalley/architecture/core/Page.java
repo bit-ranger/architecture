@@ -1,6 +1,8 @@
 package com.rainyalley.architecture.core;
 
-public class Page {
+import java.io.Serializable;
+
+public class Page implements Serializable{
 
     private static final int DEFAULT_PAGE_SIZE = 20;
 
