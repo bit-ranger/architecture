@@ -16,8 +16,8 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>com.rainyalley.architecture.rpc.ProviderLauncher</mainClass>
                     <includeProjectDependencies>true</includeProjectDependencies>
+                    <mainClass>com.rainyalley.architecture.rpc.provider.ProviderLauncher</mainClass>
                 </configuration>
             </plugin>
         </plugins>
@@ -32,6 +32,30 @@
             <groupId>com.rainyalley</groupId>
             <artifactId>architecture-common</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.4.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.sgroschupf</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.apache.zookeeper</artifactId>
+                    <groupId>zookeeper</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -81,9 +105,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>3.0.0.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.9</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
-
-
     <repositories>
         <repository>
             <id>thirdparty</id>
