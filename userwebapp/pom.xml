@@ -17,20 +17,12 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.0</version>
                 <configuration>
-                    <mode>context</mode>
-                    <contextFile>src/main/webapp/META-INF/context.xml</contextFile>
-                    <!-- 如果server.xml配了，则其他所有配置都会失效，包括context.xml -->
-                    <!-- <serverXml>src/main/tomcatconf/server.xml</serverXml> -->
-                    <contextReloadable>true</contextReloadable>
-                    <backgroundProcessorDelay>5</backgroundProcessorDelay>
+                    <port>80</port>
+                    <path>/</path>
+                    <systemProperties>
+                        <JAVA_OPTS>-Xms64m -Xmx256m -XX:MaxPermSize=64m</JAVA_OPTS>
+                    </systemProperties>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.29</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
