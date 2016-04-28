@@ -1,6 +1,6 @@
-package com.rainyalley.architecture.message;
+package com.rainyalley.architecture.message.consumer;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -10,7 +10,7 @@ import javax.jms.TextMessage;
 /**
  * Created by sllx on 9/22/15.
  */
-@Service("responseConsumer")
+@Component("responseConsumer")
 public class ResponseConsumer implements MessageListener{
 
     @Override
