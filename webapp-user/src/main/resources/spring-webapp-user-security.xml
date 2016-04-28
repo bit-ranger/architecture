@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <import resource="spring-security.xml"/>
+
+
+    <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
+    <security:http security="none" pattern="/favicon.ico" />
+    <security:http security="none" pattern="/resources" />
+
+
+    <security:http
+            pattern="/authority/**"
+            authentication-manager-ref="authenticationManager">
+
+        <!-- 注册BasicAuthenticationEntryPoint -->
+        <security:http-basic/>
+
+        <security:logout delete-cookies="JSESSIONID" logout-success-url="/" logout-url="/logout"/>
+
+        <security:custom-filter ref="customFilterSecurityInterceptor" after="FILTER_SECURITY_INTERCEPTOR"/>
+
+    </security:http>
+</beans>

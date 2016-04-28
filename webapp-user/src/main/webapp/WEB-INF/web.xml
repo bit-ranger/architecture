@@ -36,16 +36,6 @@
         <servlet-name>springMvc</servlet-name>
     </filter-mapping>
 
-    <!-- cxf -->
-    <servlet>
-        <servlet-name>cxf</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>cxf</servlet-name>
-        <url-pattern>/service/*</url-pattern>
-    </servlet-mapping>
-
     <!-- multipart解析过滤器,默认 bean id 为"filterMultipartResolver" -->
     <filter>
         <filter-name>multipartFilter</filter-name>
@@ -98,7 +88,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath:spring-userwebapp.xml
+            classpath:spring-webapp-user.xml
         </param-value>
     </context-param>
 	<listener>

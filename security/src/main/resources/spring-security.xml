@@ -5,25 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-
-    <!-- 当指定一个http元素的security属性为none时，表示其对应pattern的filter链为空 -->
-    <security:http security="none" pattern="/favicon.ico" />
-    <security:http security="none" pattern="/resources/**" />
-
-
-    <security:http
-            pattern="/authority/**"
-            authentication-manager-ref="authenticationManager">
-
-        <!-- 注册BasicAuthenticationEntryPoint -->
-        <security:http-basic/>
-
-        <security:logout delete-cookies="JSESSIONID" logout-success-url="/" logout-url="/logout"/>
-
-        <security:custom-filter ref="customFilterSecurityInterceptor" after="FILTER_SECURITY_INTERCEPTOR"/>
-
-    </security:http>
-
+    <import resource="spring-common.xml"/>
 
     <!-- 认证管理器。用户名密码都集成在配置文件中 -->
     <security:authentication-manager id="authenticationManager">
@@ -80,7 +62,7 @@
     </bean>
 
     <!-- 资源与角色关系数据 -->
-    <bean id="customSecurityMetadataSource" class="com.rainyalley.architecture.web.user.JitFilterInvocationSecurityMetadataSource">
+    <bean id="customSecurityMetadataSource" class="com.rainyalley.architecture.security.JitFilterInvocationSecurityMetadataSource">
         <constructor-arg index="0">
             <ref bean="jdbcTemplate"/>
         </constructor-arg>

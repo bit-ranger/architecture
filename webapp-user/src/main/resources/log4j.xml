@@ -93,7 +93,7 @@
 
     <logger name="com.rainyalley.architecture.common.aop" additivity="false">
         <level value="DEBUG"/>
-        <appender-ref ref="LOG.AOP"/>
+        <!--<appender-ref ref="LOG.AOP"/>-->
         <appender-ref ref="LOG.Console"/>
     </logger>
 

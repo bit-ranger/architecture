@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/webapp-user/target/architecture-userwebapp-1.0/WEB-INF/classes/spring-userwebapp-security.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/architecture-userwebapp-1.0/WEB-INF/springMvc-servlet.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/architecture-userwebapp-1.0/WEB-INF/classes/spring-userwebapp-mvc.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/classes/com/rainyalley/architecture/web</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/classes/spring-userwebapp-security.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/classes/spring-userwebapp.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/classes/spring-userwebapp-cxf.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/classes/spring-userwebapp-mvc.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/src/main/webapp/WEB-INF/springMvc-servlet.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/src/main/resources/spring-webapp-user-security.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/architecture-userwebapp-1.0/WEB-INF/classes/spring-userwebapp-cxf.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/target/architecture-userwebapp-1.0/WEB-INF/classes/spring-userwebapp.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/src/main/resources/spring-webapp-user-cxf.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/src/main/resources/spring-webapp-user.xml</file>
+          <file>file://$MODULE_DIR$/webapp-user/src/main/resources/spring-webapp-user-mvc.xml</file>
+          <file>file://$MODULE_DIR$/security/src/main/resources/spring-security.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />

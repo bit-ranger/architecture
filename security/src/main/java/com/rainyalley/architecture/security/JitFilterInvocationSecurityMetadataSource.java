@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.web.user;
+package com.rainyalley.architecture.security;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

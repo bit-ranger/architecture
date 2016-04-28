@@ -12,9 +12,11 @@
     <modules>
         <module>core</module>
         <module>common</module>
-        <module>userwebapp</module>
         <module>message</module>
         <module>rpc</module>
+        <module>security</module>
+        <module>webapp-user</module>
+        <module>weservice-user</module>
     </modules>
 
 </project>
