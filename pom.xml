@@ -16,7 +16,7 @@
         <module>rpc</module>
         <module>security</module>
         <module>webapp-user</module>
-        <module>weservice-user</module>
+        <module>webservice-user</module>
     </modules>
 
 </project>

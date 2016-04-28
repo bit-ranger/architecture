@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.web.user;
+package com.rainyalley.architecture.webservice.user;
 
 
 import com.rainyalley.architecture.common.user.model.entity.User;
