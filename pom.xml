@@ -17,6 +17,7 @@
         <module>security</module>
         <module>webapp-user</module>
         <module>webservice-user</module>
+        <module>spi</module>
     </modules>
 
 </project>
