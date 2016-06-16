@@ -14,8 +14,8 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 public class DefaultNotificationManagerTest {
 
     private NotificationManager notificationManager = new DefaultNotificationManager();
-    private InternalSubject subject = new InternalSubject(){}; // extend
-    private InternalObserver observer = new InternalObserver();
+    private InternalObserver internalObserver = new InternalObserver();
+    private ExtendInternalObserver extendInternalObserver = new ExtendInternalObserver();
 
     @Before
     public void before() throws Exception {
@@ -27,12 +27,13 @@ public class DefaultNotificationManagerTest {
 
     /**
      *
-     * Method: subscribe(Class<T> subjectType, Observer<T> observer)
+     * Method: subscribe(Class<T> subjectType, Observer<T> internalObserver)
      *
      */
     @Test
     public void testSubscribe() throws Exception {
-        notificationManager.subscribe(InternalSubject.class, observer);
+        notificationManager.subscribe(InternalEvent.class, internalObserver);
+        notificationManager.subscribe(ExtendInternalEvent.class, extendInternalObserver);
     }
 
     /**
@@ -43,28 +44,54 @@ public class DefaultNotificationManagerTest {
     @Test
     public void testNotify() throws Exception {
         testSubscribe();
-        notificationManager.notify(InternalEvent.TEST, subject);
+        notificationManager.notify(ExtendInternalEvent.TEST);
 
-        Assert.assertEquals(InternalEvent.TEST, observer.event);
-        Assert.assertEquals(subject, observer.subject);
+
+        Assert.assertNotNull(extendInternalObserver.event);
     }
 
-    private static class InternalSubject{}
-
-    private static class InternalObserver implements Observer<InternalSubject>{
+    private static class InternalObserver implements Observer<InternalEvent>{
 
         private Event event;
-        private InternalSubject subject;
 
         @Override
-        public void focus(Event event, InternalSubject subject) {
+        public void focus(InternalEvent event) {
             this.event = event;
-            this.subject = subject;
         }
     }
 
-    private static enum  InternalEvent implements Event{
-        TEST
+    private static class ExtendInternalObserver implements Observer<ExtendInternalEvent>{
+
+        private Event event;
+
+        @Override
+        public void focus(ExtendInternalEvent event) {
+            this.event = event;
+        }
+
+    }
+
+    private static class InternalEvent implements Event<String>{
+
+
+        private String context;
+
+        private InternalEvent(String context) {
+            this.context = context;
+        }
+
+        @Override
+        public String context() {
+            return context;
+        }
+    }
+
+    private static class ExtendInternalEvent extends InternalEvent{
+        private static final ExtendInternalEvent TEST = new ExtendInternalEvent("test");
+
+        public ExtendInternalEvent(String context) {
+            super(context);
+        }
     }
 
 } 

@@ -1,4 +1,7 @@
 package com.rainyalley.architecture.core.notification;
 
-public interface Event {
+public interface Event<T> {
+
+    T context();
+
 }

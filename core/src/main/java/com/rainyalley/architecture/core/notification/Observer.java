@@ -1,8 +1,8 @@
 package com.rainyalley.architecture.core.notification;
 
-public interface Observer<T> {
+public interface Observer<T extends Event<?>> {
 
 
-    void focus(Event event, T subject);
+    void focus(T event);
 
 }
