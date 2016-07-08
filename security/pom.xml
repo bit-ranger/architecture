@@ -4,48 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>architecture-security</artifactId>
-    <groupId>com.rainyalley</groupId>
-    <version>1.0</version>
+    <parent>
+        <groupId>com.rainyalley.architecture</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>security</artifactId>
     <packaging>jar</packaging>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <properties>
-        <spring.version>4.1.6.RELEASE</spring.version>
-        <spring-security.vertion>4.0.1.RELEASE</spring-security.vertion>
-        <cxf.version>3.0.0</cxf.version>
-        <jackson.version>2.4.1</jackson.version>
-    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.rainyalley</groupId>
-            <artifactId>architecture-common</artifactId>
-            <version>1.0</version>
+            <groupId>com.rainyalley.architecture</groupId>
+            <artifactId>common</artifactId>
         </dependency>
         <!-- security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring-security.vertion}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring-security.vertion}</version>
         </dependency>
     </dependencies>
 </project>
