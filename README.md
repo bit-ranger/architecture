@@ -15,30 +15,32 @@ Intellij IDEA
 服务层
 
 ## security
-权限管理模块
+权限管理模块，整合spring-security，CAS
 
 ## rpc
-远程调用模块
+远程调用模块，整合dubbo
 
 ## message
-消息队列模块
+消息队列模块，整合activeMQ
 
 ## webapp-user
 一个可放到web容器运行的应用
-暴露user相关的服务
+用springMVC暴露接口，数据格式为JSON
 
 ## webservice-user
 一个可放到web容器运行的应用
-以webservice形式暴露user相关的服务
+通过CXF暴露接口，支持soap,json两种数据格式。
 
 # 准备
 
-1. 启动mysql, 创建数据库, 名称为architecture
+1. 启动mysql, 创建数据库, 名称为architecture, 用户名为root, 无密码
 
-2. 执行common/doc/tables.sql 创建所需的表
+2. 执行zero/tables.sql 创建所需的表
 
-3. 如需使用message模块, 需启动ActiveMQ, ActiveMQ使用默认配置
+3. 解压zero/cas-tom.zip并启动
 
-4. 如需使用rpc模块, 需启动zookeeper, zookeeper使用默认配置
+4. 如需使用message模块, 需启动ActiveMQ, 并使用默认配置
+
+5. 如需使用rpc模块, 需启动zookeeper, 并使用默认配置
 
 
