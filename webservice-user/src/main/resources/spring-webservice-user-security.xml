@@ -17,13 +17,15 @@
 
     <security:http
             pattern="/**"
-            authentication-manager-ref="authenticationManager">
+            authentication-manager-ref="authenticationManager"
+            entry-point-ref="casAuthenticationEntryPoint">
 
         <!-- 注册BasicAuthenticationEntryPoint -->
-        <security:http-basic/>
+        <!--<security:http-basic/>-->
 
         <security:logout delete-cookies="JSESSIONID" logout-success-url="/" logout-url="/logout"/>
 
+        <security:custom-filter position="CAS_FILTER" ref="casFilter" />
         <security:custom-filter ref="customFilterSecurityInterceptor" after="FILTER_SECURITY_INTERCEPTOR"/>
 
     </security:http>
