@@ -15,7 +15,7 @@ Intellij IDEA
 服务层
 
 ## security
-权限管理模块，整合spring-security，CAS
+权限管理模块，整合spring-security，通过CAS进行单点登录
 
 ## rpc
 远程调用模块，整合dubbo
@@ -25,11 +25,11 @@ Intellij IDEA
 
 ## webapp-user
 一个可放到web容器运行的应用
-用springMVC暴露接口，数据格式为JSON
+通过springMVC暴露接口，数据格式为json
 
 ## webservice-user
 一个可放到web容器运行的应用
-通过CXF暴露接口，支持soap,json两种数据格式。
+通过CXF暴露接口，支持soap,rest两种接口。
 
 # 准备
 
@@ -42,5 +42,9 @@ Intellij IDEA
 4. 如需使用message模块, 需启动ActiveMQ, 并使用默认配置
 
 5. 如需使用rpc模块, 需启动zookeeper, 并使用默认配置
+
+6. 进入根目录，执行 `clean install -DskipTests=true`
+
+7. 进入 webapp-user 或 webservice-user 执行 `tomcat7:run`
 
 
