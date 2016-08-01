@@ -17,12 +17,13 @@
         <module>security</module>
         <module>webapp-user</module>
         <module>webservice-user</module>
+        <module>search</module>
     </modules>
 
     <properties>
         <spring.version>4.1.6.RELEASE</spring.version>
-        <jackson.version>2.4.1</jackson.version>
         <spring-security.vertion>4.0.1.RELEASE</spring-security.vertion>
+        <jackson.version>2.4.1</jackson.version>
         <cxf.version>3.0.0</cxf.version>
     </properties>
 
@@ -359,6 +360,24 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-mock</artifactId>
                 <version>2.0.8</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-redis</artifactId>
+                <version>1.5.2.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>2.7.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ansj</groupId>
+                <artifactId>ansj_seg</artifactId>
+                <version>3.7.6</version>
             </dependency>
         </dependencies>
 
