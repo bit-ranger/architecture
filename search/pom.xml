@@ -12,16 +12,6 @@
     <artifactId>search</artifactId>
     <packaging>jar</packaging>
 
-
-    <!-- 增加新的maven源 -->
-    <repositories>
-        <repository>
-            <id>mvn-repo</id>
-            <url>http://maven.nlpcn.org/</url>
-        </repository>
-    </repositories>
-
-
     <dependencies>
         <dependency>
             <groupId>org.ansj</groupId>

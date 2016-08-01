@@ -18,6 +18,7 @@
         <module>webapp-user</module>
         <module>webservice-user</module>
         <module>search</module>
+        <module>transaction</module>
     </modules>
 
     <properties>
@@ -399,6 +400,11 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </repository>
+        <!-- 增加新的maven源 -->
+        <repository>
+            <id>mvn-repo</id>
+            <url>http://maven.nlpcn.org/</url>
         </repository>
     </repositories>
 
