@@ -18,7 +18,6 @@
         <module>webapp-user</module>
         <module>webservice-user</module>
         <module>search</module>
-        <module>transaction</module>
     </modules>
 
     <properties>
