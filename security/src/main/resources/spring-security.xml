@@ -9,6 +9,8 @@
 
     <bean id="casFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
+        <!-- 被cas过滤器拦截的请求 -->
+        <property name="filterProcessesUrl" value="/login/cas"/>
     </bean>
 
     <!-- 认证管理器 -->
@@ -28,6 +30,7 @@
         <property name="serviceProperties" ref="serviceProperties" />
         <property name="ticketValidator">
             <bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+                <!-- cas 服务登录信息校验地址 -->
                 <constructor-arg index="0" value="http://localhost:8080/cas" />
             </bean>
         </property>
@@ -35,11 +38,13 @@
     </bean>
 
     <bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+        <!-- 登录完成回调地址 -->
         <property name="service" value="http://localhost/login/cas" />
     </bean>
 
     <bean id="casAuthenticationEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
         <property name="serviceProperties" ref="serviceProperties"/>
+        <!-- cas系统的登录页 -->
         <property name="loginUrl" value="http://localhost:8080/cas/login"/>
     </bean>
 
