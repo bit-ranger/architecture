@@ -8,63 +8,72 @@ import org.aspectj.lang.reflect.SourceLocation;
 
 import java.lang.reflect.Method;
 
-public class PointContext implements JoinPoint{
+public class PointContext implements JoinPoint {
 
-    private JoinPoint joinPoint;
+    private final JoinPoint joinPoint;
 
-    private Method method;
+    private final Method method;
 
-    private Class<?>[] parameterTypes;
+    private final Class<?>[] parameterTypes;
 
     public PointContext(JoinPoint joinPoint) {
         this.joinPoint = joinPoint;
-        parameterTypes = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterTypes();
-        method = MethodUtils.getAccessibleMethod(getTarget().getClass(), getSignature().getName(), parameterTypes);
+        this.parameterTypes = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterTypes();
+        this.method = MethodUtils.getAccessibleMethod(this.getTarget().getClass(), this.getSignature().getName(), this.parameterTypes);
     }
 
     @Override
     public String toString() {
-        return joinPoint.toString();
+        return this.joinPoint.toString();
     }
 
+    @Override
     public String toShortString() {
-        return joinPoint.toShortString();
+        return this.joinPoint.toShortString();
     }
 
+    @Override
     public String toLongString() {
-        return joinPoint.toLongString();
+        return this.joinPoint.toLongString();
     }
 
+    @Override
     public Object getThis() {
-        return joinPoint.getThis();
+        return this.joinPoint.getThis();
     }
 
+    @Override
     public Object getTarget() {
-        return joinPoint.getTarget();
+        return this.joinPoint.getTarget();
     }
 
+    @Override
     public Object[] getArgs() {
-        return joinPoint.getArgs();
+        return this.joinPoint.getArgs();
     }
 
+    @Override
     public Signature getSignature() {
-        return joinPoint.getSignature();
+        return this.joinPoint.getSignature();
     }
 
+    @Override
     public SourceLocation getSourceLocation() {
-        return joinPoint.getSourceLocation();
+        return this.joinPoint.getSourceLocation();
     }
 
+    @Override
     public String getKind() {
-        return joinPoint.getKind();
+        return this.joinPoint.getKind();
     }
 
-    public JoinPoint.StaticPart getStaticPart() {
-        return joinPoint.getStaticPart();
+    @Override
+    public StaticPart getStaticPart() {
+        return this.joinPoint.getStaticPart();
     }
 
-    public Method getMethod(){
-        return method;
+    public Method getMethod() {
+        return this.method;
     }
 
 

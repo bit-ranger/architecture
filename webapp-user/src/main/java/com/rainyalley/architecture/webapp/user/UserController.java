@@ -18,12 +18,12 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping
-    public List<User> index(){
-        return userService.get(new User(), new Page());
+    public List<User> index() {
+        return this.userService.get(new User(), new Page());
     }
 
     @RequestMapping("404")
-    public String redirect404(ModelMap modelMap){
+    public String redirect404(ModelMap modelMap) {
         modelMap.clear();
         return "redirect:/";
     }

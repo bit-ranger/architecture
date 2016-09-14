@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 
-public class User implements Serializable{
+public class User implements Serializable {
 
     private static final long serialVersionUID = 2894257361469960272L;
 
@@ -15,7 +15,7 @@ public class User implements Serializable{
     private String password;
 
     public Integer getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Integer id) {
@@ -24,7 +24,7 @@ public class User implements Serializable{
 
     @NotBlank
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -33,7 +33,7 @@ public class User implements Serializable{
 
     @NotBlank
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public void setPassword(String password) {
@@ -43,22 +43,21 @@ public class User implements Serializable{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
 
         User user = (User) o;
 
-        if (id != user.id) return false;
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
+        if (this.id != user.id) return false;
+        if (this.name != null ? !this.name.equals(user.name) : user.name != null) return false;
+        return this.password != null ? this.password.equals(user.password) : user.password == null;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
+        int result = this.id != null ? this.id : 0;
+        result = 31 * result + (this.name != null ? this.name.hashCode() : 0);
+        result = 31 * result + (this.password != null ? this.password.hashCode() : 0);
         return result;
     }
 

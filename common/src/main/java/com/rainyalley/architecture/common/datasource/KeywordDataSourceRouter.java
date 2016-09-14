@@ -11,30 +11,28 @@ import java.util.List;
 
 public class KeywordDataSourceRouter extends AbstractRoutingDataSource {
 
+    private static final String READ_DB_KEY = "slave";
+    private static final String WRITE_DB_KEY = "master";
     private PointContextProvider pointContextProvider;
-
-    private final static String READ_DB_KEY = "slave";
-
-    private final static String WRITE_DB_KEY = "master";
 
     @Override
     protected Object determineCurrentLookupKey() {
-        List<PointContext> joinPoints = pointContextProvider.trace();
-        if(CollectionUtils.isEmpty(joinPoints)){
-            return READ_DB_KEY;
+        List<PointContext> joinPoints = this.pointContextProvider.trace();
+        if (CollectionUtils.isEmpty(joinPoints)) {
+            return KeywordDataSourceRouter.READ_DB_KEY;
         }
 
         PointContext first = joinPoints.get(0);
         Method method = first.getMethod();
 
-        if (method != null && method.isAnnotationPresent(Transactional.class)){
+        if (method != null && method.isAnnotationPresent(Transactional.class)) {
             Transactional annotation = method.getAnnotation(Transactional.class);
 
-            if(annotation != null && !annotation.readOnly()){
-                return WRITE_DB_KEY;
+            if (annotation != null && !annotation.readOnly()) {
+                return KeywordDataSourceRouter.WRITE_DB_KEY;
             }
         }
-        return READ_DB_KEY;
+        return KeywordDataSourceRouter.READ_DB_KEY;
     }
 
     public void setPointContextProvider(PointContextProvider pointContextProvider) {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:aop="http://www.springframework.org/schema/aop"
+<beans xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
@@ -26,30 +26,30 @@
 
     <bean id="masterDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="url" value="${jdbc.master.url}"/>
-        <property name="username" value="${jdbc.master.username}" />
-        <property name="password" value="${jdbc.master.password}" />
-        <property name="driverClassName" value="${jdbc.master.driver}" />
-        <property name="maxActive" value="${connection.pools.master.maxActive}" />
-        <property name="maxIdle" value="${connection.pools.master.maxIdle}" />
-        <property name="maxWait" value="${connection.pools.master.maxWait}" />
-        <property name="defaultAutoCommit" value="${connection.pools.master.defaultAutoCommit}" />
-        <property name="removeAbandoned" value="${connection.pools.master.removeAbandoned}" />
-        <property name="removeAbandonedTimeout" value="${connection.pools.master.removeAbandonedTimeout}" />
-        <property name="validationQuery" value="${connection.pools.master.validationQuery}" />
+        <property name="username" value="${jdbc.master.username}"/>
+        <property name="password" value="${jdbc.master.password}"/>
+        <property name="driverClassName" value="${jdbc.master.driver}"/>
+        <property name="maxActive" value="${connection.pools.master.maxActive}"/>
+        <property name="maxIdle" value="${connection.pools.master.maxIdle}"/>
+        <property name="maxWait" value="${connection.pools.master.maxWait}"/>
+        <property name="defaultAutoCommit" value="${connection.pools.master.defaultAutoCommit}"/>
+        <property name="removeAbandoned" value="${connection.pools.master.removeAbandoned}"/>
+        <property name="removeAbandonedTimeout" value="${connection.pools.master.removeAbandonedTimeout}"/>
+        <property name="validationQuery" value="${connection.pools.master.validationQuery}"/>
     </bean>
 
     <bean id="slaveDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="url" value="${jdbc.slave.url}"/>
-        <property name="username" value="${jdbc.slave.username}" />
-        <property name="password" value="${jdbc.slave.password}" />
-        <property name="driverClassName" value="${jdbc.slave.driver}" />
-        <property name="maxActive" value="${connection.pools.slave.maxActive}" />
-        <property name="maxIdle" value="${connection.pools.slave.maxIdle}" />
-        <property name="maxWait" value="${connection.pools.slave.maxWait}" />
-        <property name="defaultAutoCommit" value="${connection.pools.slave.defaultAutoCommit}" />
-        <property name="removeAbandoned" value="${connection.pools.slave.removeAbandoned}" />
-        <property name="removeAbandonedTimeout" value="${connection.pools.slave.removeAbandonedTimeout}" />
-        <property name="validationQuery" value="${connection.pools.slave.validationQuery}" />
+        <property name="username" value="${jdbc.slave.username}"/>
+        <property name="password" value="${jdbc.slave.password}"/>
+        <property name="driverClassName" value="${jdbc.slave.driver}"/>
+        <property name="maxActive" value="${connection.pools.slave.maxActive}"/>
+        <property name="maxIdle" value="${connection.pools.slave.maxIdle}"/>
+        <property name="maxWait" value="${connection.pools.slave.maxWait}"/>
+        <property name="defaultAutoCommit" value="${connection.pools.slave.defaultAutoCommit}"/>
+        <property name="removeAbandoned" value="${connection.pools.slave.removeAbandoned}"/>
+        <property name="removeAbandonedTimeout" value="${connection.pools.slave.removeAbandonedTimeout}"/>
+        <property name="validationQuery" value="${connection.pools.slave.validationQuery}"/>
     </bean>
 
     <bean id="dataSource" class="com.rainyalley.architecture.common.datasource.KeywordDataSourceRouter">
@@ -118,7 +118,7 @@
         </aop:aspect>
 
     </aop:config>
-    <bean id="pointContextCollectAspect"  class="com.rainyalley.architecture.common.aop.PointContextCollectAspect"/>
+    <bean id="pointContextCollectAspect" class="com.rainyalley.architecture.common.aop.PointContextCollectAspect"/>
     <bean id="loggerAspect" class="com.rainyalley.architecture.common.aop.LoggerAspect"/>
     <bean id="invokeCacheAspect" class="com.rainyalley.architecture.common.aop.InvokeCacheAspect">
         <property name="cacheProvider">

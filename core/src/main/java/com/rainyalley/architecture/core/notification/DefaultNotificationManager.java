@@ -6,11 +6,11 @@ import java.util.List;
 public class DefaultNotificationManager implements NotificationManager {
 
 
-    private List<Advisor> advisors = new ArrayList<Advisor>();
+    private final List<DefaultNotificationManager.Advisor> advisors = new ArrayList<DefaultNotificationManager.Advisor>();
 
-    private <E extends Event<?>> Advisor<E> get(Class<E> eventType){
-        for (Advisor advisor : advisors) {
-            if(advisor.eventType.equals(eventType)){
+    private <E extends Event<?>> DefaultNotificationManager.Advisor<E> get(Class<E> eventType) {
+        for (DefaultNotificationManager.Advisor advisor : this.advisors) {
+            if (advisor.eventType.equals(eventType)) {
                 return advisor;
             }
         }
@@ -26,10 +26,10 @@ public class DefaultNotificationManager implements NotificationManager {
      */
     @Override
     public <E extends Event<?>> void subscribe(Class<E> eventType, Observer<E> observer) {
-        Advisor<E> advisor = get(eventType);
-        if(advisor == null){
-            advisor = new Advisor<E>(eventType);
-            advisors.add(advisor);
+        DefaultNotificationManager.Advisor<E> advisor = this.get(eventType);
+        if (advisor == null) {
+            advisor = new DefaultNotificationManager.Advisor<E>(eventType);
+            this.advisors.add(advisor);
         }
 
         advisor.push(observer);
@@ -43,27 +43,27 @@ public class DefaultNotificationManager implements NotificationManager {
     @Override
     public <E extends Event<?>> void notify(E event) {
         Class<E> eventType = (Class<E>) event.getClass();
-        Advisor<E> advisor = get(eventType);
+        DefaultNotificationManager.Advisor<E> advisor = this.get(eventType);
         advisor.notify(event);
     }
 
 
-    private static class Advisor<T extends Event<?>>{
+    private static class Advisor<T extends Event<?>> {
 
-        private Class<T> eventType;
+        private final Class<T> eventType;
 
-        private List<Observer<T>> observerList = new ArrayList<Observer<T>>(4);
+        private final List<Observer<T>> observerList = new ArrayList<Observer<T>>(4);
 
         public Advisor(Class<T> eventType) {
             this.eventType = eventType;
         }
 
-        private void push(Observer<T> observer){
-            this.observerList.add(observer);
+        private void push(Observer<T> observer) {
+            observerList.add(observer);
         }
 
-        private void notify(T event){
-            for (Observer<T> observer : observerList) {
+        private void notify(T event) {
+            for (Observer<T> observer : this.observerList) {
                 observer.focus(event);
             }
         }

@@ -11,7 +11,7 @@ import javax.jms.TextMessage;
  * Created by sllx on 9/22/15.
  */
 @Component("responseConsumer")
-public class ResponseConsumer implements MessageListener{
+public class ResponseConsumer implements MessageListener {
 
     @Override
     public void onMessage(Message message) {

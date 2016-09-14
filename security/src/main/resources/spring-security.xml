@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
@@ -21,17 +21,18 @@
                 <security:user name="sharp" password="sharp" authorities="ROLE_TEST"/>
             </security:user-service>
         </security:authentication-provider>-->
-        <security:authentication-provider ref="casAuthenticationProvider" >
+        <security:authentication-provider ref="casAuthenticationProvider">
         </security:authentication-provider>
     </security:authentication-manager>
 
-    <bean id="casAuthenticationProvider" class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
-        <property name="userDetailsService" ref="userDetailsService" />
-        <property name="serviceProperties" ref="serviceProperties" />
+    <bean id="casAuthenticationProvider"
+          class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
+        <property name="userDetailsService" ref="userDetailsService"/>
+        <property name="serviceProperties" ref="serviceProperties"/>
         <property name="ticketValidator">
             <bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
                 <!-- cas 服务登录信息校验地址 -->
-                <constructor-arg index="0" value="http://localhost:8080/cas" />
+                <constructor-arg index="0" value="http://localhost:8080/cas"/>
             </bean>
         </property>
         <property name="key" value="rainyalley"/>
@@ -39,7 +40,7 @@
 
     <bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
         <!-- 登录完成回调地址 -->
-        <property name="service" value="http://localhost/login/cas" />
+        <property name="service" value="http://localhost/login/cas"/>
     </bean>
 
     <bean id="casAuthenticationEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
@@ -49,17 +50,17 @@
     </bean>
 
     <bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
-            <property name="dataSource" ref="dataSource"/>
-            <!-- 查询出的角色名称不添加前缀 -->
-            <property name="rolePrefix" value=""/>
-            <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
-            <property name="authoritiesByUsernameQuery"
-                      value="SELECT u.name as username,role.name as rolename FROM (select id,name FROM user WHERE name = ?) AS u
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 查询出的角色名称不添加前缀 -->
+        <property name="rolePrefix" value=""/>
+        <property name="usersByUsernameQuery" value="SELECT name,password,enabled FROM user WHERE name = ?"/>
+        <property name="authoritiesByUsernameQuery"
+                  value="SELECT u.name as username,role.name as rolename FROM (select id,name FROM user WHERE name = ?) AS u
                                 INNER JOIN user_role ON u.id = user_role.user_id
                                 INNER JOIN role ON user_role.role_id = role.id"/>
-            <property name="enableGroups" value="true"/>
-            <property name="groupAuthoritiesByUsernameQuery"
-                      value="SELECT colony.name as colonyname,colony.description as colonydesc,role.name as rolename FROM
+        <property name="enableGroups" value="true"/>
+        <property name="groupAuthoritiesByUsernameQuery"
+                  value="SELECT colony.name as colonyname,colony.description as colonydesc,role.name as rolename FROM
                                 (SELECT colony_id FROM (SELECT id FROM user WHERE name = ?) as u
                                 INNER JOIN user_colony ON u.id = user_colony.user_id) AS g
                                 INNER JOIN colony ON g.colony_id = colony.id
@@ -68,14 +69,15 @@
     </bean>
 
     <!-- 自定义拦截器 -->
-    <bean id="customFilterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+    <bean id="customFilterSecurityInterceptor"
+          class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
         <property name="securityMetadataSource" ref="customSecurityMetadataSource"/>
         <property name="observeOncePerRequest" value="false"/>
         <property name="accessDecisionManager" ref="customAccessDecisionManager"/>
     </bean>
 
     <!-- 决策管理器 -->
-    <bean id="customAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased" >
+    <bean id="customAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
         <property name="allowIfAllAbstainDecisions" value="false"/>
         <constructor-arg index="0">
             <list>
@@ -88,7 +90,8 @@
     </bean>
 
     <!-- 资源与角色关系数据 -->
-    <bean id="customSecurityMetadataSource" class="com.rainyalley.architecture.security.JitFilterInvocationSecurityMetadataSource">
+    <bean id="customSecurityMetadataSource"
+          class="com.rainyalley.architecture.security.JitFilterInvocationSecurityMetadataSource">
         <constructor-arg index="0">
             <ref bean="jdbcTemplate"/>
         </constructor-arg>

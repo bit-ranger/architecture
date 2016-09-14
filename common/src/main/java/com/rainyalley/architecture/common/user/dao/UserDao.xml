@@ -5,19 +5,19 @@
 <mapper namespace="com.rainyalley.architecture.common.user.dao.UserDao">
 
     <select id="select" resultType="com.rainyalley.architecture.common.user.model.entity.User">
-         select * from user
-         <where>
-             <if test="id!=null">id=#{id}</if>
-             <if test="name!=null">AND name=#{name}</if>
-             <if test="password!=null">AND password=#{password}</if>
-         </where>
+        select * from user
+        <where>
+            <if test="id!=null">id=#{id}</if>
+            <if test="name!=null">AND name=#{name}</if>
+            <if test="password!=null">AND password=#{password}</if>
+        </where>
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-         insert into user(name,password,enabled) values(#{name},#{password},TRUE)
+        insert into user(name,password,enabled) values(#{name},#{password},TRUE)
     </insert>
 
-    <delete id="delete" >
+    <delete id="delete">
         delete from user where id = #{id}
     </delete>
 

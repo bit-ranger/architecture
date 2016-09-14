@@ -13,9 +13,9 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class DefaultNotificationManagerTest {
 
-    private NotificationManager notificationManager = new DefaultNotificationManager();
-    private InternalObserver internalObserver = new InternalObserver();
-    private ExtendInternalObserver extendInternalObserver = new ExtendInternalObserver();
+    private final NotificationManager notificationManager = new DefaultNotificationManager();
+    private final DefaultNotificationManagerTest.InternalObserver internalObserver = new DefaultNotificationManagerTest.InternalObserver();
+    private final DefaultNotificationManagerTest.ExtendInternalObserver extendInternalObserver = new DefaultNotificationManagerTest.ExtendInternalObserver();
 
     @Before
     public void before() throws Exception {
@@ -26,55 +26,51 @@ public class DefaultNotificationManagerTest {
     }
 
     /**
-     *
      * Method: subscribe(Class<T> subjectType, Observer<T> internalObserver)
-     *
      */
     @Test
     public void testSubscribe() throws Exception {
-        notificationManager.subscribe(InternalEvent.class, internalObserver);
-        notificationManager.subscribe(ExtendInternalEvent.class, extendInternalObserver);
+        this.notificationManager.subscribe(DefaultNotificationManagerTest.InternalEvent.class, this.internalObserver);
+        this.notificationManager.subscribe(DefaultNotificationManagerTest.ExtendInternalEvent.class, this.extendInternalObserver);
     }
 
     /**
-     *
      * Method: notify(Event event, Object subject)
-     *
      */
     @Test
     public void testNotify() throws Exception {
-        testSubscribe();
-        notificationManager.notify(ExtendInternalEvent.TEST);
+        this.testSubscribe();
+        this.notificationManager.notify(DefaultNotificationManagerTest.ExtendInternalEvent.TEST);
 
 
-        Assert.assertNotNull(extendInternalObserver.event);
+        Assert.assertNotNull(this.extendInternalObserver.event);
     }
 
-    private static class InternalObserver implements Observer<InternalEvent>{
+    private static class InternalObserver implements Observer<DefaultNotificationManagerTest.InternalEvent> {
 
         private Event event;
 
         @Override
-        public void focus(InternalEvent event) {
+        public void focus(DefaultNotificationManagerTest.InternalEvent event) {
             this.event = event;
         }
     }
 
-    private static class ExtendInternalObserver implements Observer<ExtendInternalEvent>{
+    private static class ExtendInternalObserver implements Observer<DefaultNotificationManagerTest.ExtendInternalEvent> {
 
         private Event event;
 
         @Override
-        public void focus(ExtendInternalEvent event) {
+        public void focus(DefaultNotificationManagerTest.ExtendInternalEvent event) {
             this.event = event;
         }
 
     }
 
-    private static class InternalEvent implements Event<String>{
+    private static class InternalEvent implements Event<String> {
 
 
-        private String context;
+        private final String context;
 
         private InternalEvent(String context) {
             this.context = context;
@@ -82,12 +78,12 @@ public class DefaultNotificationManagerTest {
 
         @Override
         public String context() {
-            return context;
+            return this.context;
         }
     }
 
-    private static class ExtendInternalEvent extends InternalEvent{
-        private static final ExtendInternalEvent TEST = new ExtendInternalEvent("test");
+    private static class ExtendInternalEvent extends DefaultNotificationManagerTest.InternalEvent {
+        private static final DefaultNotificationManagerTest.ExtendInternalEvent TEST = new DefaultNotificationManagerTest.ExtendInternalEvent("test");
 
         public ExtendInternalEvent(String context) {
             super(context);

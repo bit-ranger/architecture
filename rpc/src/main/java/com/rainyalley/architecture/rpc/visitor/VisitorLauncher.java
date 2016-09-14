@@ -16,7 +16,7 @@ public class VisitorLauncher {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring-rpc-visitor.xml");
         context.start();
 
-        UserService userService = (UserService)context.getBean("remoteUserService"); // 获取远程服务代理
+        UserService userService = (UserService) context.getBean("remoteUserService"); // 获取远程服务代理
         List<User> users = userService.get(new User(), new Page());
 
         System.out.println(new ObjectMapper().writeValueAsString(users));

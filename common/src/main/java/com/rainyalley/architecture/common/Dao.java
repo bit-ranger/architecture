@@ -6,12 +6,14 @@ import java.util.Map;
 
 /**
  * 数据访问顶层接口
+ *
  * @param <T>
  */
 public interface Dao<T> {
 
     /**
      * 添加一个对象
+     *
      * @param obj 将被添加的对象
      * @return 受影响的对象个数
      */
@@ -19,6 +21,7 @@ public interface Dao<T> {
 
     /**
      * 删除一个对象
+     *
      * @param obj 将被删除的对象
      * @return 受影响的对象个数
      */
@@ -26,6 +29,7 @@ public interface Dao<T> {
 
     /**
      * 更新一个对象
+     *
      * @param obj 将被更新的对象
      * @return 受影响的对象个数
      */
@@ -33,7 +37,8 @@ public interface Dao<T> {
 
     /**
      * 获取一组对象
+     *
      * @return 对象列表
      */
-    List<T> select(Map<String,Object> params);
+    List<T> select(Map<String, Object> params);
 }

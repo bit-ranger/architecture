@@ -8,7 +8,7 @@ import javax.jms.Destination;
 
 
 @Component("messageProducer")
-public class MessageProducer{
+public class MessageProducer {
     private JmsTemplate jmsTemplate;
 
     @Resource(name = "queueDestination")
@@ -18,13 +18,13 @@ public class MessageProducer{
     private Destination topicDestination;
 
 
-    public void send(){
-        sendMessage(queueDestination, "this is a queue message!");
-        sendMessage(queueDestination, "this is a topic message!");
+    public void send() {
+        this.sendMessage(this.queueDestination, "this is a queue message!");
+        this.sendMessage(this.queueDestination, "this is a topic message!");
     }
 
-    public void sendMessage(Destination destination, final String message) {
-        jmsTemplate.convertAndSend(destination, message);
+    public void sendMessage(Destination destination, String message) {
+        this.jmsTemplate.convertAndSend(destination, message);
     }
 
     @Resource

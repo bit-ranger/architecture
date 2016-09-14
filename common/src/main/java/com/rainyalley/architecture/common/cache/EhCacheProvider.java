@@ -5,9 +5,9 @@ import net.sf.ehcache.Element;
 
 import java.util.MissingResourceException;
 
-public class EhCacheProvider implements CacheProvider{
+public class EhCacheProvider implements CacheProvider {
 
-    private Ehcache ehcache;
+    private final Ehcache ehcache;
 
     public EhCacheProvider(Ehcache ehcache) {
         this.ehcache = ehcache;
@@ -15,20 +15,20 @@ public class EhCacheProvider implements CacheProvider{
 
     @Override
     public boolean put(String key, Object value) {
-        ehcache.put(new Element(key, value));
+        this.ehcache.put(new Element(key, value));
         return true;
     }
 
     @Override
-    public <V> V get(String key, Class<V> type)  throws MissingResourceException{
+    public <V> V get(String key, Class<V> type) throws MissingResourceException {
         Element element = null;
-        try{
-             element = ehcache.get(key);
-        } catch (Exception e){
+        try {
+            element = this.ehcache.get(key);
+        } catch (Exception e) {
             throw new MissingResourceException("Cache missing", type.getName(), key);
         }
 
-        if(element == null){
+        if (element == null) {
             throw new MissingResourceException("Cache missing", type.getName(), key);
         }
 

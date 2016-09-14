@@ -15,6 +15,7 @@ import java.util.Set;
 /**
  * 实现了{@link Service}中所有方法的默认实现类
  * 该类可作为事务的通用实现
+ *
  * @param <T>
  */
 public abstract class ServiceBasicSupport<T> implements Service<T> {
@@ -27,11 +28,11 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     @Transactional
     public int save(T obj) {
         int count = 0;
-        List<T> pojoList = _get(obj, new Page());
-        if(pojoList == null || pojoList.isEmpty()){
-            count = dao.insert(obj);
-        }else{
-            count = dao.update(obj);
+        List<T> pojoList = this._get(obj, new Page());
+        if (pojoList == null || pojoList.isEmpty()) {
+            count = this.dao.insert(obj);
+        } else {
+            count = this.dao.update(obj);
         }
         return count;
     }
@@ -39,28 +40,28 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     @Override
     @Transactional
     public int remove(T obj) {
-        return dao.delete(obj);
+        return this.dao.delete(obj);
     }
 
     @Override
     @Transactional(readOnly = true)
     public T get(T obj) {
-        List<T> pojoList = _get(obj, new Page());
-        if(pojoList == null || pojoList.isEmpty()){
+        List<T> pojoList = this._get(obj, new Page());
+        if (pojoList == null || pojoList.isEmpty()) {
             return null;
         }
         return pojoList.get(0);
     }
 
     private List<T> _get(T obj, Page page) {
-        Map<String,Object> params = BeanMapConvertor.merge(obj, page);
-        return dao.select(params);
+        Map<String, Object> params = BeanMapConvertor.merge(obj, page);
+        return this.dao.select(params);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<T> get(T obj, Page page){
-        return _get(obj,page);
+    public List<T> get(T obj, Page page) {
+        return this._get(obj, page);
     }
 
     public void setDao(Dao<T> dao) {
@@ -74,22 +75,22 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
     protected final Validator validator() {
-        if(validator == null){
-            validator = Validation.buildDefaultValidatorFactory().getValidator();
+        if (this.validator == null) {
+            this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         }
-        return validator;
+        return this.validator;
     }
 
-    protected <T> void resolveConstraint(Set<ConstraintViolation<T>> result){
+    protected <T> void resolveConstraint(Set<ConstraintViolation<T>> result) {
         Assert.notNull(result);
-        if(result.size() > 0){
+        if (result.size() > 0) {
             StringBuilder message = new StringBuilder();
             Iterator<ConstraintViolation<T>> iterator = result.iterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 ConstraintViolation<T> constraint = iterator.next();
                 message.append(constraint.getPropertyPath()).append(" ");
                 message.append(constraint.getMessage());
-                if(iterator.hasNext()){
+                if (iterator.hasNext()) {
                     message.append(", ");
                 }
             }
@@ -97,7 +98,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
         }
     }
 
-    protected <T> void validate(T object, Class<?>... groups){
-        resolveConstraint(validator().validate(object, groups));
+    protected <T> void validate(T object, Class<?>... groups) {
+        this.resolveConstraint(this.validator().validate(object, groups));
     }
 }

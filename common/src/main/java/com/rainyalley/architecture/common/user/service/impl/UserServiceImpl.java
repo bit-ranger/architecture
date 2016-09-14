@@ -11,18 +11,18 @@ import javax.annotation.Resource;
 
 @Service("userService")
 public class UserServiceImpl extends ServiceBasicSupport<User> implements UserService {
-	private UserDao userDao;
+    private UserDao userDao;
 
     @Resource
-	public void setUserDao(UserDao userDao) {
-        setDao(userDao);
+    public void setUserDao(UserDao userDao) {
+        this.setDao(userDao);
         this.userDao = userDao;
-	}
+    }
 
 
     @Override
     public int save(User obj) {
-        validate(obj);
+        this.validate(obj);
 //        Md5PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
 //        passwordEncoder.setEncodeHashAsBase64(true);
 //        String encodedPasswrod = passwordEncoder.encodePassword(obj.getPassword(),obj.getName());
