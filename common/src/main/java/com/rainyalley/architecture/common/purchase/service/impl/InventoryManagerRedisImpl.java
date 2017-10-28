@@ -8,13 +8,23 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-
+/**
+ * 共有3个操作会修改库存值
+ * {@link #occupy(String, long)}
+ * {@link #release(String, long)}
+ * {@link #store(String)}
+ *
+ * occupy 与 release 都是通过原子增长实现，不会出现并发修改问题
+ * occupy 与 store 必须控制使其不会发生并发修改，即当库存为0时才能调用store,否则可能数据错误
+ * release 与 store 可能同时发生，需要考虑并发问题，通过竞争setNX模拟锁，实现串行化
+ */
 public class InventoryManagerRedisImpl  implements InventoryManager {
 
-    private ExecutorService executorService =  Executors.newCachedThreadPool();
+    private ScheduledExecutorService scheduledExecutorService =  Executors.newScheduledThreadPool(1);
 
     private ShardedJedisPool pool;
 	
@@ -49,22 +59,16 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             return new OccupyResult(entityId, occupyNum, 0, OccupyResult.FailureCause.UNDER_STOCK);
         }
 
+
         final String inventoryKey = inventoryKey(entityId);
 
         ShardedJedis client = null;
         try {
             client = pool.getResource();
-            //设置库存
+
             inventory = client.decrBy(inventoryKey, occupyNum);
 
-
-            if(inventory == 0){
-                bgStore(entityId);
-            } else if(inventory < 0) {
-                //表示第一个超出库存的线程
-                if(-occupyNum < inventory){
-                    bgStore(entityId);
-                }
+            if(inventory < 0) {
                 return new OccupyResult(entityId, occupyNum, 0, OccupyResult.FailureCause.UNDER_STOCK);
             }
 
@@ -85,39 +89,67 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             return true;
         }
 
-        final String inventoryKey = inventoryKey(entityId);
         ShardedJedis client = null;
-        String lockOwner = "release";
         try {
-            client = pool.getResource();
-            if(!hasLock(entityId, lockOwner)){
-                boolean locked = lock(entityId, lockOwner);
-                if(!locked){
-                    return false;
-                }
-            }
 
-            client.decrBy(inventoryKey, releaseNum);
-            return true;
+
+            final String inventoryKey = inventoryKey(entityId);
+            client = pool.getResource();
+            final Long inventory = _get(client, entityId);
+            if(inventory == null){
+                return false;
+            } else if(inventory < 0){
+                String lockOwner = "release";
+                try {
+                    if(!lock(entityId, lockOwner)){return false;}
+                    final Long iven = _get(client, entityId);
+                    if(iven == null){
+                        return false;
+                    } else if(iven < 0){
+                        client.set(inventoryKey, String.valueOf(releaseNum));
+                        return true;
+                    } else {
+                        client.incrBy(inventoryKey, releaseNum);
+                        return true;
+                    }
+                } finally {
+                    unLock(entityId, lockOwner);
+                }
+            } else {
+                client.incrBy(inventoryKey, releaseNum);
+                return true;
+            }
         } catch (Exception e) {
             LOGGER.error("store failed:" + entityId, e);
             return false;
         } finally {
-            unLock(entityId, lockOwner);
             if(client != null){
                 client.close();
             }
         }
     }
 
-    private void bgStore(final String entityId) {
-        executorService.submit(new Runnable() {
+    /**
+     * 异步重置库存
+     * @param entityId
+     */
+    private void asyncStore(final String entityId, final long seconds) {
+        scheduledExecutorService.schedule(new Runnable() {
             @Override
             public void run() {
-                store(entityId);
+                try {
+                    boolean success = store(entityId);
+                    if(!success){
+                        asyncStore(entityId, seconds * 2);
+                    }
+                } catch (Exception e) {
+                    asyncStore(entityId, seconds * 2);
+                }
+
             }
-        });
+        }, seconds, TimeUnit.SECONDS);
     }
+
 
     /**
      * 检查锁
@@ -126,9 +158,9 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
      * @return
      */
     private boolean hasLock(final String entityId, final String owner){
-        final String inventoryLock = inventoryLockKey(entityId);
         ShardedJedis client = null;
         try {
+            final String inventoryLock = inventoryLockKey(entityId);
             client = pool.getResource();
             String value = client.get(inventoryLock);
             return owner.equals(value);
@@ -148,9 +180,9 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
      * @param owner
      */
     private boolean tryLock(final String entityId, final String owner){
-        final String inventoryLock = inventoryLockKey(entityId);
         ShardedJedis client = null;
         try {
+            final String inventoryLock = inventoryLockKey(entityId);
             client = pool.getResource();
             Long status = client.setnx(inventoryLock, owner);
             client.expire(inventoryLock, 10);
@@ -171,22 +203,23 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
      * @param owner
      */
     private boolean lock(final String entityId, final String owner){
-        final String inventoryLock = inventoryLockKey(entityId);
         ShardedJedis client = null;
+        String inventoryLock = null;
         try {
+            inventoryLock = inventoryLockKey(entityId);
             client = pool.getResource();
-            for(;;){
+            for(int i=0; i<30; i++){
                 Long status = client.setnx(inventoryLock, owner);
                 if(Long.valueOf(1).equals(status)){
-                    break;
+                    client.expire(inventoryLock, 10);
+                    return true;
                 }
                 Thread.sleep(100);
             }
-            client.expire(inventoryLock, 10);
-            return true;
+            return false;
         } catch (Exception e) {
             LOGGER.error("lock failed:" + entityId, e);
-            if(client != null){
+            if(client != null && inventoryLock != null){
                 try {
                     client.del(inventoryLock);
                 } catch (Exception e1) {
@@ -206,18 +239,20 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
      * @param entityId
      * @param owner
      */
-    private void unLock(final String entityId, final String owner){
+    private boolean unLock(final String entityId, final String owner){
         final String inventoryLock = inventoryLockKey(entityId);
         ShardedJedis client = null;
         try {
             client = pool.getResource();
             String value = client.get(inventoryLock);
             if(!owner.equals(value)){
-                return;
+                return true;
             }
             client.del(inventoryLock);
+            return true;
         } catch (Exception e) {
             LOGGER.error("unLock failed:" + entityId, e);
+            return false;
         } finally {
             if(client != null){
                 client.close();
@@ -228,7 +263,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
 
     @Override
-    public void store(final String entityId){
+    public boolean store(final String entityId){
         final String inventoryKey = inventoryKey(entityId);
         ShardedJedis client = null;
         String lockOwner = "store";
@@ -237,13 +272,15 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             if(!hasLock(entityId, lockOwner)){
                 boolean locked = lock(entityId, lockOwner);
                 if(!locked){
-                    return;
+                    return false;
                 }
             }
             long loadedInventory = loader.load(entityId);
             client.set(inventoryKey, String.valueOf(loadedInventory));
+            return true;
         } catch (Exception e) {
             LOGGER.error("store failed:" + entityId, e);
+            return false;
         } finally {
             unLock(entityId, lockOwner);
             if(client != null){
@@ -252,33 +289,42 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         }
     }
 
+
+    private Long _get(ShardedJedis client, String entityId){
+        final String inventoryKey = inventoryKey(entityId);
+        String inventory = client.get(inventoryKey);
+        if(inventory == null){
+            return null;
+        }
+
+        return Long.valueOf(inventory);
+    }
+
     @Override
     public long get(String entityId) {
-        final String inventoryKey = inventoryKey(entityId);
+
         ShardedJedis client = null;
 
         try {
             client = pool.getResource();
-            //设置库存
-            String inventory = client.get(inventoryKey);
+            Long inventory = _get(client, entityId);
             if(inventory == null){
                 return 0;
             }
 
-            long inve = Long.valueOf(inventory);
-            if(inve < 0){
+            if(inventory < 0){
                 return 0;
             }
 
-            return inve;
+            return inventory;
         } catch (Exception e) {
             LOGGER.error("get failed:" + entityId, e);
+            return 0;
         } finally {
             if(client != null){
                 client.close();
             }
         }
-        return 0;
     }
 
     /**
@@ -287,13 +333,12 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
      * @return
      */
     private String inventoryKey(String entityId){
-        return redisKeyPrefix + ":" + entityId;
+        return redisKeyPrefix + "inventory:" + entityId;
     }
 
     private String inventoryLockKey(String entityId){
         return redisKeyPrefix + ":lock:" + entityId;
     }
-
 
     public void setPool(ShardedJedisPool pool) {
         this.pool = pool;

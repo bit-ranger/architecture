@@ -10,7 +10,7 @@ public interface InventoryManager {
      * @param entityId 商品ID
      * @return
      */
-    void store(final String entityId);
+    boolean store(final String entityId);
 
     /**
      * 获取库存值
