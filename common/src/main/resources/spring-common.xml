@@ -10,7 +10,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-    <context:property-placeholder location="classpath:environment.properties"/>
+    <context:property-placeholder location="classpath:environment.properties,redis.properties"/>
 
     <context:component-scan base-package="com.rainyalley.architecture.common.user.service" use-default-filters="false">
         <!-- 扫描符合@Service的类 -->
@@ -74,6 +74,34 @@
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${redis.max_total}" />
+        <property name="minIdle" value="${redis.min_idle}" />
+        <property name="maxIdle" value="${redis.max_idle}" />
+        <property name="maxWaitMillis" value="${redis.max_wait}" />
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+        <property name="testOnReturn" value="${redis.testOnReturn}" />
+        <property name="testWhileIdle" value="${redis.testWhileIdle}" />
+    </bean>
+
+
+    <bean id="jedisPool" class="redis.clients.jedis.ShardedJedisPool">
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg index="1">
+            <list>
+                <bean class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg index="0" value="${redis.shard.1.ip}"/>
+                    <constructor-arg index="1" value="${redis.shard.1.port}"/>
+                </bean>
+                <bean class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg index="0" value="${redis.shard.2.ip}"/>
+                    <constructor-arg index="1" value="${redis.shard.2.port}"/>
+                </bean>
+            </list>
+        </constructor-arg>
     </bean>
 
 

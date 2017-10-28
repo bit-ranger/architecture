@@ -74,6 +74,12 @@
         </dependency>
 
         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.rainyalley.architecture</groupId>
             <artifactId>core</artifactId>
             <exclusions>
