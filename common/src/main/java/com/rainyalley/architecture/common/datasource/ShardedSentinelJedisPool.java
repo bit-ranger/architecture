@@ -1,0 +1,23 @@
+package com.rainyalley.architecture.common.datasource;
+
+import redis.clients.util.Pool;
+
+import java.util.List;
+
+
+public class ShardedSentinelJedisPool extends Pool<ShardedSentinelJedis> {
+
+    private List<JedisShardSentinelInfo> jedisShardSentinelInfoList;
+
+    private ShardedSentinelJedis shardedSentinelJedis;
+
+    public ShardedSentinelJedisPool(List<JedisShardSentinelInfo> jedisShardSentinelInfoList) {
+        this.jedisShardSentinelInfoList = jedisShardSentinelInfoList;
+
+        shardedSentinelJedis = new ShardedSentinelJedis(jedisShardSentinelInfoList);
+    }
+
+    public ShardedSentinelJedis getResource() {
+        return shardedSentinelJedis;
+    }
+}
