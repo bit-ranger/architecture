@@ -42,4 +42,18 @@ public interface InventoryManager {
      */
     boolean release(String entityId, long releaseNum);
 
+    /**
+     * 标记不准确
+     * @param entityId
+     * @return
+     */
+    boolean markInaccurate(String entityId);
+
+    /**
+     * 状态变化
+     * @param entityId
+     * @return
+     */
+    boolean statusChanged(String entityId);
+
 }

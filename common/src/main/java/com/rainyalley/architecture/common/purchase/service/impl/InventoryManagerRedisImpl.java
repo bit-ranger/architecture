@@ -9,10 +9,6 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 /**
  * 共有3个操作会修改库存值
  * {@link #occupy(String, long)}
@@ -24,8 +20,6 @@ import java.util.concurrent.TimeUnit;
  * release 与 store 不会发生并发修改，所有订单处于最终状态时才调用store
  */
 public class InventoryManagerRedisImpl  implements InventoryManager {
-
-    private ScheduledExecutorService scheduledExecutorService =  Executors.newScheduledThreadPool(1);
 
     private ShardedJedisPool pool;
 	
@@ -69,19 +63,13 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
             inventory = client.decrBy(inventoryKey, occupyNum);
 
-            //当减扣到临界值时开启一个异步任务
-            //从此刻以后的所有请求，编写业务时，需要保证不会产生新订单
-            //异步任务将检查所有订单，如果所有订单处于最终状态，将会重置库存
-            if(inventory == 0 || (-occupyNum < inventory && inventory < 0)){
-                asyncStore(entityId, 30);
-            }
-
             if(inventory < 0) {
                 return new OccupyResult(entityId, occupyNum, 0, OccupyResult.FailureCause.UNDER_STOCK);
             }
 
             return new OccupyResult(entityId, occupyNum, inventory);
         } catch (Exception e) {
+            markInaccurate(entityId);
             LOGGER.error("occupy failed:" + entityId, e);
             return new OccupyResult(entityId, occupyNum, 0, OccupyResult.FailureCause.UNKNOWN_ERROR);
         } finally {
@@ -138,33 +126,6 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         }
     }
 
-    /**
-     * 异步重置库存
-     * @param entityId
-     */
-    private void asyncStore(final String entityId, final long seconds) {
-        scheduledExecutorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    boolean isFinalStatus = loader.isFinalStatus(entityId);
-                    if(!isFinalStatus){
-                        asyncStore(entityId, seconds * 2);
-                        return;
-                    }
-
-                    boolean success = store(entityId);
-                    if(!success){
-                        asyncStore(entityId, seconds * 2);
-                    }
-                } catch (Exception e) {
-                    asyncStore(entityId, seconds * 2);
-                }
-
-            }
-        }, seconds, TimeUnit.SECONDS);
-    }
-
 
     @Override
     public boolean store(final String entityId){
@@ -201,8 +162,8 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
             long loadedInventory = loader.load(entityId);
             client = pool.getResource();
-            client.set(inventoryKey, String.valueOf(loadedInventory));
-            return true;
+            Long status = client.setnx(inventoryKey, String.valueOf(loadedInventory));
+            return Long.valueOf(1).equals(status);
         } catch (Exception e) {
             LOGGER.error("store failed:" + entityId, e);
             return false;
@@ -252,6 +213,89 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         }
     }
 
+    private boolean isInaccurate(String entityId){
+        String key = redisKeyPrefix + ":inaccurate:" + entityId;
+        ShardedJedis client = null;
+        try {
+            client = pool.getResource();
+            String value = client.get(key);
+            return String.valueOf(1).equals(value);
+        } catch (Exception e) {
+            LOGGER.error("isInaccurate failed:" + entityId, e);
+            return false;
+        } finally {
+            if(client != null){
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean markInaccurate(String entityId){
+        String key = redisKeyPrefix + ":inaccurate:" + entityId;
+        ShardedJedis client = null;
+        try {
+            client = pool.getResource();
+            Long status = client.setnx(key, "1");
+            return Long.valueOf(1).equals(status);
+        } catch (Exception e) {
+            LOGGER.error("markInaccurate failed:" + entityId, e);
+            return false;
+        } finally {
+            if(client != null){
+                client.close();
+            }
+        }
+    }
+
+    private boolean clearInaccurate(String entityId){
+        String key = redisKeyPrefix + ":inaccurate:" + entityId;
+        ShardedJedis client = null;
+        try {
+            client = pool.getResource();
+            Long num = client.del(key);
+            return num > 0;
+        } catch (Exception e) {
+            LOGGER.error("markInaccurate failed:" + entityId, e);
+            return false;
+        } finally {
+            if(client != null){
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean statusChanged(String entityId){
+        try {
+            long inventory = get(entityId);
+            if(inventory > 0){
+                return true;
+            }
+
+            boolean isInaccurate = isInaccurate(entityId);
+            if(!isInaccurate){
+                return true;
+            }
+
+            boolean isFinalStatus = loader.isFinalStatus(entityId);
+            if(!isFinalStatus){
+                return true;
+            }
+
+            boolean success = store(entityId);
+            if(!success){
+                return false;
+            }
+
+            return clearInaccurate(entityId);
+        } catch (Exception e) {
+            LOGGER.error("orderStatusChanged failed:" + entityId, e);
+            return false;
+        }
+
+    }
+
     /**
      * 构造redis库存的key
      * @param entityId
@@ -265,8 +309,10 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         return redisKeyPrefix + ":lock:" + entityId;
     }
 
+    @Override
     public void setPool(ShardedJedisPool pool) {
         this.pool = pool;
         this.lock = new ShardedRedisLock(pool);
     }
+
 }
