@@ -9,7 +9,8 @@ public class JedisShardSentinelInfo extends ShardInfo<JedisSentinelPool> {
 
     private String shardName;
 
-    public JedisShardSentinelInfo(JedisSentinelPool jedisSentinelPool, String shardName){
+    public JedisShardSentinelInfo(JedisSentinelPool jedisSentinelPool, String shardName, int weight){
+        super(weight);
         this.jedisSentinelPool = jedisSentinelPool;
         this.shardName = shardName;
     }

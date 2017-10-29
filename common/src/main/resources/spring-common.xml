@@ -88,22 +88,24 @@
     </bean>
 
     <bean id="jedisShardSentinel1" class="redis.clients.jedis.JedisSentinelPool">
-        <constructor-arg index="0" value="shardMaster1"/>
+        <constructor-arg index="0" value="shard01"/>
         <constructor-arg index="1">
             <set>
-                <value>127.0.0.1:10001</value>
-                <value>127.0.0.1:10002</value>
+                <value>127.0.0.1:26379</value>
+                <value>127.0.0.1:26380</value>
+                <value>127.0.0.1:26381</value>
             </set>
         </constructor-arg>
         <constructor-arg index="2" ref="jedisPoolConfig"/>
     </bean>
 
     <bean id="jedisShardSentinel2" class="redis.clients.jedis.JedisSentinelPool">
-        <constructor-arg index="0" value="shardMaster2"/>
+        <constructor-arg index="0" value="shard02"/>
         <constructor-arg index="1">
             <set>
-                <value>127.0.0.1:20001</value>
-                <value>127.0.0.1:20002</value>
+                <value>127.0.0.1:26379</value>
+                <value>127.0.0.1:26380</value>
+                <value>127.0.0.1:26381</value>
             </set>
         </constructor-arg>
         <constructor-arg index="2" ref="jedisPoolConfig"/>
@@ -116,10 +118,12 @@
                     <bean class="com.rainyalley.architecture.common.datasource.JedisShardSentinelInfo">
                         <constructor-arg index="0" ref="jedisShardSentinel1"/>
                         <constructor-arg index="1" value="shard1"/>
+                        <constructor-arg index="2" value="100"/>
                     </bean>
                     <bean class="com.rainyalley.architecture.common.datasource.JedisShardSentinelInfo">
                         <constructor-arg index="0" ref="jedisShardSentinel2"/>
                         <constructor-arg index="1" value="shard2"/>
+                        <constructor-arg index="2" value="100"/>
                     </bean>
                 </list>
         </constructor-arg>
