@@ -13,6 +13,13 @@ public interface InventoryManager {
     boolean store(final String entityId);
 
     /**
+     * 如果库存不存在，则加载库存，否则无操作
+     * @param entityId
+     * @return true 加载了库存
+     */
+    boolean storeIfNX(final String entityId);
+
+    /**
      * 获取库存值
      * @param entityId 商品ID
      * @return
