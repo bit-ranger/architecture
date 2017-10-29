@@ -1,18 +1,17 @@
 package com.rainyalley.architecture.common.datasource;
 
 import redis.clients.jedis.JedisSentinelPool;
-import redis.clients.jedis.JedisShardInfo;
 import redis.clients.util.ShardInfo;
 
 public class JedisShardSentinelInfo extends ShardInfo<JedisSentinelPool> {
 
     private JedisSentinelPool jedisSentinelPool;
 
-    private JedisShardInfo jedisShardInfo;
+    private String shardName;
 
-    public JedisShardSentinelInfo(JedisSentinelPool jedisSentinelPool, JedisShardInfo jedisShardInfo){
+    public JedisShardSentinelInfo(JedisSentinelPool jedisSentinelPool, String shardName){
         this.jedisSentinelPool = jedisSentinelPool;
-        this.jedisShardInfo = jedisShardInfo;
+        this.shardName = shardName;
     }
 
 
@@ -23,6 +22,6 @@ public class JedisShardSentinelInfo extends ShardInfo<JedisSentinelPool> {
 
     @Override
     public String getName() {
-        return jedisShardInfo.getName();
+        return shardName;
     }
 }

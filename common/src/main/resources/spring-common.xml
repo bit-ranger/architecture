@@ -87,20 +87,41 @@
         <property name="testWhileIdle" value="${redis.testWhileIdle}" />
     </bean>
 
-
-    <bean id="jedisPool" class="redis.clients.jedis.ShardedJedisPool">
-        <constructor-arg index="0" ref="jedisPoolConfig" />
+    <bean id="jedisShardSentinel1" class="redis.clients.jedis.JedisSentinelPool">
+        <constructor-arg index="0" value="shardMaster1"/>
         <constructor-arg index="1">
-            <list>
-                <bean class="redis.clients.jedis.JedisShardInfo">
-                    <constructor-arg index="0" value="${redis.shard.1.ip}"/>
-                    <constructor-arg index="1" value="${redis.shard.1.port}"/>
-                </bean>
-                <bean class="redis.clients.jedis.JedisShardInfo">
-                    <constructor-arg index="0" value="${redis.shard.2.ip}"/>
-                    <constructor-arg index="1" value="${redis.shard.2.port}"/>
-                </bean>
-            </list>
+            <set>
+                <value>127.0.0.1:10001</value>
+                <value>127.0.0.1:10002</value>
+            </set>
+        </constructor-arg>
+        <constructor-arg index="2" ref="jedisPoolConfig"/>
+    </bean>
+
+    <bean id="jedisShardSentinel2" class="redis.clients.jedis.JedisSentinelPool">
+        <constructor-arg index="0" value="shardMaster2"/>
+        <constructor-arg index="1">
+            <set>
+                <value>127.0.0.1:20001</value>
+                <value>127.0.0.1:20002</value>
+            </set>
+        </constructor-arg>
+        <constructor-arg index="2" ref="jedisPoolConfig"/>
+    </bean>
+
+
+    <bean id="shardedSentinelJedisPool" class="com.rainyalley.architecture.common.datasource.ShardedSentinelJedisPool">
+        <constructor-arg index="0" >
+                <list>
+                    <bean class="com.rainyalley.architecture.common.datasource.JedisShardSentinelInfo">
+                        <constructor-arg index="0" ref="jedisShardSentinel1"/>
+                        <constructor-arg index="1" value="shard1"/>
+                    </bean>
+                    <bean class="com.rainyalley.architecture.common.datasource.JedisShardSentinelInfo">
+                        <constructor-arg index="0" ref="jedisShardSentinel2"/>
+                        <constructor-arg index="1" value="shard2"/>
+                    </bean>
+                </list>
         </constructor-arg>
     </bean>
 
