@@ -28,15 +28,15 @@
     </properties>
 
     <profiles>
-        <!--<profile>-->
-            <!--<id>development</id>-->
-            <!--<properties>-->
-                <!--<profiles.env>development</profiles.env>-->
-            <!--</properties>-->
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
-        <!--</profile>-->
+        <profile>
+            <id>development</id>
+            <properties>
+                <profiles.env>development</profiles.env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
 
         <profile>
             <id>production</id>
@@ -58,7 +58,8 @@
                 <directory>src/main/resources</directory>
                 <!-- 资源根目录排除各环境的配置，使用单独的资源目录来指定 -->
                 <excludes>
-                    <exclude>*</exclude>
+                    <exclude>/production/*</exclude>
+                    <exclude>/development/*</exclude>
                 </excludes>
             </resource>
             <resource>
@@ -224,7 +225,7 @@
             <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
-                <version>1.6.12</version>
+                <version>1.8.9</version>
             </dependency>
 
             <dependency>
