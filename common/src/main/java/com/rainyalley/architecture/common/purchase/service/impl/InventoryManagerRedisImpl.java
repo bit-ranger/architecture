@@ -309,7 +309,6 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         return redisKeyPrefix + ":lock:" + entityId;
     }
 
-    @Override
     public void setPool(ShardedJedisPool pool) {
         this.pool = pool;
         this.lock = new ShardedRedisLock(pool);
