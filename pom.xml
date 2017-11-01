@@ -18,6 +18,7 @@
         <module>webapp-user</module>
         <module>webservice-user</module>
         <module>search</module>
+        <module>jedis-sharding-sentinel</module>
     </modules>
 
     <properties>
@@ -285,6 +286,13 @@
                 <artifactId>common</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.rainyalley.architecture</groupId>
+                <artifactId>jedis-sharding-sentinel</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.rainyalley.architecture</groupId>
                 <artifactId>security</artifactId>

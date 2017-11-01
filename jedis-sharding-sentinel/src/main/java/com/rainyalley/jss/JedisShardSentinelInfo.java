@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.common.datasource;
+package com.rainyalley.jss;
 
 import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.util.ShardInfo;

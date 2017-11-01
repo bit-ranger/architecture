@@ -74,10 +74,9 @@
         </dependency>
 
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
+            <groupId>com.rainyalley.architecture</groupId>
+            <artifactId>jedis-sharding-sentinel</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>com.rainyalley.architecture</groupId>

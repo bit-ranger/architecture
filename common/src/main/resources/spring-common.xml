@@ -112,15 +112,15 @@
     </bean>
 
 
-    <bean id="shardedSentinelJedisPool" class="com.rainyalley.architecture.common.datasource.ShardedSentinelJedisPool">
+    <bean id="shardedSentinelJedisPool" class="com.rainyalley.jss.ShardedSentinelJedisPool">
         <constructor-arg index="0" >
                 <list>
-                    <bean class="com.rainyalley.architecture.common.datasource.JedisShardSentinelInfo">
+                    <bean class="com.rainyalley.jss.JedisShardSentinelInfo">
                         <constructor-arg index="0" ref="jedisShardSentinel1"/>
                         <constructor-arg index="1" value="shard1"/>
                         <constructor-arg index="2" value="100"/>
                     </bean>
-                    <bean class="com.rainyalley.architecture.common.datasource.JedisShardSentinelInfo">
+                    <bean class="com.rainyalley.jss.JedisShardSentinelInfo">
                         <constructor-arg index="0" ref="jedisShardSentinel2"/>
                         <constructor-arg index="1" value="shard2"/>
                         <constructor-arg index="2" value="100"/>
