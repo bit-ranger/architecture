@@ -19,6 +19,7 @@
         <module>webservice-user</module>
         <module>search</module>
         <module>jedis-sharding-sentinel</module>
+        <module>jedis-ss</module>
     </modules>
 
     <properties>

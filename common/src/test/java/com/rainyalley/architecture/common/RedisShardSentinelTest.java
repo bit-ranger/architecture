@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.common;
 
-import com.rainyalley.architecture.common.datasource.ShardedSentinelJedis;
-import com.rainyalley.architecture.common.datasource.ShardedSentinelJedisPool;
+import com.rainyalley.jedis.ss.ShardedSentinelJedis;
+import com.rainyalley.jedis.ss.ShardedSentinelJedisPool;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;

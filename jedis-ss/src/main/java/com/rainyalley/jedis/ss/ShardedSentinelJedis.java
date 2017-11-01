@@ -1,4 +1,4 @@
-package com.rainyalley.jss;
+package com.rainyalley.jedis.ss;
 
 import redis.clients.jedis.*;
 import redis.clients.jedis.params.geo.GeoRadiusParam;
