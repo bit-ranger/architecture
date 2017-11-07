@@ -74,8 +74,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.rainyalley.architecture</groupId>
-            <artifactId>jedis-sharding-sentinel</artifactId>
+            <groupId>com.rainyalley</groupId>
+            <artifactId>jedis-shard-shentinel</artifactId>
         </dependency>
 
         <dependency>

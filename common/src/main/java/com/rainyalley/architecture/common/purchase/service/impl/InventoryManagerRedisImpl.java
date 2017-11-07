@@ -2,12 +2,13 @@ package com.rainyalley.architecture.common.purchase.service.impl;
 
 import com.rainyalley.architecture.common.purchase.service.InventoryLoader;
 import com.rainyalley.architecture.common.purchase.service.InventoryManager;
-import com.rainyalley.architecture.common.purchase.service.Lock;
 import com.rainyalley.architecture.common.purchase.service.model.entity.OccupyResult;
+import com.rainyalley.jss.ShardedSentinelJedis;
+import com.rainyalley.jss.ShardedSentinelJedisPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPool;
+
+import java.util.Arrays;
 
 /**
  * 共有3个操作会修改库存值
@@ -21,7 +22,7 @@ import redis.clients.jedis.ShardedJedisPool;
  */
 public class InventoryManagerRedisImpl  implements InventoryManager {
 
-    private ShardedJedisPool pool;
+    private ShardedSentinelJedisPool pool;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(InventoryManagerRedisImpl.class);
 	
@@ -29,11 +30,21 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
     private InventoryLoader loader;
 
-    private Lock lock;
+    private String inventoryReleaseScript =
+            "local currNum = redis.call('get', KEYS[1])\n" +
+            "if (currNum == nil or currNum < 0) then\n" +
+            "    redis.call('set',KEYS[1],ARGV[1])\n" +
+            "    return ARGV[1]\n" +
+            "end\n" +
+            "return redis.call('incrby',KEYS[1], ARGV[1])\n";
 
-    public InventoryManagerRedisImpl(String redisKeyPrefix, InventoryLoader loader){
+    private String inventoryReleaseScriptSha;
+
+    public InventoryManagerRedisImpl(String redisKeyPrefix, InventoryLoader loader, ShardedSentinelJedisPool pool){
         this.redisKeyPrefix = redisKeyPrefix;
         this.loader = loader;
+        this.pool = pool;
+        inventoryReleaseScriptSha = pool.getResource().scriptLoad(inventoryReleaseScript);
     }
 
     /**
@@ -57,7 +68,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
         final String inventoryKey = inventoryKey(entityId);
 
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
         try {
             client = pool.getResource();
 
@@ -69,7 +80,6 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
             return new OccupyResult(entityId, occupyNum, inventory);
         } catch (Exception e) {
-            markInaccurate(entityId);
             LOGGER.error("occupy failed:" + entityId, e);
             return new OccupyResult(entityId, occupyNum, 0, OccupyResult.FailureCause.UNKNOWN_ERROR);
         } finally {
@@ -85,37 +95,12 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             return true;
         }
 
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
         try {
-
-
             final String inventoryKey = inventoryKey(entityId);
             client = pool.getResource();
-            final Long inventory = _get(client, entityId);
-            if(inventory == null){
-                return false;
-            } else if(inventory < 0){
-                String lockOwner = "release";
-                String lockKey = inventoryLockKey(entityId);
-                try {
-                    if(!lock.lock(lockKey, lockOwner)){return false;}
-                    final Long iven = _get(client, entityId);
-                    if(iven == null){
-                        return false;
-                    } else if(iven < 0){
-                        client.set(inventoryKey, String.valueOf(releaseNum));
-                        return true;
-                    } else {
-                        client.incrBy(inventoryKey, releaseNum);
-                        return true;
-                    }
-                } finally {
-                    lock.unLock(lockKey, lockOwner);
-                }
-            } else {
-                client.incrBy(inventoryKey, releaseNum);
-                return true;
-            }
+            client.evalsha(inventoryReleaseScriptSha, Arrays.asList(inventoryKey), Arrays.asList(String.valueOf(releaseNum)));
+            return true;
         } catch (Exception e) {
             LOGGER.error("store failed:" + entityId, e);
             return false;
@@ -125,12 +110,13 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             }
         }
     }
+    
 
 
     @Override
     public boolean store(final String entityId){
         final String inventoryKey = inventoryKey(entityId);
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
         String lockOwner = "store";
         String lockKey = inventoryLockKey(entityId);
         try {
@@ -154,7 +140,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
     @Override
     public boolean storeIfNX(String entityId) {
         final String inventoryKey = inventoryKey(entityId);
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
         String lockOwner = "storeIfNX";
         String lockKey = inventoryLockKey(entityId);
         try {
@@ -176,7 +162,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
     }
 
 
-    private Long _get(ShardedJedis client, String entityId){
+    private Long _get(ShardedSentinelJedis client, String entityId){
         final String inventoryKey = inventoryKey(entityId);
         String inventory = client.get(inventoryKey);
         if(inventory == null){
@@ -189,7 +175,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
     @Override
     public long get(String entityId) {
 
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
 
         try {
             client = pool.getResource();
@@ -215,7 +201,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
     private boolean isInaccurate(String entityId){
         String key = redisKeyPrefix + ":inaccurate:" + entityId;
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
         try {
             client = pool.getResource();
             String value = client.get(key);
@@ -230,27 +216,9 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         }
     }
 
-    @Override
-    public boolean markInaccurate(String entityId){
-        String key = redisKeyPrefix + ":inaccurate:" + entityId;
-        ShardedJedis client = null;
-        try {
-            client = pool.getResource();
-            Long status = client.setnx(key, "1");
-            return Long.valueOf(1).equals(status);
-        } catch (Exception e) {
-            LOGGER.error("markInaccurate failed:" + entityId, e);
-            return false;
-        } finally {
-            if(client != null){
-                client.close();
-            }
-        }
-    }
-
     private boolean clearInaccurate(String entityId){
         String key = redisKeyPrefix + ":inaccurate:" + entityId;
-        ShardedJedis client = null;
+        ShardedSentinelJedis client = null;
         try {
             client = pool.getResource();
             Long num = client.del(key);
@@ -265,36 +233,6 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
         }
     }
 
-    @Override
-    public boolean statusChanged(String entityId){
-        try {
-            long inventory = get(entityId);
-            if(inventory > 0){
-                return true;
-            }
-
-            boolean isInaccurate = isInaccurate(entityId);
-            if(!isInaccurate){
-                return true;
-            }
-
-            boolean isFinalStatus = loader.isFinalStatus(entityId);
-            if(!isFinalStatus){
-                return true;
-            }
-
-            boolean success = store(entityId);
-            if(!success){
-                return false;
-            }
-
-            return clearInaccurate(entityId);
-        } catch (Exception e) {
-            LOGGER.error("orderStatusChanged failed:" + entityId, e);
-            return false;
-        }
-
-    }
 
     /**
      * 构造redis库存的key
@@ -307,11 +245,6 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
     private String inventoryLockKey(String entityId){
         return redisKeyPrefix + ":lock:" + entityId;
-    }
-
-    public void setPool(ShardedJedisPool pool) {
-        this.pool = pool;
-        this.lock = new ShardedRedisLock(pool);
     }
 
 }

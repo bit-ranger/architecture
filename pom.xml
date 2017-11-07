@@ -289,9 +289,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.rainyalley.architecture</groupId>
-                <artifactId>jedis-sharding-sentinel</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <groupId>com.rainyalley</groupId>
+                <artifactId>jedis-shard-shentinel</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
