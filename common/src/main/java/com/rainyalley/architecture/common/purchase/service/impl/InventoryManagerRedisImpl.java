@@ -3,6 +3,8 @@ package com.rainyalley.architecture.common.purchase.service.impl;
 import com.rainyalley.architecture.common.purchase.service.InventoryLoader;
 import com.rainyalley.architecture.common.purchase.service.InventoryManager;
 import com.rainyalley.architecture.common.purchase.service.model.entity.OccupyResult;
+import com.rainyalley.jss.Lock;
+import com.rainyalley.jss.RedisLock;
 import com.rainyalley.jss.ShardedSentinelJedis;
 import com.rainyalley.jss.ShardedSentinelJedisPool;
 import org.slf4j.Logger;
@@ -40,11 +42,15 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
 
     private String inventoryReleaseScriptSha;
 
+    private Lock lock;
+
     public InventoryManagerRedisImpl(String redisKeyPrefix, InventoryLoader loader, ShardedSentinelJedisPool pool){
         this.redisKeyPrefix = redisKeyPrefix;
         this.loader = loader;
         this.pool = pool;
         inventoryReleaseScriptSha = pool.getResource().scriptLoad(inventoryReleaseScript);
+
+        lock = new RedisLock("inventory",":", pool);
     }
 
     /**
@@ -117,10 +123,10 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
     public boolean store(final String entityId){
         final String inventoryKey = inventoryKey(entityId);
         ShardedSentinelJedis client = null;
-        String lockOwner = "store";
-        String lockKey = inventoryLockKey(entityId);
+        double time = lock.time(entityId);
         try {
-            if(!lock.lock(lockKey, lockOwner)){return false;}
+
+            if(!lock.lock(entityId, time, 5)){return false;}
 
             long loadedInventory = loader.load(entityId);
             client = pool.getResource();
@@ -130,7 +136,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             LOGGER.error("store failed:" + entityId, e);
             return false;
         } finally {
-            lock.unLock(lockKey, lockOwner);
+            lock.unLock(entityId, time);
             if(client != null){
                 client.close();
             }
@@ -141,10 +147,9 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
     public boolean storeIfNX(String entityId) {
         final String inventoryKey = inventoryKey(entityId);
         ShardedSentinelJedis client = null;
-        String lockOwner = "storeIfNX";
-        String lockKey = inventoryLockKey(entityId);
+        double time = lock.time(entityId);
         try {
-            if(!lock.tryLock(lockKey, lockOwner)){return false;}
+            if(!lock.tryLock(entityId, time)){return false;}
 
             long loadedInventory = loader.load(entityId);
             client = pool.getResource();
@@ -154,7 +159,7 @@ public class InventoryManagerRedisImpl  implements InventoryManager {
             LOGGER.error("store failed:" + entityId, e);
             return false;
         } finally {
-            lock.unLock(lockKey, lockOwner);
+            lock.unLock(entityId, time);
             if(client != null){
                 client.close();
             }

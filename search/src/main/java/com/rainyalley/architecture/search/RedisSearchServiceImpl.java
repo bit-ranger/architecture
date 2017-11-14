@@ -30,7 +30,7 @@ public class RedisSearchServiceImpl implements SearchService {
             throw new IllegalArgumentException("text can not be blank");
         }
 
-        List<Term> terms = ToAnalysis.parse(text.toString());
+        List<Term> terms = ToAnalysis.parse(text.toString()).getTerms();
         for (Term term : terms) {
             String key = this.keyPrefix + term.getRealName();
             this.zso.add(key, id, 1);
@@ -39,7 +39,7 @@ public class RedisSearchServiceImpl implements SearchService {
 
     @Override
     public Set<String> search(String keyword) {
-        List<Term> terms = ToAnalysis.parse(keyword.toString());
+        List<Term> terms = ToAnalysis.parse(keyword.toString()).getTerms();
 
         Set<String> idSet = new HashSet<String>();
         if (terms.size() > 2) {

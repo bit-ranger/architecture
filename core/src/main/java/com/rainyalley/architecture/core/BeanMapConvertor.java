@@ -19,9 +19,9 @@ public class BeanMapConvertor {
      *
      * @param bean 要转化的JavaBean 对象
      * @return 转化出来的  Map 对象
-     * @throws IntrospectionException    如果分析类属性失败
-     * @throws IllegalAccessException    如果实例化 JavaBean 失败
-     * @throws InvocationTargetException 如果调用属性的 setter 方法失败
+//     * @throws IntrospectionException    如果分析类属性失败
+//     * @throws IllegalAccessException    如果实例化 JavaBean 失败
+//     * @throws InvocationTargetException 如果调用属性的 setter 方法失败
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static Map<String, Object> toMap(Object bean) {
