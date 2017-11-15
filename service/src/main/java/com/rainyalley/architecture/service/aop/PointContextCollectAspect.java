@@ -3,15 +3,27 @@ package com.rainyalley.architecture.service.aop;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+@Aspect
 public class PointContextCollectAspect implements PointContextProvider {
 
     private static final ThreadLocal<List<PointContext>> concurrentJoinPoints = new ThreadLocal<List<PointContext>>();
     private final Log logger = LogFactory.getLog(this.getClass());
 
+
+    @Pointcut("execution(public * com.rainyalley.architecture.service.ServiceBasicSupport.*(..)) || execution(public * com.rainyalley.architecture.service..service..*.*(..))")
+    public void pointcut(){ }
+
+
+    @Before("pointcut()")
     public void weave(JoinPoint joinPoint) throws Throwable {
         List<PointContext> joinPointList = PointContextCollectAspect.concurrentJoinPoints.get();
         if (joinPointList == null) {

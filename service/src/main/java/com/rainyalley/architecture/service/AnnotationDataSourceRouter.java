@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.service.datasource;
+package com.rainyalley.architecture.service;
 
 import com.rainyalley.architecture.service.aop.PointContext;
 import com.rainyalley.architecture.service.aop.PointContextProvider;
@@ -9,17 +9,17 @@ import org.springframework.util.CollectionUtils;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class KeywordDataSourceRouter extends AbstractRoutingDataSource {
+public class AnnotationDataSourceRouter extends AbstractRoutingDataSource {
 
-    private static final String READ_DB_KEY = "slave";
-    private static final String WRITE_DB_KEY = "master";
+    private static final String SLAVE_DB_KEY = "slave";
+    private static final String MASTER_DB_KEY = "master";
     private PointContextProvider pointContextProvider;
 
     @Override
     protected Object determineCurrentLookupKey() {
         List<PointContext> joinPoints = this.pointContextProvider.trace();
         if (CollectionUtils.isEmpty(joinPoints)) {
-            return KeywordDataSourceRouter.READ_DB_KEY;
+            return AnnotationDataSourceRouter.SLAVE_DB_KEY;
         }
 
         PointContext first = joinPoints.get(0);
@@ -29,10 +29,10 @@ public class KeywordDataSourceRouter extends AbstractRoutingDataSource {
             Transactional annotation = method.getAnnotation(Transactional.class);
 
             if (annotation != null && !annotation.readOnly()) {
-                return KeywordDataSourceRouter.WRITE_DB_KEY;
+                return AnnotationDataSourceRouter.MASTER_DB_KEY;
             }
         }
-        return KeywordDataSourceRouter.READ_DB_KEY;
+        return AnnotationDataSourceRouter.SLAVE_DB_KEY;
     }
 
     public void setPointContextProvider(PointContextProvider pointContextProvider) {

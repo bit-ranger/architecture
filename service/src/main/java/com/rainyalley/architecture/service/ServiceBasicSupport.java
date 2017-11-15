@@ -5,7 +5,6 @@ import com.rainyalley.architecture.core.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.annotation.Resource;
 import javax.validation.*;
 import java.util.Iterator;
 import java.util.List;
@@ -68,7 +67,6 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
         this.dao = dao;
     }
 
-    @Resource
     public void setValidatorFactory(ValidatorFactory validatorFactory) {
         Validator validator = validatorFactory == null ? null : validatorFactory.getValidator();
         this.validator = validator;

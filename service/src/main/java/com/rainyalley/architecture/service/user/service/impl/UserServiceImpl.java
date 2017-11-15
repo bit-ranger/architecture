@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-@Service("userService")
+@Service
 public class UserServiceImpl extends ServiceBasicSupport<User> implements UserService {
     private UserDao userDao;
 

@@ -52,7 +52,7 @@
         <property name="validationQuery" value="${connection.pools.slave.validationQuery}"/>
     </bean>
 
-    <bean id="dataSource" class="com.rainyalley.architecture.service.datasource.KeywordDataSourceRouter">
+    <bean id="dataSource" class="com.rainyalley.architecture.service.AnnotationDataSourceRouter">
         <property name="targetDataSources">
             <map key-type="java.lang.String">
                 <entry key="slave" value-ref="slaveDataSource"/>
