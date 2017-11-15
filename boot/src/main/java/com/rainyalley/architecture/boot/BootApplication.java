@@ -1,15 +1,15 @@
 package com.rainyalley.architecture.boot;
 
+import com.rainyalley.architecture.service.ServiceConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Arrays;
+
 @SpringBootApplication
-//@ImportResource(value =
-//		{"classpath:spring-boot-mvc.xml",
-//		"classpath:spring-boot-security.xml"})
 public class BootApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BootApplication.class, args);
+		SpringApplication.run(Arrays.asList(BootApplication.class, ServiceConfiguration.class).toArray(), args);
 	}
 }

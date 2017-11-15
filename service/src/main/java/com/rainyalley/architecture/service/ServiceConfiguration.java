@@ -5,16 +5,16 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
+@SpringBootApplication
 @MapperScan(basePackages = "com.rainyalley.architecture.service.*.dao", sqlSessionFactoryRef = "sqlSessionFactory")
-@ComponentScan
 public class ServiceConfiguration {
 
     static final String MAPPER_LOCATION = "classpath:mybatis/mapper/**.xml";
@@ -44,13 +44,14 @@ public class ServiceConfiguration {
     private String slaveDriverClass;
 
     @Bean
+    @Primary
     public DataSource dataSource() {
         DruidDataSource masterDataSource = new DruidDataSource();
         masterDataSource.setDriverClassName(masterDriverClass);
         masterDataSource.setUrl(masterUrl);
         masterDataSource.setUsername(masterUser);
         masterDataSource.setPassword(masterPassword);
-        
+
 //        DruidDataSource slaveDataSource = new DruidDataSource();
 //        slaveDataSource.setDriverClassName(slaveDriverClass);
 //        slaveDataSource.setUrl(slaveUrl);
