@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS architecture;
+
+USE architecture;
+
 drop table if exists security_metadata;
 
 drop table if exists colony_role;
@@ -27,10 +31,7 @@ create table security_metadata
    role_id              int not null comment '角色ID',
    primary key (id),
    unique key UK_SecurityMetadata (resource_id, role_id)
-);
-
-alter table security_metadata comment '权限元数据';
-
+) COMMENT '权限元数据';
 
 
 /*==============================================================*/
@@ -43,9 +44,8 @@ create table colony
    description          varchar(100) not null comment '描述',
    primary key (id),
    unique key UK_colony (name)
-);
+) COMMENT '群体';
 
-alter table colony comment '群体';
 
 /*==============================================================*/
 /* Table: colony_role                                           */
@@ -57,9 +57,8 @@ create table colony_role
    colony_id            int not null comment '群体ID',
    primary key (id),
    unique key UK_colony_role (role_id, colony_id)
-);
+) COMMENT '群体角色';
 
-alter table colony_role comment '群体角色';
 
 /*==============================================================*/
 /* Table: role                                                  */
@@ -71,9 +70,8 @@ create table role
    description          varchar(100) not null comment '描述',
    primary key (id),
    unique key UK_role (name)
-);
+) COMMENT '角色';
 
-alter table role comment '角色';
 
 /*==============================================================*/
 /* Table: user                                                  */
@@ -86,9 +84,8 @@ create table user
    enabled              boolean not null comment 'true : 可用,  false : 不可用',
    primary key (id),
    unique key UK_name (name)
-);
+) COMMENT '用户';
 
-alter table user comment '用户';
 
 /*==============================================================*/
 /* Table: user_colony                                           */
@@ -100,9 +97,8 @@ create table user_colony
    colony_id            int not null comment '群体ID',
    primary key (id),
    unique key UK_user_colony (user_id, colony_id)
-);
+) COMMENT '用户群体';
 
-alter table user_colony comment '用户群体';
 
 /*==============================================================*/
 /* Table: user_role                                             */
@@ -114,9 +110,8 @@ create table user_role
    role_id              int not null comment '角色ID',
    primary key (id),
    unique key UK_user_role (user_id, role_id)
-);
+) COMMENT '用户角色';
 
-alter table user_role comment '用户角色';
 
 /*==============================================================*/
 /* Table: webResource                                           */
@@ -129,6 +124,4 @@ create table resource
    primary key (id),
    unique key UK_pattern (content),
    unique key UK_sequence (sequence)
-);
-
-alter table resource comment '系统资源';
+) COMMENT '系统资源';
