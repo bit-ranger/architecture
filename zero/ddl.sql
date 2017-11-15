@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS architecture;
+CREATE DATABASE IF NOT EXISTS architecture CHARACTER SET utf8 COLLATE utf8_general_ci;;
 
 USE architecture;
 
