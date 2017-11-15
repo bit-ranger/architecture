@@ -7,16 +7,14 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
-@Configuration
-@ComponentScan
 @MapperScan(basePackages = "com.rainyalley.architecture.service.*.dao", sqlSessionFactoryRef = "sqlSessionFactory")
+@ComponentScan
 public class ServiceConfiguration {
 
     static final String MAPPER_LOCATION = "classpath:mybatis/mapper/**.xml";
