@@ -1,8 +1,8 @@
 package com.rainyalley.architecture.rpc.visitor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.common.user.model.entity.User;
-import com.rainyalley.architecture.common.user.service.UserService;
+import com.rainyalley.architecture.service.user.model.entity.User;
+import com.rainyalley.architecture.service.user.service.UserService;
 import com.rainyalley.architecture.core.Page;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Log4jConfigurer;

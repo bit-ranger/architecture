@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.webservice.user;
 
 
-import com.rainyalley.architecture.common.user.model.entity.User;
+import com.rainyalley.architecture.service.user.model.entity.User;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.webapp.user;
 
-import com.rainyalley.architecture.common.user.model.entity.User;
-import com.rainyalley.architecture.common.user.service.UserService;
+import com.rainyalley.architecture.service.user.model.entity.User;
+import com.rainyalley.architecture.service.user.service.UserService;
 import com.rainyalley.architecture.core.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

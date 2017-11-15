@@ -97,7 +97,7 @@
         </layout>
     </appender>
 
-    <logger name="com.rainyalley.architecture.common.aop" additivity="false">
+    <logger name="com.rainyalley.architecture.service.aop" additivity="false">
         <level value="DEBUG"/>
         <!--<appender-ref ref="LOG.AOP"/>-->
         <appender-ref ref="LOG.Console"/>
