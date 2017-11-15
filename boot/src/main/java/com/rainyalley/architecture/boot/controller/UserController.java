@@ -30,4 +30,9 @@ public class UserController {
         List<User> entityList = userService.get(new User(), new Page());
         return entityList;
     }
+
+    @RequestMapping("/error")
+    public List<User> error() throws Exception{
+        throw new Exception("出错啦");
+    }
 }
