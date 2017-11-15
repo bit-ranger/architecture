@@ -1,5 +1,6 @@
-package com.rainyalley.architecture.boot.error;
+package com.rainyalley.architecture.boot.config;
 
+import com.rainyalley.architecture.boot.ErrorInfo;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

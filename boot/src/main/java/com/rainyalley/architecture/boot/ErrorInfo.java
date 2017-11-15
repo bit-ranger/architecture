@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.boot.error;
+package com.rainyalley.architecture.boot;
 
 public class ErrorInfo {
 
