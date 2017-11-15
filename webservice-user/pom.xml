@@ -15,12 +15,25 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-ws</artifactId>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+            <version>3.1.12</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
+            <version>3.1.12</version>
+        </dependency>
+
         <dependency>
             <groupId>wsdl4j</groupId>
             <artifactId>wsdl4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rainyalley.architecture</groupId>
+            <artifactId>service</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>com.rainyalley.architecture</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>service</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>commons-pool</groupId>

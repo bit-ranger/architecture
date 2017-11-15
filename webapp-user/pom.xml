@@ -32,7 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>com.rainyalley.architecture</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>service</artifactId>
         </dependency>
 
         <dependency>
