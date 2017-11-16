@@ -25,15 +25,14 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
 
     @Override
     @Transactional
-    public int save(T obj) {
-        int count = 0;
+    public T save(T obj) {
         List<T> pojoList = this._get(obj, new Page());
         if (pojoList == null || pojoList.isEmpty()) {
-            count = this.dao.insert(obj);
+            this.dao.insert(obj);
         } else {
-            count = this.dao.update(obj);
+            this.dao.update(obj);
         }
-        return count;
+        return obj;
     }
 
     @Override

@@ -17,7 +17,7 @@ public interface Service<T> {
      * @param obj 将被添加的对象
      * @return 受影响的对象个数
      */
-    int save(T obj);
+    T save(T obj);
 
     /**
      * 删除一个对象

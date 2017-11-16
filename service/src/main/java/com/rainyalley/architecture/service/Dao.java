@@ -33,7 +33,7 @@ public interface Dao<T> {
      * @param obj 将被更新的对象
      * @return 受影响的对象个数
      */
-    int update(T obj);
+    T update(T obj);
 
     /**
      * 获取一组对象

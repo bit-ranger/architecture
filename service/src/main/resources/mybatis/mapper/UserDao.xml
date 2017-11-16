@@ -15,6 +15,9 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into user(name,password,enabled) values(#{name},#{password},TRUE)
+        <selectKey  resultType="int" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <delete id="delete">

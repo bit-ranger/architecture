@@ -27,7 +27,7 @@ public class UserServiceImpl extends ServiceBasicSupport<User> implements UserSe
 
     @CachePut(key = "#p0.id")
     @Override
-    public int save(User obj) {
+    public User save(User obj) {
         this.validate(obj);
 //        Md5PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
 //        passwordEncoder.setEncodeHashAsBase64(true);
