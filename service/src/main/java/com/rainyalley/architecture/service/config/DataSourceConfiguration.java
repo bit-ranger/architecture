@@ -1,7 +1,8 @@
 package com.rainyalley.architecture.service.config;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -11,54 +12,18 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfiguration {
 
-    @Value("${jdbc.master.url}")
-    private String masterUrl;
-
-    @Value("${jdbc.master.username}")
-    private String masterUser;
-
-    @Value("${jdbc.master.password}")
-    private String masterPassword;
-
-    @Value("${jdbc.master.driverClassName}")
-    private String masterDriverClass;
-
-    @Value("${jdbc.slave.url}")
-    private String slaveUrl;
-
-    @Value("${jdbc.slave.username}")
-    private String slaveUser;
-
-    @Value("${jdbc.slave.password}")
-    private String slavePassword;
-
-    @Value("${jdbc.slave.driverClassName}")
-    private String slaveDriverClass;
-
-    @Bean
     @Primary
-    public DataSource dataSource() {
-        DruidDataSource masterDataSource = new DruidDataSource();
-        masterDataSource.setDriverClassName(masterDriverClass);
-        masterDataSource.setUrl(masterUrl);
-        masterDataSource.setUsername(masterUser);
-        masterDataSource.setPassword(masterPassword);
-
-//        DruidDataSource slaveDataSource = new DruidDataSource();
-//        slaveDataSource.setDriverClassName(slaveDriverClass);
-//        slaveDataSource.setUrl(slaveUrl);
-//        slaveDataSource.setUsername(slaveUser);
-//        slaveDataSource.setPassword(slavePassword);
-//
-//        AnnotationDataSourceRouter router = new AnnotationDataSourceRouter();
-//        router.setDefaultTargetDataSource(masterDataSource);
-//        router.setPointContextProvider(pointContextProvider);
-//        Map<Object,Object> targetDataSources = new HashMap<Object, Object>();
-//        targetDataSources.put("master", masterDataSource);
-//        targetDataSources.put("slave", slaveDataSource);
-//        router.setTargetDataSources(targetDataSources);
-//        return router;
-        return masterDataSource;
+    @Bean(name = "primaryDataSource")
+    @Qualifier("primaryDataSource")
+    @ConfigurationProperties(prefix="spring.datasource.primary")
+    public DataSource primaryDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+    @Bean(name = "secondaryDataSource")
+    @Qualifier("secondaryDataSource")
+    @ConfigurationProperties(prefix="spring.datasource.secondary")
+    public DataSource secondaryDataSource() {
+        return DataSourceBuilder.create().build();
     }
 
 
