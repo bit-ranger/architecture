@@ -1,15 +1,12 @@
 package com.rainyalley.architecture.boot;
 
-import com.rainyalley.architecture.service.ServiceConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Arrays;
-
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.rainyalley.architecture.boot","com.rainyalley.architecture.service"})
 public class BootApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Arrays.asList(BootApplication.class, ServiceConfiguration.class).toArray(), args);
+		SpringApplication.run(BootApplication.class, args);
 	}
 }
