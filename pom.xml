@@ -25,11 +25,8 @@
         <module>core</module>
         <module>service</module>
         <module>message</module>
-        <module>rpc</module>
-        <module>security</module>
-        <module>webapp-user</module>
-        <module>webservice-user</module>
         <module>search</module>
+        <module>rpc</module>
         <module>boot</module>
     </modules>
 
