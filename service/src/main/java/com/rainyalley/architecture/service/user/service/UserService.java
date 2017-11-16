@@ -6,4 +6,6 @@ import com.rainyalley.architecture.service.user.model.entity.User;
 
 
 public interface UserService extends Service<User> {
+
+    User get(int id);
 }

@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.service.user.service.impl;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.service.ServiceConfiguration;
+import com.rainyalley.architecture.service.config.ServiceConfiguration;
 import com.rainyalley.architecture.service.user.model.entity.User;
 import com.rainyalley.architecture.service.user.service.UserService;
 import org.junit.Assert;
@@ -25,8 +25,6 @@ public class UserServiceImplTest {
 
     @Resource
     private UserService userService;
-
-
 
     @Test
     @Rollback
@@ -52,5 +50,7 @@ public class UserServiceImplTest {
         User entity =  userService.get(user);
         Assert.assertEquals(entity, user);
     }
+
+
 
 }
