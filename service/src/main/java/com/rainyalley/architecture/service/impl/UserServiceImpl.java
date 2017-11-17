@@ -6,6 +6,7 @@ import com.rainyalley.architecture.dao.UserDao;
 import com.rainyalley.architecture.model.entity.User;
 import com.rainyalley.architecture.service.UserService;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class UserServiceImpl extends ServiceBasicSupport<User> implements UserSe
     private UserDao userDao;
 
 
+    @CachePut(key = "#p0.id")
     @Override
     public User save(User obj) {
         this.validate(obj);
