@@ -24,9 +24,6 @@
     <modules>
         <module>core</module>
         <module>service</module>
-        <module>message</module>
-        <module>search</module>
-        <module>rpc</module>
         <module>boot</module>
     </modules>
 
