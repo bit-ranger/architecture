@@ -1,8 +1,8 @@
 package com.rainyalley.architecture.boot.controller;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.service.user.model.entity.User;
-import com.rainyalley.architecture.service.user.service.UserService;
+import com.rainyalley.architecture.model.entity.User;
+import com.rainyalley.architecture.service.UserService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

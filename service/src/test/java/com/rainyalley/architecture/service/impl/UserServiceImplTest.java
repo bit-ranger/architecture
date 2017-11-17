@@ -1,9 +1,9 @@
-package com.rainyalley.architecture.service.user.service.impl;
+package com.rainyalley.architecture.service.impl;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.service.config.ServiceConfiguration;
-import com.rainyalley.architecture.service.user.model.entity.User;
-import com.rainyalley.architecture.service.user.service.UserService;
+import com.rainyalley.architecture.config.ArchitectureConfiguration;
+import com.rainyalley.architecture.model.entity.User;
+import com.rainyalley.architecture.service.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {ServiceConfiguration.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {ArchitectureConfiguration.class})
 @SpringBootApplication
 @Transactional
 public class UserServiceImplTest {

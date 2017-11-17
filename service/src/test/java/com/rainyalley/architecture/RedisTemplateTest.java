@@ -1,6 +1,6 @@
 package com.rainyalley.architecture;
 
-import com.rainyalley.architecture.service.user.model.entity.User;
+import com.rainyalley.architecture.model.entity.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

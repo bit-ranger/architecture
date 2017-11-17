@@ -1,7 +1,7 @@
-package com.rainyalley.architecture.service;
+package com.rainyalley.architecture.config;
 
-import com.rainyalley.architecture.service.aop.PointContext;
-import com.rainyalley.architecture.service.aop.PointContextProvider;
+import com.rainyalley.architecture.aop.PointContext;
+import com.rainyalley.architecture.aop.PointContextProvider;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
