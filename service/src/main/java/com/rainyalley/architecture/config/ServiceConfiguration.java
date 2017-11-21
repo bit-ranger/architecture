@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @ComponentScan("com.rainyalley.architecture")
 @MapperScan(basePackages = "com.rainyalley.architecture.dao", sqlSessionFactoryRef = "sqlSessionFactory")
-public class ArchitectureConfiguration {
+public class ServiceConfiguration {
 
     static final String MAPPER_LOCATION = "classpath:mybatis/mapper/**.xml";
 
