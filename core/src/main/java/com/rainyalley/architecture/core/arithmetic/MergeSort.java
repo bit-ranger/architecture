@@ -1,5 +1,9 @@
 package com.rainyalley.architecture.core.arithmetic;
 
+/**
+ * 归并排序
+ * 使用循环实现
+ */
 public class MergeSort {
 
 

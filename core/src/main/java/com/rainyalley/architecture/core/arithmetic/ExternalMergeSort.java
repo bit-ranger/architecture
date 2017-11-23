@@ -1,5 +1,11 @@
 package com.rainyalley.architecture.core.arithmetic;
 
+/**
+ * 外部归并排序
+ * 使用循环实现
+ * @see ExternalStore 随机访问存储器
+ * @see ExternalStoreIntegerFileAdapter 用文件实现的随机访问存储器
+ */
 public class ExternalMergeSort {
 
     public <T extends Comparable<T>> void sort(ExternalStore<T> arr){
