@@ -1,8 +1,8 @@
-package com.rainyalley.architecture.core.arithmetic;
+package com.rainyalley.architecture.core.arithmetic.sort;
 
 import java.util.concurrent.*;
 
-public class ConcurrentExternalMergeSort {
+public class ConcurrentExternalMergeSort{
 
     /**
      * 0-4个线程活动
@@ -11,7 +11,7 @@ public class ConcurrentExternalMergeSort {
      */
     private static ExecutorService es = new ThreadPoolExecutor(0, 4, 10L, TimeUnit.MILLISECONDS, new LinkedOfferBlockingQueue<>(100));
 
-    public <T extends Comparable<T>> void sort(ExternalMergeSort.ExternalStore<T> arr){
+    public <T extends Comparable<T>> void sort(ExternalStore<T> arr){
 
 
         // 一个子数组的长度
@@ -60,12 +60,12 @@ public class ConcurrentExternalMergeSort {
     private static class mergeTask<T extends Comparable<T>> implements Runnable {
 
         private CountDownLatch latch;
-        private ExternalMergeSort.ExternalStore<T> arr;
+        private ExternalStore<T> arr;
         private long left;
         private long right;
         private long end;
 
-        public mergeTask(ExternalMergeSort.ExternalStore<T> arr, long left, long right, long end, CountDownLatch latch) {
+        public mergeTask(ExternalStore<T> arr, long left, long right, long end, CountDownLatch latch) {
             this.arr = arr;
             this.left = left;
             this.right = right;
@@ -79,7 +79,6 @@ public class ConcurrentExternalMergeSort {
             latch.countDown();
         }
 
-
         /**
          * 合并并排序
          * @param arr 待排序数组
@@ -87,8 +86,8 @@ public class ConcurrentExternalMergeSort {
          * @param right 右数组起点
          * @param end 右数组终点
          */
-        private <T extends Comparable<T>> void merge(ExternalMergeSort.ExternalStore<T> arr, long left, long right, long end) {
-            ExternalMergeSort.ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
+        protected  <T extends Comparable<T>> void merge(ExternalStore<T> arr, long left, long right, long end) {
+            ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
 
             //左边数组元素的位置
             long i = left;

@@ -1,5 +1,6 @@
-package com.rainyalley.architecture.core.arithmetic;
+package com.rainyalley.architecture.core.arithmetic.sort;
 
+import com.rainyalley.architecture.core.arithmetic.sort.MergeSort;
 import org.junit.Test;
 
 import java.util.Arrays;

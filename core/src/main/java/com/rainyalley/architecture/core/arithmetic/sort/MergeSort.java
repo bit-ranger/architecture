@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.core.arithmetic;
+package com.rainyalley.architecture.core.arithmetic.sort;
 
 /**
  * 归并排序

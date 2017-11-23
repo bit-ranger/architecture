@@ -1,11 +1,11 @@
-package com.rainyalley.architecture.core.arithmetic;
+package com.rainyalley.architecture.core.arithmetic.sort;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
-class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore<Integer> {
+class ExternalStoreIntegerFileAdapter implements ExternalStore<Integer> {
 
     private File file;
 
@@ -36,7 +36,7 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
     }
 
     @Override
-    public ExternalMergeSort.ExternalStore<Integer> create(String name, long size) {
+    public ExternalStore<Integer> create(String name, long size) {
         return new ExternalStoreIntegerFileAdapter(name, size);
     }
 

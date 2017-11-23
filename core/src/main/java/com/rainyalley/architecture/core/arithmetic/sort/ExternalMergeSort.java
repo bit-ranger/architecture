@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.core.arithmetic;
+package com.rainyalley.architecture.core.arithmetic.sort;
 
 /**
  * 外部归并排序
@@ -44,7 +44,7 @@ public class ExternalMergeSort {
      * @param right 右数组起点
      * @param end 右数组终点
      */
-    private <T extends Comparable<T>> void merge(ExternalStore<T> arr, long left, long right, long end) {
+    protected  <T extends Comparable<T>> void merge(ExternalStore<T> arr, long left, long right, long end) {
         ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
 
         //左边数组元素的位置
@@ -85,19 +85,4 @@ public class ExternalMergeSort {
     }
 
 
-
-    public interface ExternalStore<T extends Comparable<T>> {
-
-        String name();
-
-        ExternalStore<T> create(String name, long size);
-
-        void delete();
-
-        T get(long index);
-
-        void set(long index, T data);
-
-        long size();
-    }
 }
