@@ -2,7 +2,7 @@ package com.rainyalley.architecture.core.arithmetic;
 
 import java.util.concurrent.*;
 
-public class ExternalConcurrentMergeSort {
+public class ConcurrentExternalMergeSort {
 
     /**
      * 0-4个线程活动

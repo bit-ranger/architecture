@@ -16,12 +16,15 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
      */
     private int unitBytes = 4;
 
+    private long size;
+
 
 
     public ExternalStoreIntegerFileAdapter(String fileName, long size){
         try {
             this.file = new File(fileName);
             this.raf = new RandomAccessFile(file, "rw");
+            this.size = size;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -55,6 +58,10 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
 
     @Override
     public Integer get(long index) {
+        if(index >= size){
+            throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
+        }
+
         try {
             raf.seek(index * unitBytes);
             byte[] dataBytes = ByteBuffer.allocate(unitBytes).array();
@@ -67,6 +74,10 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
 
     @Override
     public void set(long index, Integer data) {
+        if(index >= size){
+            throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
+        }
+
         try {
             raf.seek(index * unitBytes);
             byte[] dataBytes = ByteBuffer.allocate(unitBytes).putInt(data).array();
@@ -78,10 +89,6 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
 
     @Override
     public long size() {
-        try {
-            return raf.length() / unitBytes;
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return size;
     }
 }
