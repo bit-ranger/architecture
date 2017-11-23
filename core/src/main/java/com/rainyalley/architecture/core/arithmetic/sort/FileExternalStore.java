@@ -1,9 +1,12 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 不要倒序访问
@@ -13,7 +16,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     private File file;
 
-    private RandomAccessFile raf;
+    private final Map<Thread, RandomAccessFile> rafMap = new HashMap<>();
 
     private long size;
 
@@ -24,7 +27,6 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     public FileExternalStore(String fileName, long size, ByteData<T> byteData){
         try {
             this.file = new File(fileName);
-            this.raf = new RandomAccessFile(file, "rw");
             this.size = size;
             this.byteData = byteData;
         } catch (Exception e) {
@@ -43,12 +45,15 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     }
 
     @Override
-    public void close() {
-        try {
-            raf.close();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
+    public  void  close() {
+        for (RandomAccessFile randomAccessFile : rafMap.values()) {
+            try {
+                randomAccessFile.close();
+            } catch (IOException e) {
+                throw new IllegalArgumentException();
+            }
         }
+        rafMap.clear();
         if(!file.exists()){
             return;
         }
@@ -65,8 +70,10 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         }
 
 
+
         byte[] dataBytes = ByteBuffer.allocate(byteData.unitBytes()).array();
         try {
+            RandomAccessFile raf = ensureRaf();
             raf.seek(index * byteData.unitBytes());
             raf.read(dataBytes);
         } catch (IOException e) {
@@ -84,9 +91,27 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
         byte[] dataBytes = byteData.toByteArray(data);
         try {
+            RandomAccessFile raf = ensureRaf();
             raf.seek(index * byteData.unitBytes());
             raf.write(dataBytes);
         } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private RandomAccessFile ensureRaf(){
+        RandomAccessFile raf = rafMap.get(Thread.currentThread());
+        if(raf != null){
+            return raf;
+        }
+
+        try {
+            raf = new RandomAccessFile(file, "rw");
+            synchronized (rafMap) {
+                rafMap.put(Thread.currentThread(), raf);
+            }
+            return raf;
+        } catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
