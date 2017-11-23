@@ -1,20 +1,27 @@
 package com.rainyalley.architecture.core.arithmetic;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore<Integer> {
 
     private File file;
 
+    private RandomAccessFile raf;
 
-    private Integer[] arr;
+    /**
+     * 每个单元4字节
+     */
+    private int unitBytes = 4;
 
 
 
     public ExternalStoreIntegerFileAdapter(String fileName, long size){
         try {
             this.file = new File(fileName);
-            arr = new Integer[(int)size];
+            this.raf = new RandomAccessFile(file, "rw");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -22,7 +29,7 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
 
     @Override
     public String name() {
-        return file.getName();
+        return file.getPath();
     }
 
     @Override
@@ -32,6 +39,11 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
 
     @Override
     public void delete() {
+        try {
+            raf.close();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         if(!file.exists()){
             return;
         }
@@ -43,16 +55,33 @@ class ExternalStoreIntegerFileAdapter implements ExternalMergeSort.ExternalStore
 
     @Override
     public Integer get(long index) {
-        return arr[(int)index];
+        try {
+            raf.seek(index * unitBytes);
+            byte[] dataBytes = ByteBuffer.allocate(unitBytes).array();
+            raf.read(dataBytes);
+            return ByteBuffer.wrap(dataBytes).asIntBuffer().get();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void set(long index, Integer data) {
-        arr[(int)index] = data;
+        try {
+            raf.seek(index * unitBytes);
+            byte[] dataBytes = ByteBuffer.allocate(unitBytes).putInt(data).array();
+            raf.write(dataBytes);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public long size() {
-        return arr.length;
+        try {
+            return raf.length() / unitBytes;
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }
