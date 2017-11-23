@@ -23,7 +23,7 @@ public class ConcurrentExternalMergeSortTest {
                 ies.set(i, src.get(i));
             }
 
-            ExternalMergeSort sort = new ExternalMergeSort();
+            ConcurrentExternalMergeSort sort = new ConcurrentExternalMergeSort();
             sort.sort(ies);
 
             Collections.sort(src);

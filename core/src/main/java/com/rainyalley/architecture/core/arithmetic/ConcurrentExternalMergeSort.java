@@ -9,9 +9,10 @@ public class ConcurrentExternalMergeSort {
      * 阻塞队列容量100
      * 最大空闲时间10秒
      */
-    private static ExecutorService es = new ThreadPoolExecutor(0, 4, 10L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(100));
+    private static ExecutorService es = new ThreadPoolExecutor(0, 4, 10L, TimeUnit.MILLISECONDS, new LinkedOfferBlockingQueue<>(100));
 
     public <T extends Comparable<T>> void sort(ExternalMergeSort.ExternalStore<T> arr){
+
 
         // 一个子数组的长度
         // 从 1开始分割，与递归不同的是，递归由数组长度一分为二最后到1，
@@ -20,10 +21,16 @@ public class ConcurrentExternalMergeSort {
 
         while (size < arr.size()) {
 
-            int taskNum = Double.valueOf(Math.ceil((double)arr.size() / (double)(size * 2))).intValue();
-            CountDownLatch taskLatch = new CountDownLatch(taskNum);
+            long taskNum = arr.size() / (size * 2);
+            //表示处理最后一对数组时，存在右数组
+            if(arr.size() % (size * 2) > size){
+                taskNum++;
+            }
+
+            CountDownLatch taskLatch = new CountDownLatch(Long.valueOf(taskNum).intValue());
 
             // 完全二叉树一层内的遍历
+            // left + size 即为 right的起始位置 ----> left + size <= arr.size() - 1 表示存在右数组 ----> 若不存在右数组，无需处理，因为左数组在上一级中已经有序
             for (long left = 0; left + size <= arr.size() - 1; left += size * 2) {
                 //中间地址，即右数组的起始地址
                 long right = left + size - 1;
@@ -118,6 +125,27 @@ public class ConcurrentExternalMergeSort {
             }
 
             temp.delete();
+        }
+    }
+
+
+    private static class LinkedOfferBlockingQueue<E> extends LinkedBlockingQueue<E>{
+        private static final long serialVersionUID = -8914170589029264025L;
+
+        public LinkedOfferBlockingQueue(int maxSize) {
+            super(maxSize);
+        }
+
+        @Override
+        public boolean offer(E e) {
+            // turn offer() and add() into a blocking calls (unless interrupted)
+            try {
+                put(e);
+                return true;
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            return false;
         }
     }
 
