@@ -2,7 +2,7 @@ package com.rainyalley.architecture.core.arithmetic.sort;
 
 import java.nio.ByteBuffer;
 
-public class IntegerByteData implements FileExternalStore.ByteData<Integer> {
+public class IntegerByteData implements ByteData<Integer> {
 
     @Override
     public byte[] toByteArray(Integer data) {
