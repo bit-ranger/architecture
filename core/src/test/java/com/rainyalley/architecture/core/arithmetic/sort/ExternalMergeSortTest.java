@@ -1,28 +1,37 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import com.rainyalley.architecture.core.arithmetic.sort.ExternalMergeSort;
-import com.rainyalley.architecture.core.arithmetic.sort.ExternalStore;
-import com.rainyalley.architecture.core.arithmetic.sort.ExternalStoreIntegerFileAdapter;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ExternalMergeSortTest {
     @Test
     public void sort() throws Exception {
-        Integer array[] = new Integer[]{33,67,98,9,23,56,67};
-        ExternalStore<Integer> ies = new ExternalStoreIntegerFileAdapter("D:/var/sort/externalMerge.tmp", array.length);
+        List<Integer> src = new ArrayList<>();
+        int num = 10000;
+        for (int i = 0; i < num; i++) {
+            src.add(Double.valueOf(Math.random()*num).intValue());
+        }
+
+        ExternalStore<Integer> ies = new FileExternalStore<Integer>("D:/var/sort/externalMerge.tmp", src.size(), new IntegerByteData(), 1000);
         try {
-            for (int i=0; i<array.length; i++) {
-                ies.set(i, array[i]);
+            for (int i=0; i<src.size(); i++) {
+                ies.set(i, src.get(i));
             }
 
             ExternalMergeSort sort = new ExternalMergeSort();
             sort.sort(ies);
 
-            for (int i=0; i<array.length; i++) {
-                System.out.println(ies.get(i));
+            Collections.sort(src);
+
+            for (int i=0; i<src.size(); i++) {
+                Assert.assertEquals(ies.get(i), src.get(i));
             }
         } finally {
-            ies.delete();
+            ies.close();
         }
     }
 

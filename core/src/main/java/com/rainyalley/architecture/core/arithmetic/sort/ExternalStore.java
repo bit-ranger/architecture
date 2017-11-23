@@ -6,7 +6,7 @@ public interface ExternalStore<T extends Comparable<T>> {
 
     ExternalStore<T> create(String name, long size);
 
-    void delete();
+    void close();
 
     T get(long index);
 

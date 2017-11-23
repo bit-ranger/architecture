@@ -1,15 +1,24 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class ConcurrentExternalMergeSort{
+
+    private static final int maxTask = 32;
 
     /**
      * 0-4个线程活动
      * 阻塞队列容量100
      * 最大空闲时间10秒
      */
-    private static ExecutorService es = new ThreadPoolExecutor(0, 4, 10L, TimeUnit.MILLISECONDS, new LinkedOfferBlockingQueue<>(100));
+    private final static ThreadPoolExecutor es = new ThreadPoolExecutor(0, 32, 10L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(maxTask));
+
+    public ConcurrentExternalMergeSort() {
+        es.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    }
 
     public <T extends Comparable<T>> void sort(ExternalStore<T> arr){
 
@@ -89,41 +98,45 @@ public class ConcurrentExternalMergeSort{
         protected  <T extends Comparable<T>> void merge(ExternalStore<T> arr, long left, long right, long end) {
             ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
 
-            //左边数组元素的位置
-            long i = left;
-            //右边数组元素的位置
-            long j = right + 1;
-            //temp数组元素的位置
-            long k = 0;
+            try {
+                //左边数组元素的位置
+                long i = left;
+                //右边数组元素的位置
+                long j = right + 1;
+                //temp数组元素的位置
+                long k = 0;
 
-            // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
-            while (i <= right && j <= end) {
-                //如果左边元素更小，就放入temp，位置+1
-                if (arr.get(i).compareTo(arr.get(j)) < 0){
+                // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
+                while (i <= right && j <= end) {
+                    //如果左边元素更小，就放入temp，位置+1
+                    if (arr.get(i).compareTo(arr.get(j)) < 0){
+                        temp.set(k++, arr.get(i++));
+                    }
+                    //如果右边元素更小，就放入temp，位置+1
+                    else{
+                        temp.set(k++, arr.get(j++));
+                    }
+                }
+
+                // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
+                while (i <= right){
                     temp.set(k++, arr.get(i++));
                 }
-                //如果右边元素更小，就放入temp，位置+1
-                else{
+
+                while (j <= end){
                     temp.set(k++, arr.get(j++));
                 }
+
+
+                // 排好序的临时数组重新放入原数组
+                for (int m = 0; m < temp.size(); m++) {
+                    arr.set(m + left, temp.get(m));
+                }
+            } finally {
+                temp.close();
             }
 
-            // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
-            while (i <= right){
-                temp.set(k++, arr.get(i++));
-            }
 
-            while (j <= end){
-                temp.set(k++, arr.get(j++));
-            }
-
-
-            // 排好序的临时数组重新放入原数组
-            for (int m = 0; m < temp.size(); m++) {
-                arr.set(m + left, temp.get(m));
-            }
-
-            temp.delete();
         }
     }
 

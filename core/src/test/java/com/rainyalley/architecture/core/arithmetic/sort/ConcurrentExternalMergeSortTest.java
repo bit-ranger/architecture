@@ -1,8 +1,5 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import com.rainyalley.architecture.core.arithmetic.sort.ConcurrentExternalMergeSort;
-import com.rainyalley.architecture.core.arithmetic.sort.ExternalStore;
-import com.rainyalley.architecture.core.arithmetic.sort.ExternalStoreIntegerFileAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,7 +17,8 @@ public class ConcurrentExternalMergeSortTest {
             src.add(Double.valueOf(Math.random()*num).intValue());
         }
 
-        ExternalStore<Integer> ies = new ExternalStoreIntegerFileAdapter("D:/var/sort/externalMerge.tmp", src.size());
+        ExternalStore<Integer> ies = new FileExternalStore<Integer>("D:/var/sort/externalMerge.tmp", src.size(), new IntegerByteData(), 100000);
+
         try {
             for (int i=0; i<src.size(); i++) {
                 ies.set(i, src.get(i));
@@ -35,7 +33,7 @@ public class ConcurrentExternalMergeSortTest {
                 Assert.assertEquals(ies.get(i), src.get(i));
             }
         } finally {
-            ies.delete();
+            ies.close();
         }
 
 
