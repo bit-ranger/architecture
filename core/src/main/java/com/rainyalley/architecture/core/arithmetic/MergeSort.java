@@ -11,9 +11,9 @@ public class MergeSort {
 
         while (size < arr.length) {
             // 完全二叉树一层内的遍历
-            for (int left = 0; left + size <= arr.length - 1; left += size * 2) {
-                //中间地址，即右数组的起始地址
-                int mid = left + size - 1;
+            for (int left = 0; left + size < arr.length; left += size * 2) {
+                //右数组的起始地址
+                int right = left + size;
                 //右数组的尾部
                 int end = left + size * 2 - 1;
 
@@ -23,7 +23,7 @@ public class MergeSort {
                 }
 
                 // 合并
-                merge(arr, left, mid, end);
+                merge(arr, left, right, end);
             }
 
             // 下一层
@@ -43,31 +43,31 @@ public class MergeSort {
         Object[] temp = new Object[end - left + 1];
 
         //左边数组元素的位置
-        int i = left;
+        int li = left;
         //右边数组元素的位置
-        int j = right + 1;
+        int ri = right;
         //temp数组元素的位置
         int k = 0;
 
         // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
-        while (i <= right && j <= end) {
+        while (li < right && ri <= end) {
             //如果左边元素更小，就放入temp，位置+1
-            if (arr[i].compareTo(arr[j]) < 0){
-                temp[k++] = arr[i++];
+            if (arr[li].compareTo(arr[ri]) < 0){
+                temp[k++] = arr[li++];
             }
             //如果右边元素更小，就放入temp，位置+1
             else{
-                temp[k++] = arr[j++];
+                temp[k++] = arr[ri++];
             }
         }
 
         // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
-        while (i <= right){
-            temp[k++] = arr[i++];
+        while (li < right){
+            temp[k++] = arr[li++];
         }
 
-        while (j <= end){
-            temp[k++] = arr[j++];
+        while (ri <= end){
+            temp[k++] = arr[ri++];
         }
 
 
