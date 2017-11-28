@@ -4,7 +4,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class ConcurrentExternalMergeSort{
 
@@ -71,8 +70,6 @@ public class ConcurrentExternalMergeSort{
 
     private static class mergeTask<T extends Comparable<T>> implements Runnable {
 
-        private Logger logger = Logger.getLogger(getClass().getName());
-
         private CountDownLatch latch;
         private ExternalStore<T> arr;
         private long left;
@@ -92,7 +89,7 @@ public class ConcurrentExternalMergeSort{
             try {
                 merge(arr, left, right, end);
             } catch (Exception e) {
-                logger.warning(e.getMessage());
+                e.printStackTrace(System.err);
             } finally {
                 latch.countDown();
             }

@@ -22,12 +22,21 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     private ByteDataConverter<T> byteData;
 
 
+    private long copyNumber;
+
 
     public FileExternalStore(String fileName, long size, ByteDataConverter<T> byteData){
+        this(fileName, size, 500, byteData);
+    }
+
+
+
+    public FileExternalStore(String fileName, long size, long copyNumber, ByteDataConverter<T> byteData){
         try {
             this.file = new File(fileName);
             this.size = size;
             this.byteData = byteData;
+            this.copyNumber = copyNumber;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -40,7 +49,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     @Override
     public ExternalStore<T> create(String name, long size) {
-        return new FileExternalStore<>(name, size, byteData);
+        return new FileExternalStore<>(name, size, copyNumber, byteData);
     }
 
     @Override
@@ -171,8 +180,18 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
             throw new IndexOutOfBoundsException("index:" + descIndex + length + " size:" + size);
         }
 
-        List<T> dataList = src.get(srcIndex, length);
-        set(descIndex, dataList);
+        long copiedLength = 0;
+        for (long i = 0; copyNumber < length && i < length; i+=copyNumber) {
+            List<T> dataList = src.get(srcIndex + i, Math.min(copyNumber,length-copiedLength));
+            set(descIndex + i, dataList);
+            copiedLength += copyNumber;
+        }
+
+        if(copiedLength < length){
+            List<T> dataList = src.get(srcIndex + copiedLength, length - copiedLength);
+            set(descIndex + copiedLength, dataList);
+        }
+
     }
 
 
@@ -197,6 +216,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     public long size() {
         return size;
     }
+
 
 
 }

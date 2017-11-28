@@ -9,9 +9,10 @@ import java.util.List;
 
 public class FileExternalStoreTest {
 
-    int numbers = 50;
+    int numbers = 10000;
 
-    FileExternalStore<Integer> integerFileExternalStore = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, new IntegerByteDataConverter());
+    FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, new IntegerByteDataConverter());
+    FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, new IntegerByteDataConverter());
 
     List<Integer> integers = new ArrayList<>();
 
@@ -43,14 +44,14 @@ public class FileExternalStoreTest {
 
     @Test
     public void get1() throws Exception {
-        integerFileExternalStore.set(0, integers);
-        List<Integer> dataList = integerFileExternalStore.get(0,50);
+        is.set(0, integers);
+        List<Integer> dataList = is.get(0,50);
         Assert.assertEquals(dataList, integers);
     }
 
     @Test
     public void set() throws Exception {
-        integerFileExternalStore.set(0, integers);
+        is.set(0, integers);
     }
 
     @Test
@@ -59,6 +60,11 @@ public class FileExternalStoreTest {
 
     @Test
     public void copyFrom() throws Exception {
+        is.set(0, integers);
+        is2.copyFrom(0, is, 0, numbers);
+        for (int i = 0; i < numbers; i++) {
+            Assert.assertEquals(is.get(i), is2.get(i));
+        }
     }
 
     @Test
