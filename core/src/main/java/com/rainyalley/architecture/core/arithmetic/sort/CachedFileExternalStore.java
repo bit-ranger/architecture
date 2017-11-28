@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * 不要倒序访问
@@ -90,6 +91,12 @@ public class CachedFileExternalStore<T extends Comparable<T>> implements Externa
     }
 
     @Override
+    public List<T> get(long index, long length) {
+        //~todo~
+        return null;
+    }
+
+    @Override
     public void set(long index, T data) {
         if(index >= size || index < 0){
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
@@ -100,6 +107,16 @@ public class CachedFileExternalStore<T extends Comparable<T>> implements Externa
         int iib = indexInBufferValue(Long.valueOf(index).intValue());
 
         bufferValue[iib] = data;
+    }
+
+    @Override
+    public void set(long index, List<T> dataList) {
+        //~todo~
+    }
+
+    @Override
+    public void copyFrom(long descIndex, ExternalStore<T> src, long srcIndex, long length) {
+        //~todo~
     }
 
     @Override

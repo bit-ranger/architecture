@@ -12,7 +12,7 @@ public class ConcurrentExternalMergeSortTest {
     public void sort() throws Exception {
 
         List<Integer> src = new ArrayList<>();
-        int num = 1000000;
+        int num = 10000;
         for (int i = 0; i < num; i++) {
             src.add(Double.valueOf(Math.random()*num).intValue());
         }

@@ -4,8 +4,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class ConcurrentExternalMergeSort{
+
+
 
     private static final int maxTask = 32;
 
@@ -41,8 +44,8 @@ public class ConcurrentExternalMergeSort{
             // 完全二叉树一层内的遍历
             // left + size 即为 right的起始位置 ----> left + size <= arr.size() - 1 表示存在右数组 ----> 若不存在右数组，无需处理，因为左数组在上一级中已经有序
             for (long left = 0; left + size <= arr.size() - 1; left += size * 2) {
-                //中间地址，即右数组的起始地址
-                long right = left + size - 1;
+                //右数组的起始地址
+                long right = left + size;
                 //右数组的尾部
                 long end = left + size * 2 - 1;
 
@@ -68,6 +71,8 @@ public class ConcurrentExternalMergeSort{
 
     private static class mergeTask<T extends Comparable<T>> implements Runnable {
 
+        private Logger logger = Logger.getLogger(getClass().getName());
+
         private CountDownLatch latch;
         private ExternalStore<T> arr;
         private long left;
@@ -84,8 +89,14 @@ public class ConcurrentExternalMergeSort{
 
         @Override
         public void run() {
-            merge(arr, left, right, end);
-            latch.countDown();
+            try {
+                merge(arr, left, right, end);
+            } catch (Exception e) {
+                logger.warning(e.getMessage());
+            } finally {
+                latch.countDown();
+            }
+
         }
 
         /**
@@ -100,64 +111,51 @@ public class ConcurrentExternalMergeSort{
 
             try {
                 //左边数组元素的位置
-                long i = left;
+                long li = left;
                 //右边数组元素的位置
-                long j = right + 1;
+                long ri = right;
                 //temp数组元素的位置
-                long k = 0;
+                long ti = 0;
 
                 // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
-                while (i <= right && j <= end) {
+                while (li < right && ri <= end) {
                     //如果左边元素更小，就放入temp，位置+1
-                    if (arr.get(i).compareTo(arr.get(j)) < 0){
-                        temp.set(k++, arr.get(i++));
+                    if (arr.get(li).compareTo(arr.get(ri)) < 0){
+                        temp.set(ti++, arr.get(li++));
                     }
                     //如果右边元素更小，就放入temp，位置+1
                     else{
-                        temp.set(k++, arr.get(j++));
+                        temp.set(ti++, arr.get(ri++));
                     }
                 }
 
                 // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
-                while (i <= right){
-                    temp.set(k++, arr.get(i++));
+//                while (li < right){
+//                    temp.set(ti++, arr.get(li++));
+//                }
+                if(li < right){
+                    temp.copyFrom(ti, arr, li, right - li);
                 }
 
-                while (j <= end){
-                    temp.set(k++, arr.get(j++));
+//                while (ri <= end){
+//                    temp.set(ti++, arr.get(ri++));
+//                }
+                if(ri <= end){
+                    temp.copyFrom(ti, arr, ri, end-ri+1);
                 }
 
 
                 // 排好序的临时数组重新放入原数组
-                for (int m = 0; m < temp.size(); m++) {
-                    arr.set(m + left, temp.get(m));
-                }
+//                for (int m = 0; m < temp.size(); m++) {
+//                    arr.set(m + left, temp.get(m));
+//                }
+                arr.copyFrom(left, temp, 0, temp.size());
+
             } finally {
                 temp.close();
             }
 
 
-        }
-    }
-
-
-    private static class LinkedOfferBlockingQueue<E> extends LinkedBlockingQueue<E>{
-        private static final long serialVersionUID = -8914170589029264025L;
-
-        public LinkedOfferBlockingQueue(int maxSize) {
-            super(maxSize);
-        }
-
-        @Override
-        public boolean offer(E e) {
-            // turn offer() and add() into a blocking calls (unless interrupted)
-            try {
-                put(e);
-                return true;
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-            return false;
         }
     }
 

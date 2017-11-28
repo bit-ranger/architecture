@@ -18,7 +18,7 @@ public class ExternalMergeSort {
             // 完全二叉树一层内的遍历
             for (long left = 0; left + size <= arr.size() - 1; left += size * 2) {
                 //中间地址，即右数组的起始地址
-                long right = left + size - 1;
+                long right = left + size;
                 //右数组的尾部
                 long end = left + size * 2 - 1;
 
@@ -48,31 +48,31 @@ public class ExternalMergeSort {
         ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
 
         //左边数组元素的位置
-        long i = left;
+        long li = left;
         //右边数组元素的位置
-        long j = right + 1;
+        long ri = right;
         //temp数组元素的位置
-        long k = 0;
+        long ti = 0;
 
         // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
-        while (i <= right && j <= end) {
+        while (li < right && ri <= end) {
             //如果左边元素更小，就放入temp，位置+1
-            if (arr.get(i).compareTo(arr.get(j)) < 0){
-                temp.set(k++, arr.get(i++));
+            if (arr.get(li).compareTo(arr.get(ri)) < 0){
+                temp.set(ti++, arr.get(li++));
             }
             //如果右边元素更小，就放入temp，位置+1
             else{
-                temp.set(k++, arr.get(j++));
+                temp.set(ti++, arr.get(ri++));
             }
         }
 
         // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
-        while (i <= right){
-            temp.set(k++, arr.get(i++));
+        while (li < right){
+            temp.set(ti++, arr.get(li++));
         }
 
-        while (j <= end){
-            temp.set(k++, arr.get(j++));
+        while (ri <= end){
+            temp.set(ti++, arr.get(ri++));
         }
 
 
