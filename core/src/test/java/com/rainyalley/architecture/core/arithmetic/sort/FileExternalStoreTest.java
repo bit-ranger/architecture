@@ -9,7 +9,7 @@ import java.util.List;
 
 public class FileExternalStoreTest {
 
-    int numbers = 10000;
+    int numbers = 1000000;
 
     FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, new IntegerByteDataConverter());
     FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, new IntegerByteDataConverter());
@@ -45,7 +45,7 @@ public class FileExternalStoreTest {
     @Test
     public void get1() throws Exception {
         is.set(0, integers);
-        List<Integer> dataList = is.get(0,50);
+        List<Integer> dataList = is.get(0,numbers);
         Assert.assertEquals(dataList, integers);
     }
 
