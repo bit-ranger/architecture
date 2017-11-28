@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MergeSortTest {
@@ -20,7 +21,12 @@ public class MergeSortTest {
         MergeSort sort = new MergeSort();
 
         Integer arrMS[] = new Integer[src.size()];
-        sort.sort(src.toArray(arrMS));
+        sort.sort(src.toArray(arrMS), new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1.compareTo(o2);
+            }
+        });
 
         Collections.sort(src);
         Integer arrCS[] = new Integer[src.size()];
