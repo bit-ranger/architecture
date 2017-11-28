@@ -17,7 +17,7 @@ public class ConcurrentExternalMergeSortTest {
             src.add(Double.valueOf(Math.random()*num).intValue());
         }
 
-        ExternalStore<Integer> ies = new FileExternalStore<Integer>("/var/sort/externalMerge.tmp", src.size(), new IntegerByteData());
+        ExternalStore<Integer> ies = new FileExternalStore<Integer>("/var/sort/externalMerge.tmp", src.size(), new IntegerByteDataConverter());
 
         try {
             for (int i=0; i<src.size(); i++) {
