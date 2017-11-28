@@ -18,7 +18,7 @@ public class CachedFileExternalStore<T extends Comparable<T>> implements Externa
 
     private long size;
 
-    private ByteData<T> byteData;
+    private ByteDataConverter<T> byteData;
 
     private long bufferStart = 0;
 
@@ -29,11 +29,11 @@ public class CachedFileExternalStore<T extends Comparable<T>> implements Externa
     private Object[] bufferValue;
 
 
-    public CachedFileExternalStore(String fileName, long size, ByteData<T> byteData){
+    public CachedFileExternalStore(String fileName, long size, ByteDataConverter<T> byteData){
         this(fileName, size, byteData, 100);
     }
 
-    public CachedFileExternalStore(String fileName, long size, ByteData<T> byteData, int bufferSize){
+    public CachedFileExternalStore(String fileName, long size, ByteDataConverter<T> byteData, int bufferSize){
         try {
             this.file = new File(fileName);
             this.raf = new RandomAccessFile(file, "rw");

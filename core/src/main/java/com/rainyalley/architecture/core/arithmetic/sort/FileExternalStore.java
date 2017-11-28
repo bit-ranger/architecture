@@ -20,11 +20,11 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     private long size;
 
-    private ByteData<T> byteData;
+    private ByteDataConverter<T> byteData;
 
 
 
-    public FileExternalStore(String fileName, long size, ByteData<T> byteData){
+    public FileExternalStore(String fileName, long size, ByteDataConverter<T> byteData){
         try {
             this.file = new File(fileName);
             this.size = size;
