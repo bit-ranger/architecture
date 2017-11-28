@@ -66,19 +66,17 @@ public class MergeSort {
         }
 
         // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
-        while (li < right){
-            temp[k++] = arr[li++];
+        if(li < right){
+            System.arraycopy(arr, li, temp, k, right-li);
         }
 
-        while (ri <= end){
-            temp[k++] = arr[ri++];
+        if(ri <= end){
+            System.arraycopy(arr, ri, temp, k, end-ri+1);
         }
 
 
         // 排好序的临时数组重新放入原数组
-        for (int m = 0; m < temp.length; m++) {
-            arr[m + left] = (T)temp[m];
-        }
+        System.arraycopy(temp, 0, arr, left, temp.length);
     }
 
 }
