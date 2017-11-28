@@ -53,27 +53,27 @@ public class MergeSort {
         //右边数组元素的位置
         int ri = right;
         //temp数组元素的位置
-        int k = 0;
+        int ti = 0;
 
         // 注意： 此处并没有全部放入temp中，当一边达到mid或right时就是退出循环
         while (li < right && ri <= end) {
             //如果左边元素更小，就放入temp，位置+1
             if (comparator.compare(arr[li], arr[ri]) < 0){
-                temp[k++] = arr[li++];
+                temp[ti++] = arr[li++];
             }
             //如果右边元素更小，就放入temp，位置+1
             else{
-                temp[k++] = arr[ri++];
+                temp[ti++] = arr[ri++];
             }
         }
 
         // 如果左边或右边有剩余，则继续放入，只可能一边有剩余
         if(li < right){
-            System.arraycopy(arr, li, temp, k, right-li);
+            System.arraycopy(arr, li, temp, ti, right-li);
         }
 
         if(ri <= end){
-            System.arraycopy(arr, ri, temp, k, end-ri+1);
+            System.arraycopy(arr, ri, temp, ti, end-ri+1);
         }
 
 
