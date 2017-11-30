@@ -32,8 +32,6 @@ public class PdfGenerator implements Closeable{
 
     private Configuration config;
 
-    private List<String> fontPathList;
-
     protected GenericObjectPool<ITextRenderer> rendererPool;
 
 
@@ -59,7 +57,7 @@ public class PdfGenerator implements Closeable{
 
         Assert.notNull(fonts, String.format("no files in dir [%s]", fontDir));
 
-        fontPathList = new ArrayList<>(fonts.length);
+        List<String> fontPathList = new ArrayList<>(fonts.length);
 
         for (File file : fonts) {
             if(file.isDirectory()){
