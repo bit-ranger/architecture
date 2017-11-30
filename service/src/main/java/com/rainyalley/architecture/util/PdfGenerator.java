@@ -6,20 +6,22 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import net.jcip.annotations.Immutable;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.util.Assert;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 @Immutable
-public class PdfGenerator {
+public class PdfGenerator implements Closeable{
 
 
     private static final String defaultEncoding = "UTF-8";
@@ -31,6 +33,8 @@ public class PdfGenerator {
     private Configuration config;
 
     private List<String> fontPathList;
+
+    protected GenericObjectPool<ITextRenderer> rendererPool;
 
 
     public PdfGenerator(String ftlDir) {
@@ -64,6 +68,8 @@ public class PdfGenerator {
 
             fontPathList.add(file.getPath());
         }
+
+        rendererPool = new GenericObjectPool<ITextRenderer>(new RendererFactory(fontPathList));
     }
 
     // 使用freemarker得到html内容
@@ -78,17 +84,64 @@ public class PdfGenerator {
 
     public void write(String content, OutputStream out) throws DocumentException, IOException {
 
-        ITextRenderer render = new ITextRenderer();
+        ITextRenderer renderer = null;
+        try {
+            renderer = rendererPool.borrowObject();
+        } catch (Exception e) {
+            throw new MissingResourceException("Could not get a resource from the pool", ITextRenderer.class.getName(), "");
+        }
+        try {
+            renderer.setDocumentFromString(content);
+            renderer.layout();
+            renderer.createPDF(out);
+            renderer.finishPDF();
+        } finally {
+            if (renderer != null) {
+                rendererPool.returnObject(renderer);
+            }
+        }
+    }
 
-        ITextFontResolver resolver = render.getFontResolver();
+    @Override
+    public void close() throws IOException {
+        rendererPool.close();
+    }
 
-        for (String font : fontPathList) {
-            resolver.addFont(font, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+    private static class RendererFactory implements PooledObjectFactory<ITextRenderer>{
+
+        private List<String> fontPathList;
+
+        private RendererFactory(List<String> fontPathList) {
+            this.fontPathList = fontPathList;
         }
 
-        render.setDocumentFromString(content);
-        render.layout();
-        render.createPDF(out);
-        render.finishPDF();
+        @Override
+        public PooledObject<ITextRenderer> makeObject() throws Exception {
+            ITextRenderer render = new ITextRenderer();
+
+            ITextFontResolver resolver = render.getFontResolver();
+
+            for (String font : fontPathList) {
+                resolver.addFont(font, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            }
+            return new DefaultPooledObject<>(render);
+        }
+
+        @Override
+        public void destroyObject(PooledObject<ITextRenderer> p) throws Exception {
+        }
+
+        @Override
+        public boolean validateObject(PooledObject<ITextRenderer> p) {
+            return true;
+        }
+
+        @Override
+        public void activateObject(PooledObject<ITextRenderer> p) throws Exception {
+        }
+
+        @Override
+        public void passivateObject(PooledObject<ITextRenderer> p) throws Exception {
+        }
     }
 }
