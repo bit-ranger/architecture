@@ -1,4 +1,4 @@
-package com.rainyalley.architecture;
+package com.rainyalley.architecture.util;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;

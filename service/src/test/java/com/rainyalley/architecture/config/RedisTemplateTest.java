@@ -1,4 +1,4 @@
-package com.rainyalley.architecture;
+package com.rainyalley.architecture.config;
 
 import com.rainyalley.architecture.model.entity.User;
 import org.junit.Assert;

@@ -1,4 +1,4 @@
-package com.rainyalley.architecture;
+package com.rainyalley.architecture.util;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
