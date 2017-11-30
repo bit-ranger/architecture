@@ -2,7 +2,6 @@ package com.rainyalley.architecture.util;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,6 +16,7 @@ import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -32,6 +32,11 @@ import java.util.Map;
 
 @NotThreadSafe
 public class HttpPoolingClient extends CloseableHttpClient{
+
+    /**
+     * 将请求标记为可重试
+     */
+    private final static String http_req_retry = "http.request_retry";
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -82,7 +87,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
 
     private PoolingHttpClientConnectionManager connectionManager;
 
-    private HttpRequestRetryHandler retryHandler;
+    private org.apache.http.client.HttpRequestRetryHandler retryHandler;
 
     public void init(){
         requestConfig = RequestConfig.custom()
@@ -101,7 +106,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
             connectionManager.setMaxPerRoute(new HttpRoute(httpHost), entry.getValue());
         }
 
-        retryHandler = new StandardHttpRequestRetryHandler(retryTimes, true);
+        retryHandler = new StandardHttpRequestRetryHandler(retryTimes, false);
 
         client = HttpClients.custom()
                 .setConnectionManager(connectionManager)
@@ -128,7 +133,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
                 logger.debug("get send " + httpGet);
             }
 
-            String result = doSend(httpGet);
+            String result = doSend(httpGet, null);
 
             if(logger.isDebugEnabled()){
                 logger.debug("get receive " + result);
@@ -141,10 +146,10 @@ public class HttpPoolingClient extends CloseableHttpClient{
 
     }
 
-    private String doSend(HttpUriRequest request) throws IOException, IllegalStateException{
+    private String doSend(final HttpUriRequest request, final HttpContext context) throws IOException, IllegalStateException{
         CloseableHttpResponse response = null;
         try {
-            response = this.execute(request);
+            response = this.execute(request, context);
             int respStatus = response.getStatusLine().getStatusCode();
             if (respStatus == HttpStatus.SC_OK) {
                 HttpEntity httpEntity = response.getEntity();
@@ -169,7 +174,12 @@ public class HttpPoolingClient extends CloseableHttpClient{
     }
 
 
-    public String post(String url, Map<String,String> params, Header... header) throws IOException, IllegalStateException {
+    public String post(String url, Map<String,String> params, Header... header) throws IOException, IllegalStateException{
+        return post(url, params, false, header);
+    }
+
+
+    public String post(String url, Map<String,String> params, boolean retry, Header... header) throws IOException, IllegalStateException {
         HttpPost httpPost = new HttpPost(url);
         for (Header h : header) {
             httpPost.addHeader(h);
@@ -183,7 +193,11 @@ public class HttpPoolingClient extends CloseableHttpClient{
                 logger.debug("post send " + httpPost);
             }
 
-            String result = doSend(httpPost);
+            BasicHttpContext context = new BasicHttpContext();
+            if(retry){
+                context.setAttribute(http_req_retry, true);
+            }
+            String result = doSend(httpPost, context);
 
             if(logger.isDebugEnabled()){
                 logger.debug("post receive " + result);
@@ -208,5 +222,21 @@ public class HttpPoolingClient extends CloseableHttpClient{
     @Override
     public ClientConnectionManager getConnectionManager() {
         throw new UnsupportedOperationException();
+    }
+
+
+    /**
+     * 指定的请求将重试
+     */
+    private static class SpecificHttpRequestRetryHandler extends StandardHttpRequestRetryHandler{
+        @Override
+        public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+            boolean retry = super.retryRequest(exception, executionCount, context);
+
+            //如果之前已判断为可重试，则重试
+            //如果之前判断为不可重试，此判断是否指定为重试
+            return retry || Boolean.TRUE.equals(context.getAttribute(http_req_retry));
+
+        }
     }
 }
