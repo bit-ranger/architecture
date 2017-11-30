@@ -106,7 +106,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
             connectionManager.setMaxPerRoute(new HttpRoute(httpHost), entry.getValue());
         }
 
-        retryHandler = new StandardHttpRequestRetryHandler(retryTimes, false);
+        retryHandler = new SpecificHttpRequestRetryHandler(retryTimes, false);
 
         client = HttpClients.custom()
                 .setConnectionManager(connectionManager)
@@ -229,13 +229,27 @@ public class HttpPoolingClient extends CloseableHttpClient{
      * 指定的请求将重试
      */
     private static class SpecificHttpRequestRetryHandler extends StandardHttpRequestRetryHandler{
+
+        public SpecificHttpRequestRetryHandler(int retryCount, boolean requestSentRetryEnabled) {
+            super(retryCount, requestSentRetryEnabled);
+        }
+
         @Override
         public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
             boolean retry = super.retryRequest(exception, executionCount, context);
 
             //如果之前已判断为可重试，则重试
+            if(retry){
+                return true;
+            }
+
+            if (executionCount > this.getRetryCount()) {
+                //超过次数则不重试
+                return false;
+            }
+
             //如果之前判断为不可重试，此判断是否指定为重试
-            return retry || Boolean.TRUE.equals(context.getAttribute(http_req_retry));
+            return Boolean.TRUE.equals(context.getAttribute(http_req_retry));
 
         }
     }

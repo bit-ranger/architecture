@@ -8,14 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 
 @RunWith(SpringRunner.class)
-@SpringBootApplication
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {HttpPoolingClientTest.class})
 public class HttpPoolingClientTest{
 
@@ -45,7 +43,7 @@ public class HttpPoolingClientTest{
     public void post() throws Exception {
 
         Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
-        client.post("http://baidu.com", Collections.emptyMap(),header);
+        client.post("http://ljlklkl22.com", Collections.emptyMap(), true, header);
     }
 
     @Test
