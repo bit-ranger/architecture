@@ -26,7 +26,7 @@ public class PdfGenerator implements Closeable{
 
     private static final String defaultEncoding = "UTF-8";
 
-    private static final String defaultFontDir =  PdfGenerator.class.getResource("/").getPath() + "/font";
+    private static final String defaultFontDir =  PdfGenerator.class.getResource("/").getPath() + "font";
 
     private String encoding = defaultEncoding;
 
