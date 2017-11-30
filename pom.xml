@@ -149,6 +149,12 @@
                 <artifactId>jcip-annotations</artifactId>
                 <version>1.0</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.xhtmlrenderer</groupId>
+                <artifactId>flying-saucer-pdf</artifactId>
+                <version>9.0.9</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
