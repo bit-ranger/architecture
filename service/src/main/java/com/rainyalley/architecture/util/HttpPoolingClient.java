@@ -45,7 +45,7 @@ import java.util.Map;
  *
  */
 @NotThreadSafe
-public class HttpPoolingClient extends CloseableHttpClient{
+public class HttpPoolingClient extends CloseableHttpClient implements StringOrientedHttpClient {
 
     /**
      * 将请求标记为可重试
@@ -155,6 +155,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
      * @return 响应字符串
      * @throws IOException
      */
+    @Override
     public String get(String url, Header... header) throws IOException{
         HttpGet httpGet = new HttpGet(url);
         for (Header h : header) {
@@ -179,7 +180,8 @@ public class HttpPoolingClient extends CloseableHttpClient{
      * @return 响应字符串
      * @throws IOException
      */
-    public String post(String url, Map<String,String> params, Header... header) throws IOException{
+    @Override
+    public String post(String url, Map<String, String> params, Header... header) throws IOException{
         return post(url, params, false, header);
     }
 
@@ -193,7 +195,8 @@ public class HttpPoolingClient extends CloseableHttpClient{
      * @return 响应字符串
      * @throws IOException
      */
-    public String post(String url, Map<String,String> params, boolean retry, Header... header) throws IOException {
+    @Override
+    public String post(String url, Map<String, String> params, boolean retry, Header... header) throws IOException {
         ShowEntityHttpPost httpPost = new ShowEntityHttpPost(url);
         httpPost.setShowEntity(true);
         httpPost.addHeader(HttpHeaders.CONTENT_ENCODING, charset.name());
@@ -224,6 +227,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
      * @return 响应字符串
      * @throws IOException
      */
+    @Override
     public String post(String url, String payload, Header... header) throws IOException{
         return post(url, payload, false, header);
     }
@@ -238,6 +242,7 @@ public class HttpPoolingClient extends CloseableHttpClient{
      * @return 响应字符串
      * @throws IOException
      */
+    @Override
     public String post(String url, String payload, boolean retry, Header... header) throws IOException {
         ShowEntityHttpPost httpPost = new ShowEntityHttpPost(url);
         httpPost.setShowEntity(true);
