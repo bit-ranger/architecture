@@ -113,7 +113,7 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringOrie
     }
 
 
-    private String receiveString(final HttpUriRequest request, final HttpContext context) throws IOException{
+    protected String receiveString(final HttpUriRequest request, final HttpContext context) throws IOException{
         CloseableHttpResponse response = null;
         try {
             if(logger.isDebugEnabled()){
