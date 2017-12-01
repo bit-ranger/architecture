@@ -1,8 +1,6 @@
 package com.rainyalley.architecture.util;
 
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
-import org.apache.http.message.BasicHeader;
+import net.minidev.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {HttpPoolingClientTest.class})
@@ -41,9 +40,18 @@ public class HttpPoolingClientTest{
 
     @Test
     public void post() throws Exception {
+        Map<String,String> map = new HashMap<String,String>();
+        map.put("aaa", "bbbb");
+       // Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
+        client.post("http://baidu.com", map, true);
+    }
 
-        Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
-        client.post("http://ljlklkl22.com", Collections.emptyMap(), true, header);
+    @Test
+    public void postJon() throws Exception{
+        Map<String,String> map = new HashMap<String,String>();
+        map.put("aaa", "bbbb");
+        //Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
+        client.post("http://baidu.com", JSONObject.toJSONString(map), true);
     }
 
     @Test
