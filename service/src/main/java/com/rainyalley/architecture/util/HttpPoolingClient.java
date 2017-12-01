@@ -441,4 +441,36 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringOrie
     public void setCharset(Charset charset) {
         this.charset = charset;
     }
+
+    public int getConnectionRequestTimeout() {
+        return connectionRequestTimeout;
+    }
+
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public int getMaxTotal() {
+        return maxTotal;
+    }
+
+    public int getMaxPerRoute() {
+        return maxPerRoute;
+    }
+
+    public Map<String, Integer> getRouteMax() {
+        return routeMax;
+    }
+
+    public int getRetryTimes() {
+        return retryTimes;
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
 }
