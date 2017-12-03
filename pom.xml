@@ -120,13 +120,6 @@
                 <version>2.2.4</version>
             </dependency>
 
-            <!-- Druid 数据连接池依赖 -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>1.0.18</version>
-            </dependency>
-
             <dependency>
                 <groupId>com.rainyalley.architecture</groupId>
                 <artifactId>service</artifactId>
@@ -163,11 +156,12 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.6.0</version>
                     <configuration>
-                        <source>9</source>
-                        <target>9</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
