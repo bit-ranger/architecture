@@ -11,7 +11,7 @@ import java.util.Map;
  * @author bin.zhang
  * 面向字符串的http client
  */
-public interface StringOrientedHttpClient extends HttpClient, Closeable {
+public interface StringHttpClient extends HttpClient, Closeable {
 
     /**
      * get请求

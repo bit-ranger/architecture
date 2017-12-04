@@ -45,7 +45,7 @@ import java.util.Map;
  *
  */
 @NotThreadSafe
-public class HttpPoolingClient extends CloseableHttpClient implements StringOrientedHttpClient {
+public class HttpPoolingClient extends CloseableHttpClient implements StringHttpClient {
 
     /**
      * 将请求标记为可重试
