@@ -1,21 +1,22 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
-/**
- * 不要倒序访问
- * @param <T>
- */
+
 public class FileExternalStore<T extends Comparable<T>> implements ExternalStore<T> {
 
-    private File file;
-
-    private final Map<Thread, RandomAccessFile> rafMap = new HashMap<>();
+    private Path path;
 
     private long size;
 
@@ -33,7 +34,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     public FileExternalStore(String fileName, long size, long copyNumber, ByteDataConverter<T> byteData){
         try {
-            this.file = new File(fileName);
+            this.path = Paths.get(fileName);
             this.size = size;
             this.byteData = byteData;
             this.copyNumber = copyNumber;
@@ -44,7 +45,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     @Override
     public String name() {
-        return file.getPath();
+        return path.toString();
     }
 
     @Override
@@ -54,22 +55,12 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     @Override
     public  void  close() {
-        for (RandomAccessFile randomAccessFile : rafMap.values()) {
-            try {
-                randomAccessFile.close();
-            } catch (IOException e) {
-                throw new IllegalArgumentException();
-            }
-        }
-        rafMap.clear();
-        if(!file.exists()){
-            return;
-        }
-        boolean deleted = file.delete();
-        if(!deleted){
+        File file = path.toFile();
+        if(!file.delete()){
             file.deleteOnExit();
         }
     }
+
 
     @Override
     public T get(long index) {
@@ -77,18 +68,15 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-
-
-        byte[] dataBytes = ByteBuffer.allocate(byteData.unitBytes()).array();
-        try {
-            RandomAccessFile raf = ensureRaf();
-            raf.seek(index * byteData.unitBytes());
-            raf.read(dataBytes);
+        ByteBuffer dataBytes = ByteBuffer.allocate(byteData.unitBytes());
+        try(SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
+            sbc.position(index * byteData.unitBytes());
+            sbc.read(dataBytes);
+            return byteData.toData(dataBytes.array());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        T data = byteData.toData(dataBytes);
-        return data;
+
     }
 
     @Override
@@ -97,12 +85,12 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-        byte[] dataBytes = ByteBuffer.allocate(byteData.unitBytes()*Long.valueOf(length).intValue()).array();
+        ByteBuffer dataBytes = ByteBuffer.allocate(byteData.unitBytes()*Long.valueOf(length).intValue());
         int readBytes = 0;
-        try {
-            RandomAccessFile raf = ensureRaf();
-            raf.seek(index * byteData.unitBytes());
-            readBytes = raf.read(dataBytes);
+        try (SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
+
+            sbc.position(index * byteData.unitBytes());
+            readBytes = sbc.read(dataBytes);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -115,7 +103,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
         for (int i = 0; i < readBytes; i+=byteData.unitBytes()) {
             byte[] bytes = ByteBuffer.allocate(byteData.unitBytes()).array();
-            System.arraycopy(dataBytes, i, bytes, 0, byteData.unitBytes());
+            System.arraycopy(dataBytes.array(), i, bytes, 0, byteData.unitBytes());
             T data = byteData.toData(bytes);
             dataList.add(data);
         }
@@ -131,10 +119,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         }
 
         byte[] dataBytes = byteData.toByteArray(data);
-        try {
-            RandomAccessFile raf = ensureRaf();
-            raf.seek(index * byteData.unitBytes());
-            raf.write(dataBytes);
+        try(SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE))) {
+            sbc.position(index * byteData.unitBytes());
+            sbc.write(ByteBuffer.wrap(dataBytes));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -161,10 +148,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
             }
         }
 
-        RandomAccessFile raf = ensureRaf();
-        try {
-            raf.seek(index * byteData.unitBytes());
-            raf.write(baos.toByteArray());
+        try (SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE))){
+            sbc.position(index * byteData.unitBytes());
+            sbc.write(ByteBuffer.wrap(baos.toByteArray()));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -192,24 +178,6 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
             set(descIndex + copiedLength, dataList);
         }
 
-    }
-
-
-    private RandomAccessFile ensureRaf(){
-        RandomAccessFile raf = rafMap.get(Thread.currentThread());
-        if(raf != null){
-            return raf;
-        }
-
-        try {
-            raf = new RandomAccessFile(file, "rw");
-            synchronized (rafMap) {
-                rafMap.put(Thread.currentThread(), raf);
-            }
-            return raf;
-        } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 
     @Override

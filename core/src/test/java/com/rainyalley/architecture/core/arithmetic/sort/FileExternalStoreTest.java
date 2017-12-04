@@ -11,8 +11,8 @@ public class FileExternalStoreTest {
 
     int numbers = 1000000;
 
-    FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, new IntegerByteDataConverter());
-    FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, new IntegerByteDataConverter());
+    FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, 10000, new IntegerByteDataConverter());
+    FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, 10000,new IntegerByteDataConverter());
 
     List<Integer> integers = new ArrayList<>();
 
@@ -65,6 +65,9 @@ public class FileExternalStoreTest {
         for (int i = 0; i < numbers; i++) {
             Assert.assertEquals(is.get(i), is2.get(i));
         }
+        is2.close();
+        is.close();
+
     }
 
     @Test
