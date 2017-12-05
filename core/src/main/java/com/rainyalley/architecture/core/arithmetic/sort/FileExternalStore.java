@@ -5,6 +5,8 @@ import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +23,8 @@ import java.util.List;
 
 
 public class FileExternalStore<T extends Comparable<T>> implements ExternalStore<T> {
+
+    private  final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     private Path path;
 
@@ -44,11 +48,13 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         try {
             this.path = Paths.get(fileName);
             GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-            config.setMaxTotal(32);
+            config.setMaxTotal(3200);
             pool = new GenericObjectPool<>(new SeekableFatory(path), config);
             this.size = size;
             this.byteData = byteData;
             this.copyNumber = copyNumber;
+
+            LOGGER.debug("create {}", fileName);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -70,6 +76,8 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         if(!file.delete()){
             file.deleteOnExit();
         }
+
+        LOGGER.debug("close {}", name());
     }
 
 
