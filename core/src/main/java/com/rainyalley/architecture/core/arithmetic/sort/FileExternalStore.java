@@ -1,5 +1,11 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +28,8 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     private ByteDataConverter<T> byteData;
 
+    private GenericObjectPool<SeekableByteChannel> pool;
+
 
     private long copyNumber;
 
@@ -35,6 +43,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     public FileExternalStore(String fileName, long size, long copyNumber, ByteDataConverter<T> byteData){
         try {
             this.path = Paths.get(fileName);
+            GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+            config.setMaxTotal(32);
+            pool = new GenericObjectPool<>(new SeekableFatory(path), config);
             this.size = size;
             this.byteData = byteData;
             this.copyNumber = copyNumber;
@@ -69,12 +80,17 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         }
 
         ByteBuffer dataBytes = ByteBuffer.allocate(byteData.unitBytes());
-        try(SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
+
+        SeekableByteChannel sbc = null;
+        try{
+            sbc = pool.borrowObject();
             sbc.position(index * byteData.unitBytes());
             sbc.read(dataBytes);
             return byteData.toData(dataBytes.array());
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        } finally {
+            pool.returnObject(sbc);
         }
 
     }
@@ -87,12 +103,15 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
         ByteBuffer dataBytes = ByteBuffer.allocate(byteData.unitBytes()*Long.valueOf(length).intValue());
         int readBytes = 0;
-        try (SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ))) {
-
+        SeekableByteChannel sbc = null;
+        try {
+            sbc = pool.borrowObject();
             sbc.position(index * byteData.unitBytes());
             readBytes = sbc.read(dataBytes);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        } finally {
+            pool.returnObject(sbc);
         }
 
         if(readBytes % byteData.unitBytes() != 0){
@@ -119,12 +138,17 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         }
 
         byte[] dataBytes = byteData.toByteArray(data);
-        try(SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE))) {
+        SeekableByteChannel sbc = null;
+        try {
+            sbc = pool.borrowObject();
             sbc.position(index * byteData.unitBytes());
             sbc.write(ByteBuffer.wrap(dataBytes));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        } finally {
+            pool.returnObject(sbc);
         }
+
     }
 
     @Override
@@ -148,12 +172,17 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
             }
         }
 
-        try (SeekableByteChannel sbc = Files.newByteChannel(path, EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE))){
+        SeekableByteChannel sbc = null;
+        try {
+            sbc = pool.borrowObject();
             sbc.position(index * byteData.unitBytes());
             sbc.write(ByteBuffer.wrap(baos.toByteArray()));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        } finally {
+            pool.returnObject(sbc);
         }
+
     }
 
     @Override
@@ -186,5 +215,38 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     }
 
 
+    private static class SeekableFatory implements PooledObjectFactory<SeekableByteChannel> {
 
+        private Path path;
+
+        public SeekableFatory(Path path) {
+            this.path = path;
+        }
+
+        @Override
+        public PooledObject<SeekableByteChannel> makeObject() throws Exception {
+            DefaultPooledObject<SeekableByteChannel> obj =  new DefaultPooledObject<>(Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE)));
+            return obj;
+        }
+
+        @Override
+        public void destroyObject(PooledObject<SeekableByteChannel> p) throws Exception {
+            p.getObject().close();
+        }
+
+        @Override
+        public boolean validateObject(PooledObject<SeekableByteChannel> p) {
+            return p.getObject().isOpen();
+        }
+
+        @Override
+        public void activateObject(PooledObject<SeekableByteChannel> p) throws Exception {
+
+        }
+
+        @Override
+        public void passivateObject(PooledObject<SeekableByteChannel> p) throws Exception {
+
+        }
+    }
 }
