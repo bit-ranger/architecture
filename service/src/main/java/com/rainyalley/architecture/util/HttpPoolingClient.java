@@ -204,7 +204,6 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
             httpPost.addHeader(h);
         }
 
-
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(transferMap(params), charset);
         httpPost.setEntity(entity);
         try {
@@ -251,6 +250,12 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         for (Header h : header) {
             httpPost.addHeader(h);
         }
+//
+//        try {
+//            Thread.sleep(100000L);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
 
         StringEntity entity = new StringEntity(payload, charset);
@@ -334,22 +339,24 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
             StringBuilder sb = new StringBuilder();
             sb.append(super.toString());
 
-            if(showEntity){
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    HttpEntity entity = getEntity();
-                    entity.writeTo(baos);
-                    Header[] encoding = getHeaders(HttpHeaders.CONTENT_ENCODING);
-                    String entityString;
-                    if(encoding != null && encoding.length > 0){
-                        entityString = baos.toString(encoding[0].getValue());
-                    } else {
-                        entityString = baos.toString();
+            if (showEntity) {
+                HttpEntity entity = getEntity();
+                if (entity != null && entity.isRepeatable()) {
+                    try {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        entity.writeTo(baos);
+                        Header[] encoding = getHeaders(HttpHeaders.CONTENT_ENCODING);
+                        String entityString;
+                        if (encoding != null && encoding.length > 0) {
+                            entityString = baos.toString(encoding[0].getValue());
+                        } else {
+                            entityString = baos.toString();
+                        }
+                        sb.append(" ");
+                        sb.append(entityString);
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
                     }
-                    sb.append(" ");
-                    sb.append(entityString);
-                } catch (Exception e) {
-                    e.printStackTrace(System.err);
                 }
             }
 

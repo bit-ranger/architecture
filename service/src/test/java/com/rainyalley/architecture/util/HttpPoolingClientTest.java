@@ -51,7 +51,7 @@ public class HttpPoolingClientTest{
         Map<String,String> map = new HashMap<String,String>();
         map.put("aaa", "bbbb");
         //Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
-        client.post("http://baidu.com", JSONObject.toJSONString(map), true);
+        client.post("http://172.31.19.54:1234/muser/publicRequests/depoPublicRequests", JSONObject.toJSONString(map), true);
     }
 
     @Test
