@@ -3,6 +3,7 @@ package com.rainyalley.architecture.boot.controller;
 import com.rainyalley.architecture.core.Page;
 import com.rainyalley.architecture.model.entity.User;
 import com.rainyalley.architecture.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,16 +20,22 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.GET)
-    public User get(@PathVariable("id") int id){
+    public ResponseEntity<User> get(@PathVariable("id") int id){
         User user = new User();
         user.setId(id);
         User entity = userService.get(user);
-        return entity;
+
+        if(entity != null){
+            return ResponseEntity.ok().eTag("998").body(entity);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<User> list(){
+    public ResponseEntity<List<User>> list(){
         List<User> entityList = userService.get(new User(), new Page());
-        return entityList;
+        return ResponseEntity.ok(entityList);
     }
 }
