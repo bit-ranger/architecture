@@ -1,27 +1,21 @@
 package com.rainyalley.architecture.util;
 
-import net.minidev.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {HttpPoolingClientTest.class})
 public class HttpPoolingClientTest{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private HttpPoolingClient client = new HttpPoolingClient();
 
-
-
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Before
@@ -51,7 +45,7 @@ public class HttpPoolingClientTest{
         Map<String,String> map = new HashMap<String,String>();
         map.put("aaa", "bbbb");
         //Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
-        client.post("http://172.31.19.54:1234/muser/publicRequests/depoPublicRequests", JSONObject.toJSONString(map), true);
+        client.post("http://baidu.com", objectMapper.writeValueAsString(map), true);
     }
 
     @Test

@@ -1,49 +1,38 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileExternalStoreTest {
 
-    int numbers = 1000000;
+    private static int numbers = 10000;
 
-    FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, 10000, new IntegerByteDataConverter());
-    FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, 10000,new IntegerByteDataConverter());
+    private static FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, 10000, new IntegerByteDataConverter());
+    private static FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, 10000,new IntegerByteDataConverter());
 
-    List<Integer> integers = new ArrayList<>();
+    private List<Integer> integers = new ArrayList<>();
 
 
 
     @Before
     public void before(){
+        integers.clear();
         for (int i = 0; i < numbers; i++) {
             integers.add(Double.valueOf(Math.random()*numbers).intValue());
         }
     }
 
-    @Test
-    public void name() throws Exception {
-
+    @AfterClass
+    public static void afterClass(){
+        is2.close();
+        is.close();
     }
 
-    @Test
-    public void create() throws Exception {
-    }
-
-    @Test
-    public void close() throws Exception {
-    }
 
     @Test
     public void get() throws Exception {
-    }
-
-    @Test
-    public void get1() throws Exception {
         is.set(0, integers);
         List<Integer> dataList = is.get(0,numbers);
         Assert.assertEquals(dataList, integers);
@@ -54,9 +43,6 @@ public class FileExternalStoreTest {
         is.set(0, integers);
     }
 
-    @Test
-    public void set1() throws Exception {
-    }
 
     @Test
     public void copyFrom() throws Exception {
@@ -65,13 +51,6 @@ public class FileExternalStoreTest {
         for (int i = 0; i < numbers; i++) {
             Assert.assertEquals(is.get(i), is2.get(i));
         }
-        is2.close();
-        is.close();
-
-    }
-
-    @Test
-    public void size() throws Exception {
     }
 
 }

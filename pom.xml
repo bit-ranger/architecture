@@ -10,7 +10,7 @@
     <groupId>com.rainyalley.architecture</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>${architecture-version}</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <name>architecture</name>
     <description>architecture</description>

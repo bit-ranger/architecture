@@ -1,14 +1,13 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ExternalMergeSortTest {
-    @Test
+
     public void sort() throws Exception {
         List<Integer> src = new ArrayList<>();
         int num = 10000;

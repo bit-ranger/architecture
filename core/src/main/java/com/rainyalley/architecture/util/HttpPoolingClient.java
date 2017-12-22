@@ -250,13 +250,6 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         for (Header h : header) {
             httpPost.addHeader(h);
         }
-//
-//        try {
-//            Thread.sleep(100000L);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
 
         StringEntity entity = new StringEntity(payload, charset);
         httpPost.setEntity(entity);

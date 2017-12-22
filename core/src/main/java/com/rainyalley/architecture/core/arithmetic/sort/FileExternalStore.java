@@ -98,7 +98,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         } finally {
-            pool.returnObject(sbc);
+            if(sbc!=null){
+                pool.returnObject(sbc);
+            }
         }
 
     }
@@ -119,7 +121,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         } finally {
-            pool.returnObject(sbc);
+            if(sbc != null){
+                pool.returnObject(sbc);
+            }
         }
 
         if(readBytes % byteData.unitBytes() != 0){
@@ -154,7 +158,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         } finally {
-            pool.returnObject(sbc);
+            if(sbc != null){
+                pool.returnObject(sbc);
+            }
         }
 
     }
@@ -188,7 +194,9 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         } finally {
-            pool.returnObject(sbc);
+            if(sbc != null){
+                pool.returnObject(sbc);
+            }
         }
 
     }
@@ -233,8 +241,13 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
         @Override
         public PooledObject<SeekableByteChannel> makeObject() throws Exception {
-            DefaultPooledObject<SeekableByteChannel> obj =  new DefaultPooledObject<>(Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE)));
-            return obj;
+            try {
+                DefaultPooledObject<SeekableByteChannel> obj =  new DefaultPooledObject<>(Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE)));
+                return obj;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
