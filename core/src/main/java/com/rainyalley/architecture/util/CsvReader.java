@@ -3,9 +3,8 @@ package com.rainyalley.architecture.util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -39,6 +38,25 @@ public class CsvReader extends Reader {
     public CsvReader(Reader reader, String separator) {
         this.reader = new BufferedReader(reader);
         this.separator = separator;
+    }
+
+    /**
+     *
+     * @param in 输入流
+     * @param charset 字符集
+     */
+    public CsvReader(InputStream in, Charset charset) {
+        this(new InputStreamReader(in, charset));
+    }
+
+    /**
+     *
+     * @param in 输入流
+     * @param charset 字符集
+     * @param separator 分隔符
+     */
+    public CsvReader(InputStream in, Charset charset, String separator) {
+        this(new InputStreamReader(in, charset), separator);
     }
 
     @Override
