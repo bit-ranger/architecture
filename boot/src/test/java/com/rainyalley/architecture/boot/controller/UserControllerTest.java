@@ -45,7 +45,7 @@ public class UserControllerTest {
         ResultActions ra = mvc.perform(MockMvcRequestBuilders.get("/user/1").accept(MediaType.APPLICATION_JSON));
         ra.andExpect(status().isOk());
         ra.andExpect(header().string("Transfer-Encoding", not("chunked")));
-        ra.andExpect(content().json("{\"id\":1,\"name\":\"中文名字\",\"password\":\"中文密码\"}"));
+        ra.andExpect(content().json("{\"id\":1,\"name\":\"中文名字A\",\"password\":\"中文密码\"}"));
     }
 
     @Test
