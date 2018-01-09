@@ -76,7 +76,7 @@ public class JedisReentrantLockTest {
             es.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if(jrl.tryLock(50000)){
+                    if(jrl.lock(3000, 5000)){
                         lockNum.incrementAndGet();
                     }
 
@@ -86,7 +86,7 @@ public class JedisReentrantLockTest {
         }
 
         latch.await();
-        Assert.assertEquals(1, lockNum.get());
+        Assert.assertEquals(2, lockNum.get());
     }
 
     @Test

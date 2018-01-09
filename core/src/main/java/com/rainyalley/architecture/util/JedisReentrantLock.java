@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisCommands;
 
 import java.util.Random;
+import java.util.UUID;
 
 
 /**
@@ -14,14 +15,31 @@ import java.util.Random;
  */
 public class JedisReentrantLock implements Lock {
 
+    /**
+     * 全局唯一ID，用于与其他机器区分开来
+     */
+    private static final UUID uuid = UUID.randomUUID();
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * redis锁的key
+     */
     private String lockKey;
 
+    /**
+     * redis客户端，需要自行保证线程安全
+     */
     private JedisCommands jedis;
 
+    /**
+     * 随机数生成器
+     */
     private Random random = new Random();
 
+    /**
+     * json转换器
+     */
     private ObjectMapper om = new ObjectMapper();
 
     public JedisReentrantLock(String lockKey, JedisCommands jedis) {
@@ -31,7 +49,7 @@ public class JedisReentrantLock implements Lock {
 
 
     private String currentAsker(){
-        return String.valueOf(Thread.currentThread().getId());
+        return uuid + ":" + String.valueOf(Thread.currentThread().getId());
     }
 
     private boolean hasLock(LockVal lv){
@@ -118,7 +136,7 @@ public class JedisReentrantLock implements Lock {
 
             //20毫秒~50毫秒之间随机睡眠，错开并发
             try {
-                Thread.sleep(random.nextInt(30) + 20);
+                Thread.sleep(random.nextInt(50) + 100);
             } catch (InterruptedException e) {
                 //
             }
@@ -130,6 +148,7 @@ public class JedisReentrantLock implements Lock {
         try {
             String lockValTxt = jedis.get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
+                logger.debug("unLock  auto      >>> {} -> {}", lockKey, currentAsker());
                 return true;
             }
 
