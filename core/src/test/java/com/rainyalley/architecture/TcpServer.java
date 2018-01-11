@@ -9,7 +9,7 @@ public class TcpServer {
 
     public static void main(String[] args) throws Exception{
         //服务端在20006端口监听客户端请求的TCP连接
-        ServerSocket server = new ServerSocket(8080);
+        ServerSocket server = new ServerSocket(9090);
         Socket client = null;
         boolean f = true;
         while(f){
@@ -43,7 +43,7 @@ public class TcpServer {
                     String str =  buf.readLine();
                     System.out.println(str);
 
-                    if("".equals(str) && "0".equals(previewLine)){
+                    if(str == null || ("".equals(str) && "0".equals(previewLine))){
                         run = false;
                     }
 
