@@ -134,7 +134,7 @@ public class JedisReentrantLock implements Lock {
                 return false;
             }
 
-            //20毫秒~50毫秒之间随机睡眠，错开并发
+            //100毫秒~150毫秒之间随机睡眠，错开并发
             try {
                 Thread.sleep(random.nextInt(50) + 100);
             } catch (InterruptedException e) {
@@ -148,8 +148,8 @@ public class JedisReentrantLock implements Lock {
         try {
             String lockValTxt = jedis.get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
-                logger.debug("unLock  auto      >>> {} -> {}", lockKey, currentAsker());
-                return true;
+                logger.debug("unLock  miss      >>> {} -> {}", lockKey, currentAsker());
+                return false;
             }
 
             LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
@@ -165,10 +165,10 @@ public class JedisReentrantLock implements Lock {
                 } else {
                     Long num = jedis.del(lockKey);
                     logger.debug("unLock  delete    >>> {} -> {}", lockKey, num, lockValTxt);
-                    return true;
+                    return Long.valueOf(1).equals(num);
                 }
             } else {
-                return true;
+                throw new IllegalMonitorStateException();
             }
         } catch (Exception e) {
             logger.error("unLock",e);

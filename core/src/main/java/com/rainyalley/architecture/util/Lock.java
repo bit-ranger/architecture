@@ -27,7 +27,8 @@ public interface Lock {
 
     /**
      * 解锁
-     * @return
+     * @return true 解锁成功， false 锁不存在
+     * @throws IllegalMonitorStateException 当前线程不拥有锁
      */
     boolean unLock();
 }
