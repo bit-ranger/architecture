@@ -14,7 +14,7 @@ import static org.apache.commons.io.IOUtils.EOF;
 /**
  * @author bin.zhang
  */
-public class FileStore<T extends Comparable<T>> implements ExternalStore<T> {
+public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T> {
 
     private RandomAccessFile raf;
 
@@ -31,7 +31,7 @@ public class FileStore<T extends Comparable<T>> implements ExternalStore<T> {
     private boolean useCache = false;
 
 
-    public FileStore(String filePath, long size, ByteDataConverter<T> bdc){
+    public CachedFileStore(String filePath, long size, ByteDataConverter<T> bdc){
         try {
             this.filePath = filePath;
             this.size = size;
@@ -54,7 +54,7 @@ public class FileStore<T extends Comparable<T>> implements ExternalStore<T> {
 
     @Override
     public ExternalStore<T> create(String name, long size) {
-        return new FileStore<T>(name, size, bdc);
+        return new CachedFileStore<T>(name, size, bdc);
     }
 
     private void createRaf() throws IOException{

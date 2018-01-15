@@ -41,7 +41,7 @@ public class ExternalMergeSortTest {
 
 
         LOGGER.debug("set FileStore");
-        FileStore<CsvRow> ies = new FileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset));
+        CachedFileStore<CsvRow> ies = new CachedFileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset));
         br = new BufferedReader(new FileReader(file));
         try {
             int index = 0;

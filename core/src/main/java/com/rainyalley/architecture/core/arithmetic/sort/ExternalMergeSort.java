@@ -3,8 +3,9 @@ package com.rainyalley.architecture.core.arithmetic.sort;
 /**
  * 外部归并排序
  * 使用循环实现
+ * @author bin.zhang
  * @see ExternalStore 随机访问存储器
- * @see FileStore 用文件实现的随机访问存储器
+ * @see CachedFileStore 用文件实现的随机访问存储器
  */
 public class ExternalMergeSort {
 
