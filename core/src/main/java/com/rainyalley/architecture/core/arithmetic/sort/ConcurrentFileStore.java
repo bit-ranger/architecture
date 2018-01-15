@@ -22,7 +22,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 
-public class FileExternalStore<T extends Comparable<T>> implements ExternalStore<T> {
+public class ConcurrentFileStore<T extends Comparable<T>> implements ExternalStore<T> {
 
     private  final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -38,13 +38,13 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
     private long copyNumber;
 
 
-    public FileExternalStore(String fileName, long size, ByteDataConverter<T> byteData){
+    public ConcurrentFileStore(String fileName, long size, ByteDataConverter<T> byteData){
         this(fileName, size, 500, byteData);
     }
 
 
 
-    public FileExternalStore(String fileName, long size, long copyNumber, ByteDataConverter<T> byteData){
+    public ConcurrentFileStore(String fileName, long size, long copyNumber, ByteDataConverter<T> byteData){
         try {
             this.path = Paths.get(fileName);
             GenericObjectPoolConfig config = new GenericObjectPoolConfig();
@@ -67,7 +67,7 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
 
     @Override
     public ExternalStore<T> create(String name, long size) {
-        return new FileExternalStore<>(name, size, copyNumber, byteData);
+        return new ConcurrentFileStore<>(name, size, copyNumber, byteData);
     }
 
     @Override
@@ -78,6 +78,12 @@ public class FileExternalStore<T extends Comparable<T>> implements ExternalStore
         }
 
         LOGGER.debug("close {}", name());
+    }
+
+    @Override
+    public boolean delete() {
+        close();
+        return true;
     }
 
 

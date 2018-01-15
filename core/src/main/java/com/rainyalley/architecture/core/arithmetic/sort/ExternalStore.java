@@ -20,6 +20,8 @@ public interface ExternalStore<T extends Comparable<T>> {
 
     void close();
 
+    boolean delete();
+
     T get(long index);
 
     List<T> get(long index, long length);

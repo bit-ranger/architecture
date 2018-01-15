@@ -9,8 +9,8 @@ public class FileExternalStoreTest {
 
     private static int numbers = 10000;
 
-    private static FileExternalStore<Integer> is = new FileExternalStore<>("/var/sort/FileExternalStoreTest", numbers, 10000, new IntegerByteDataConverter());
-    private static FileExternalStore<Integer> is2 = new FileExternalStore<>("/var/sort/FileExternalStoreTest2", numbers, 10000,new IntegerByteDataConverter());
+    private static ConcurrentFileStore<Integer> is = new ConcurrentFileStore<>("/var/sort/FileExternalStoreTest", numbers, 10000, new IntegerByteDataConverter());
+    private static ConcurrentFileStore<Integer> is2 = new ConcurrentFileStore<>("/var/sort/FileExternalStoreTest2", numbers, 10000,new IntegerByteDataConverter());
 
     private List<Integer> integers = new ArrayList<>();
 

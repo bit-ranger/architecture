@@ -18,4 +18,9 @@ public class IntegerByteDataConverter implements ByteDataConverter<Integer> {
     public int unitBytes() {
         return 4;
     }
+
+    @Override
+    public byte[] unitSeparator() {
+        return new byte[0];
+    }
 }
