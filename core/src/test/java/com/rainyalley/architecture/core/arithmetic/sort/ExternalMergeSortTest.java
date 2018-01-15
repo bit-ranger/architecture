@@ -87,6 +87,7 @@ public class ExternalMergeSortTest {
             Collections.sort(al);
 
             LOGGER.debug("assert");
+            ies.flush();
             for (int i = 0; i < pair.getLeft(); i++) {
                 Assert.isTrue(ies.get(i).compareTo(al.get(i))  == 0);
             }
