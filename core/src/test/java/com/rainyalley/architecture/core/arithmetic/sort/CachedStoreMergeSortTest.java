@@ -44,10 +44,7 @@ public class CachedStoreMergeSortTest {
         LOGGER.debug("set FileStore");
         Store<CsvRow> ies = new FileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset));
 
-        CachedStore<CsvRow> csL = new CachedStore<>(ies, 1000, 0, pair.getLeft()/2 - 1);
-        CachedStore<CsvRow> csR = new CachedStore<>(csL, 1000, pair.getLeft()/2,  pair.getLeft() - 1);
-
-        ies = csR;
+        ies = new DoubleWaySingleStepReadStore<>(ies);
 
         br = new BufferedReader(new FileReader(file));
         try {
@@ -100,11 +97,12 @@ public class CachedStoreMergeSortTest {
 
             LOGGER.debug("complete");
 
+            file.delete();
+            ies.delete();
         } catch (Exception e){
             throw new RuntimeException(e);
         } finally {
-            file.delete();
-            ies.delete();
+
         }
     }
 
