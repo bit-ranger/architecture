@@ -43,6 +43,7 @@ import java.util.Map;
  *      2.请求数据未完整发送
  *      3.被指定为重试的请求 {@link #post(String, Map, boolean, Header...)}
  *
+ *  内部依赖是可修改的，所以非线程安全，但如果不存在并发修改成员变量的场景，则可以认为是线程安全的
  */
 @NotThreadSafe
 public class HttpPoolingClient extends CloseableHttpClient implements StringHttpClient {
