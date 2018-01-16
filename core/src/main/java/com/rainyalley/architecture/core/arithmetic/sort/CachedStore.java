@@ -59,6 +59,9 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
 
     @Override
     public void close() {
+        if(cacheList == null){
+            return;
+        }
         flush();
         cacheList = null;
         IOUtils.closeQuietly(store);
@@ -119,7 +122,7 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
         }
 
         if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("moveCache to {}, cause {}", currentCacheBeginIndex, index);
+            LOGGER.debug("moveCache@{} to {}, cause {}", hashCode() + ":" + name(), currentCacheBeginIndex, index);
         }
     }
 

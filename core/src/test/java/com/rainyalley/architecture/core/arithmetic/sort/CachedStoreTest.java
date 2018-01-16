@@ -126,6 +126,7 @@ public class CachedStoreTest {
     @AfterClass
     public static void afterClass() throws Exception {
         fsFork.delete();
+        fs.close();
         fs.delete();
         new File("/var/sort/architecture_user.csv").delete();
     }
