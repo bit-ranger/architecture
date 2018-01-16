@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class ExternalMergeSortTest {
+public class FileStoreMergeSortTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalMergeSortTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileStoreMergeSortTest.class);
 
     @Test
     public void sort() throws Exception {
@@ -25,6 +25,7 @@ public class ExternalMergeSortTest {
 
         LOGGER.debug("fill value");
         File file = new File("/var/sort/architecture_user.csv");
+        file.getParentFile().mkdirs();
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
         for (int i = 0; i < 10000; i++) {
             long id = radom.nextLong();
@@ -41,7 +42,7 @@ public class ExternalMergeSortTest {
 
 
         LOGGER.debug("set FileStore");
-        CachedFileStore<CsvRow> ies = new CachedFileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset));
+        FileStore<CsvRow> ies = new FileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset));
         br = new BufferedReader(new FileReader(file));
         try {
             int index = 0;
@@ -62,7 +63,7 @@ public class ExternalMergeSortTest {
         try {
 
             LOGGER.debug("sort");
-            ExternalMergeSort sort = new ExternalMergeSort();
+            StoreMergeSort sort = new StoreMergeSort();
             sort.sort(ies);
 
 
@@ -87,14 +88,14 @@ public class ExternalMergeSortTest {
             Collections.sort(al);
 
             LOGGER.debug("assert");
-            ies.flush();
             for (int i = 0; i < pair.getLeft(); i++) {
                 Assert.isTrue(ies.get(i).compareTo(al.get(i))  == 0);
             }
 
             LOGGER.debug("complete");
         } finally {
-            ies.close();
+            file.delete();
+            ies.delete();
         }
     }
 

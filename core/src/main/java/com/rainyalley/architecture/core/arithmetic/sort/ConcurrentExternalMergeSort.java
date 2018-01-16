@@ -22,7 +22,7 @@ public class ConcurrentExternalMergeSort{
         es.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
-    public <T extends Comparable<T>> void sort(ExternalStore<T> arr){
+    public <T extends Comparable<T>> void sort(Store<T> arr){
 
 
         // 一个子数组的长度
@@ -71,12 +71,12 @@ public class ConcurrentExternalMergeSort{
     private static class mergeTask<T extends Comparable<T>> implements Runnable {
 
         private CountDownLatch latch;
-        private ExternalStore<T> arr;
+        private Store<T> arr;
         private long left;
         private long right;
         private long end;
 
-        public mergeTask(ExternalStore<T> arr, long left, long right, long end, CountDownLatch latch) {
+        public mergeTask(Store<T> arr, long left, long right, long end, CountDownLatch latch) {
             this.arr = arr;
             this.left = left;
             this.right = right;
@@ -103,8 +103,8 @@ public class ConcurrentExternalMergeSort{
          * @param right 右数组起点
          * @param end 右数组终点
          */
-        protected  <T extends Comparable<T>> void merge(ExternalStore<T> arr, long left, long right, long end) {
-            ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
+        protected  <T extends Comparable<T>> void merge(Store<T> arr, long left, long right, long end) {
+            Store<T> temp = arr.fork(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
 
             try {
                 //左边数组元素的位置
@@ -149,7 +149,7 @@ public class ConcurrentExternalMergeSort{
                 arr.copyFrom(left, temp, 0, temp.size());
 
             } finally {
-                temp.close();
+                temp.delete();
             }
 
 

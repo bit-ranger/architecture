@@ -22,7 +22,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 
-public class ConcurrentFileStore<T extends Comparable<T>> implements ExternalStore<T> {
+public class ConcurrentFileStore<T extends Comparable<T>> implements Store<T> {
 
     private  final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -66,7 +66,7 @@ public class ConcurrentFileStore<T extends Comparable<T>> implements ExternalSto
     }
 
     @Override
-    public ExternalStore<T> create(String name, long size) {
+    public Store<T> fork(String name, long size) {
         return new ConcurrentFileStore<>(name, size, copyNumber, byteData);
     }
 
@@ -208,7 +208,7 @@ public class ConcurrentFileStore<T extends Comparable<T>> implements ExternalSto
     }
 
     @Override
-    public void copyFrom(long descIndex, ExternalStore<T> src, long srcIndex, long length) {
+    public void copyFrom(long descIndex, Store<T> src, long srcIndex, long length) {
         if(descIndex >= size || descIndex < 0){
             throw new IndexOutOfBoundsException("index:" + descIndex + " size:" + size);
         }

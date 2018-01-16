@@ -5,12 +5,12 @@ import org.junit.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileExternalStoreTest {
+public class ConcurrentFileStoreTest {
 
     private static int numbers = 10000;
 
-    private static ConcurrentFileStore<Integer> is = new ConcurrentFileStore<>("/var/sort/FileExternalStoreTest", numbers, 10000, new IntegerByteDataConverter());
-    private static ConcurrentFileStore<Integer> is2 = new ConcurrentFileStore<>("/var/sort/FileExternalStoreTest2", numbers, 10000,new IntegerByteDataConverter());
+    private static ConcurrentFileStore<Integer> is = new ConcurrentFileStore<>("/var/sort/ConcurrentFileStoreTest", numbers, 10000, new IntegerByteDataConverter());
+    private static ConcurrentFileStore<Integer> is2 = new ConcurrentFileStore<>("/var/sort/ConcurrentFileStoreTest2", numbers, 10000,new IntegerByteDataConverter());
 
     private List<Integer> integers = new ArrayList<>();
 

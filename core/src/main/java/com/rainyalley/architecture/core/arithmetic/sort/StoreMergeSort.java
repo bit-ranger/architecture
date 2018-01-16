@@ -4,12 +4,12 @@ package com.rainyalley.architecture.core.arithmetic.sort;
  * 外部归并排序
  * 使用循环实现
  * @author bin.zhang
- * @see ExternalStore 随机访问存储器
- * @see CachedFileStore 用文件实现的随机访问存储器
+ * @see Store 随机访问存储器
+ * @see CachedStore 用文件实现的随机访问存储器
  */
-public class ExternalMergeSort {
+public class StoreMergeSort {
 
-    public <T extends Comparable<T>> void sort(ExternalStore<T> arr){
+    public <T extends Comparable<T>> void sort(Store<T> arr){
         // 一个子数组的长度
         // 从 1开始分割，与递归不同的是，递归由数组长度一分为二最后到1，
         // 而非递归则是从1开始扩大二倍直到数组长度
@@ -45,8 +45,8 @@ public class ExternalMergeSort {
      * @param right 右数组起点
      * @param end 右数组终点
      */
-    protected  <T extends Comparable<T>> void merge(ExternalStore<T> arr, long left, long right, long end) {
-        ExternalStore<T> temp = arr.create(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
+    protected  <T extends Comparable<T>> void merge(Store<T> arr, long left, long right, long end) {
+        Store<T> temp = arr.fork(arr.name() + "_" + left + "_" + right + "_" + end, end - left + 1);
 
         //左边数组元素的位置
         long li = left;

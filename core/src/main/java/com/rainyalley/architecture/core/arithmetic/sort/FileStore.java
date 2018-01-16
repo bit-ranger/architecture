@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.io.IOUtils.EOF;
@@ -14,7 +15,7 @@ import static org.apache.commons.io.IOUtils.EOF;
 /**
  * @author bin.zhang
  */
-public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T> {
+public class FileStore<T extends Comparable<T>> implements Store<T> {
 
     private RandomAccessFile raf;
 
@@ -24,24 +25,13 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
 
     private ByteDataConverter<T> bdc;
 
-    private long cacheThreshold = 1000000;
 
-    private Object[] cacheList;
-
-    private boolean useCache = false;
-
-
-    public CachedFileStore(String filePath, long size, ByteDataConverter<T> bdc){
+    public FileStore(String filePath, long size, ByteDataConverter<T> bdc){
         try {
             this.filePath = filePath;
             this.size = size;
             this.bdc = bdc;
-            if(size < Integer.MAX_VALUE && size * bdc.unitBytes() < cacheThreshold){
-                useCache = true;
-                cacheList = new Object[Long.valueOf(size).intValue()];
-            } else {
-                createRaf();
-            }
+            this.raf = new RandomAccessFile(new File(filePath), "rw");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,12 +43,8 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
     }
 
     @Override
-    public ExternalStore<T> create(String name, long size) {
-        return new CachedFileStore<T>(name, size, bdc);
-    }
-
-    private void createRaf() throws IOException{
-        this.raf = new RandomAccessFile(new File(filePath), "rw");
+    public FileStore<T> fork(String name, long size) {
+        return new FileStore<T>(name, size, bdc);
     }
 
 
@@ -66,13 +52,11 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
         if(index == 0){
             return 0;
         }
-        return index * (bdc.unitBytes() + bdc.unitSeparator().length) - 1;
+        return index * (bdc.unitBytes() + bdc.unitSeparator().length);
     }
 
     @Override
     public void close() {
-        useCache = false;
-        cacheList = null;
         IOUtils.closeQuietly(raf);
     }
 
@@ -93,20 +77,6 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-        if(useCache){
-            return getCache(index);
-        } else {
-            return getFile(index);
-        }
-
-
-    }
-
-    private T getCache(long index){
-        return (T) cacheList[Long.valueOf(index).intValue()];
-    }
-
-    private T getFile(long index){
         long seek = seekToIndex(index);
 
         try {
@@ -138,7 +108,29 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
 
     @Override
     public List<T> get(long index, long length) {
-        throw new UnsupportedOperationException();
+        if(index >= size || index < 0){
+            throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
+        }
+
+        int num = Long.valueOf(length).intValue();
+        long seek = seekToIndex(index);
+        try {
+            int wws = bdc.unitBytes() + bdc.unitSeparator().length;
+            byte[] buffer = ByteBuffer.allocate(wws * num).array();
+            raf.seek(seek);
+            read(raf, buffer, 0, buffer.length);
+            List<T> dataList = new ArrayList<>(num);
+            ByteBuffer subBuffer = ByteBuffer.allocate(bdc.unitBytes());
+            for (int i = 0; i < buffer.length; i+=wws) {
+                subBuffer.clear();
+                subBuffer.put(buffer, i, bdc.unitBytes());
+                T t = bdc.toData(subBuffer.array());
+                dataList.add(t);
+            }
+            return dataList;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -146,22 +138,8 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
         if(index >= size || index < 0){
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
-
-        if(useCache){
-            setCache(index, data);
-        } else {
-            setFile(index, data);
-        }
-
-
-    }
-
-    private void setCache(long index, T data){
-        cacheList[Long.valueOf(index).intValue()] =  data;
-    }
-
-    private void setFile(long index, T data){
         long seek = seekToIndex(index);
+
         try {
             raf.seek(seek);
             raf.write(bdc.toByteArray(data));
@@ -175,30 +153,35 @@ public class CachedFileStore<T extends Comparable<T>> implements ExternalStore<T
 
     @Override
     public void set(long index, List<T> dataList) {
-        throw new UnsupportedOperationException();
+        if(index >= size || index < 0){
+            throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
+        }
+
+        long seek = seekToIndex(index);
+        int wws = bdc.unitBytes() + bdc.unitSeparator().length;
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(wws * dataList.size());
+            for (T t : dataList) {
+                byte[] data = bdc.toByteArray(t);
+                buffer.put(data);
+                if(bdc.unitSeparator().length > 0){
+                    buffer.put(bdc.unitSeparator());
+                }
+            }
+            raf.seek(seek);
+            raf.write(buffer.array());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void copyFrom(long descIndex, ExternalStore<T> src, long srcIndex, long length) {
+    public void copyFrom(long descIndex, Store<T> src, long srcIndex, long length) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public long size() {
         return size;
-    }
-
-    public void flush(){
-        if(!useCache){
-            return;
-        }
-        try {
-            createRaf();
-            for (int i = 0; i < size; i++) {
-                setFile(i, getCache(i));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

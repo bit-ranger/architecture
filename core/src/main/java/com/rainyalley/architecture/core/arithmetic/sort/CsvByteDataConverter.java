@@ -29,7 +29,7 @@ public class CsvByteDataConverter implements ByteDataConverter<CsvRow> {
         if(lineBytes.length == this.unitBytes()){
             return lineBytes;
         } else if(lineBytes.length > this.unitBytes()){
-            throw new IllegalArgumentException("lineBytes.length > bdc.unitBytes()");
+            throw new IllegalArgumentException(String.format("lineBytes.length[%s] > this.unitBytes()[%s]", lineBytes.length, this.unitBytes));
         } else {
             ByteBuffer buffer = ByteBuffer.allocate(this.unitBytes());
             buffer.put(lineBytes);
