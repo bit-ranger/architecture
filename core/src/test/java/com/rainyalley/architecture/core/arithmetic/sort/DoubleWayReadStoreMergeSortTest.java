@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class CachedStoreMergeSortTest {
+public class DoubleWayReadStoreMergeSortTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CachedStoreMergeSortTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoubleWayReadStoreMergeSortTest.class);
 
     @Test
     public void sort() throws Exception {
@@ -27,7 +27,7 @@ public class CachedStoreMergeSortTest {
         File file = new File("/var/sort/architecture_user.csv");
         file.getParentFile().mkdirs();
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000000; i++) {
             long id = radom.nextLong();
             bw.write( id + ",中文名字A,中文密码,1");
             bw.newLine();
@@ -42,9 +42,7 @@ public class CachedStoreMergeSortTest {
 
 
         LOGGER.debug("set FileStore");
-        Store<CsvRow> ies = new FileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset));
-
-        ies = new DoubleWaySingleStepReadStore<>(ies);
+        DoubleWayReadStore<CsvRow> ies = new DoubleWayReadStore<CsvRow>(new FileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset)), 2000000/pair.getRight());
 
         br = new BufferedReader(new FileReader(file));
         try {
@@ -66,7 +64,7 @@ public class CachedStoreMergeSortTest {
         try {
 
             LOGGER.debug("sort");
-            StoreMergeSort sort = new StoreMergeSort();
+            DoubleWayReadStoreMergeSort sort = new DoubleWayReadStoreMergeSort();
             sort.sort(ies);
 
 
@@ -92,7 +90,7 @@ public class CachedStoreMergeSortTest {
 
             LOGGER.debug("assert");
             for (int i = 0; i < pair.getLeft(); i++) {
-                Assert.isTrue(ies.get(i).compareTo(al.get(i)) == 0);
+                Assert.isTrue(ies.getLeftWay(i).compareTo(al.get(i)) == 0);
             }
 
             LOGGER.debug("complete");
