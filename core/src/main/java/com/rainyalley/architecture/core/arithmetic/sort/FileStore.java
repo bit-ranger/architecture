@@ -3,6 +3,7 @@ package com.rainyalley.architecture.core.arithmetic.sort;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -31,7 +32,6 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             this.filePath = filePath;
             this.size = size;
             this.bdc = bdc;
-            this.raf = new RandomAccessFile(new File(filePath), "rw");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -48,11 +48,11 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
     }
 
 
-    private long seekToIndex(long index){
-        if(index == 0){
-            return 0;
-        }
-        return index * (bdc.unitBytes() + bdc.unitSeparator().length);
+    private long seekToIndex(long index)  throws IOException {
+        initRaf();
+        long seek = index == 0 ? 0 : index * (bdc.unitBytes() + bdc.unitSeparator().length);
+        raf.seek(seek);
+        return seek;
     }
 
     @Override
@@ -77,10 +77,8 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-        long seek = seekToIndex(index);
-
         try {
-            raf.seek(seek);
+            seekToIndex(index);
             byte[] buffer = ByteBuffer.allocate(bdc.unitBytes()).array();
             read(raf, buffer, 0, bdc.unitBytes());
             return bdc.toData(buffer);
@@ -113,11 +111,10 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
         }
 
         int num = Long.valueOf(length).intValue();
-        long seek = seekToIndex(index);
         try {
             int wws = bdc.unitBytes() + bdc.unitSeparator().length;
             byte[] buffer = ByteBuffer.allocate(wws * num).array();
-            raf.seek(seek);
+            seekToIndex(index);
             read(raf, buffer, 0, buffer.length);
             List<T> dataList = new ArrayList<>(num);
             ByteBuffer subBuffer = ByteBuffer.allocate(bdc.unitBytes());
@@ -138,10 +135,9 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
         if(index >= size || index < 0){
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
-        long seek = seekToIndex(index);
 
         try {
-            raf.seek(seek);
+            seekToIndex(index);
             raf.write(bdc.toByteArray(data));
             if(bdc.unitSeparator().length > 0){
                 raf.write(bdc.unitSeparator());
@@ -157,7 +153,6 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-        long seek = seekToIndex(index);
         int wws = bdc.unitBytes() + bdc.unitSeparator().length;
         try {
             ByteBuffer buffer = ByteBuffer.allocate(wws * dataList.size());
@@ -168,7 +163,7 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
                     buffer.put(bdc.unitSeparator());
                 }
             }
-            raf.seek(seek);
+            seekToIndex(index);
             raf.write(buffer.array());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -183,5 +178,15 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
     @Override
     public long size() {
         return size;
+    }
+
+    private void initRaf(){
+        if(raf == null){
+            try {
+                this.raf = new RandomAccessFile(new File(filePath), "rw");
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
