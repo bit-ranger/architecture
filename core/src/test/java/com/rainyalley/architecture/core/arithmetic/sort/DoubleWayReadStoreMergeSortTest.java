@@ -27,7 +27,7 @@ public class DoubleWayReadStoreMergeSortTest {
         File file = new File("/var/sort/architecture_user.csv");
         file.getParentFile().mkdirs();
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 100000; i++) {
             long id = radom.nextLong();
             bw.write( id + ",中文名字A,中文密码,1");
             bw.newLine();
