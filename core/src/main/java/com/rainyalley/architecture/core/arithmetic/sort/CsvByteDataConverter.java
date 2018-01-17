@@ -32,7 +32,9 @@ public class CsvByteDataConverter implements ByteDataConverter<CsvRow> {
             throw new IllegalArgumentException(String.format("lineBytes.length[%s] > this.unitBytes()[%s]", lineBytes.length, this.unitBytes));
         } else {
             ByteBuffer buffer = ByteBuffer.allocate(this.unitBytes());
-            buffer.put(lineBytes);
+            if(lineBytes.length > 0){
+                buffer.put(lineBytes);
+            }
             for (int i = lineBytes.length; i < unitBytes; i++) {
                 buffer.put(padding);
             }
@@ -42,7 +44,13 @@ public class CsvByteDataConverter implements ByteDataConverter<CsvRow> {
 
     @Override
     public byte[] toByteArray(CsvRow data) {
-        return paddingToWidth(data.toString().getBytes(charset));
+        byte[] bytes = null;
+        if(data == null){
+            bytes = new byte[0];
+        } else {
+            bytes = data.toString().getBytes(charset);
+        }
+        return paddingToWidth(bytes);
     }
 
     @Override

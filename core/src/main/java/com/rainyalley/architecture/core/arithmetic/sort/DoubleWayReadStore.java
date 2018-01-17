@@ -66,6 +66,5 @@ public class DoubleWayReadStore<T extends Comparable<T>> {
 
     public void flush(){
         left.flush();
-        right.flush();
     }
 }
