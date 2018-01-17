@@ -3,6 +3,7 @@ package com.rainyalley.architecture.core.arithmetic.sort;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,13 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
     private Object[] cacheList;
 
     public CachedStore(Store<T> store, int maxCacheSize, long cacheRangeBeginIndex, long cacheRangeEndIndex) {
+        this(store, maxCacheSize, cacheRangeBeginIndex, cacheRangeEndIndex, true);
+    }
+
+    public CachedStore(Store<T> store, int maxCacheSize, long cacheRangeBeginIndex, long cacheRangeEndIndex, boolean load) {
+        Assert.isTrue(cacheRangeBeginIndex >= 0);
+        Assert.isTrue(cacheRangeEndIndex < store.size());
+
         this.store = store;
         this.maxCacheSize = maxCacheSize;
         this.cacheRangeBeginIndex = cacheRangeBeginIndex;
@@ -38,12 +46,14 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
         realCacheSize = Math.min(realCacheSize, Long.valueOf(store.size()).intValue());
         this.cacheList = new Object[realCacheSize];
 
-        List<T> dataList = store.get(currentCacheBeginIndex, cacheList.length);
-        if(dataList.size() != cacheList.length){
-            throw new IllegalArgumentException(String.format("dataList.size()[%s] != cacheList.length[%s]", dataList.size(), cacheList.length));
-        }
-        for (int i = 0; i < dataList.size(); i++) {
-            cacheList[i] = dataList.get(i);
+        if(load){
+            List<T> dataList = store.get(currentCacheBeginIndex, cacheList.length);
+            if(dataList.size() != cacheList.length){
+                throw new IllegalArgumentException(String.format("dataList.size()[%s] != cacheList.length[%s]", dataList.size(), cacheList.length));
+            }
+            for (int i = 0; i < dataList.size(); i++) {
+                cacheList[i] = dataList.get(i);
+            }
         }
     }
 
@@ -62,7 +72,6 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
         if(cacheList == null){
             return;
         }
-        flush();
         cacheList = null;
         IOUtils.closeQuietly(store);
     }
