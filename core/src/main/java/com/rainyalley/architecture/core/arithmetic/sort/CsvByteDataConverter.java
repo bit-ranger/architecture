@@ -31,6 +31,7 @@ public class CsvByteDataConverter implements ByteDataConverter<CsvRow> {
         } else if(lineBytes.length > this.unitBytes()){
             throw new IllegalArgumentException(String.format("lineBytes.length[%s] > this.unitBytes()[%s]", lineBytes.length, this.unitBytes));
         } else {
+            //~~todo~~ 不分配新的buffer
             ByteBuffer buffer = ByteBuffer.allocate(this.unitBytes());
             if(lineBytes.length > 0){
                 buffer.put(lineBytes);
@@ -58,6 +59,8 @@ public class CsvByteDataConverter implements ByteDataConverter<CsvRow> {
         if(dataBytes.length != this.unitBytes){
             throw new IllegalArgumentException(String.format("dataBytes.length must be %s", this.unitBytes));
         }
+
+        //~~todo~~ 不创建新的CsvRow
         return new CsvRow(new String(dataBytes, charset));
     }
 

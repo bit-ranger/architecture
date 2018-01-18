@@ -154,7 +154,7 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             int wws = bdc.unitBytes() + bdc.unitSeparator().length;
             byteBuffer.clear();
             byte[] buffer = byteBuffer.array();
-
+            //~~todo~~ 不创建新的ArrayList
             List<T> dataList = new ArrayList<>(num);
 
             //总字节

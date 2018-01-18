@@ -151,6 +151,7 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
 
     @Override
     public List<T> get(long index, long length) {
+        //~~todo~~ 不创建新的ArrayList
         ArrayList<T> al = new ArrayList<T>(Long.valueOf(length).intValue());
         for (int i = 0; i < length; i++) {
             T t = this.get(index + i);
@@ -197,6 +198,7 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
     }
 
     public void flush(){
+        //~~todo~~ 不创建新的ArrayList
         ArrayList<T> al = new ArrayList<>(realCacheSize);
         for (Object o : cacheList) {
             al.add((T)o);
