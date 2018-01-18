@@ -89,11 +89,13 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
     @Override
     public void close() {
         IOUtils.closeQuietly(raf);
-        raf = null;
     }
 
     @Override
     public boolean delete() {
+        if(raf == null){
+            return true;
+        }
         close();
         File file = new File(filePath);
         if(!file.exists()){
