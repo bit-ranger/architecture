@@ -1,7 +1,13 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import java.io.IOException;
 
+/**
+ * @author bin.zhang
+ */
+@NotThreadSafe
 public class DoubleWayReadStore<T extends Comparable<T>> {
 
     private Store<T> store;
@@ -10,14 +16,15 @@ public class DoubleWayReadStore<T extends Comparable<T>> {
 
     private CachedStore<T> right;
 
-    private int maxCacheSize;
+    private CachedStore<T> fork;
+
 
 
     public DoubleWayReadStore(Store<T> store, int maxCacheSize) {
-        this.maxCacheSize = maxCacheSize;
         this.store = store;
         this.left = new CachedStore<>(store, maxCacheSize, 0, store.size() -1);
         this.right = new CachedStore<>(store, maxCacheSize, 0, store.size() -1);
+        this.fork = new CachedStore<>(store, maxCacheSize, 0, store.size() - 1);
     }
 
     public String name() {
@@ -25,8 +32,7 @@ public class DoubleWayReadStore<T extends Comparable<T>> {
     }
 
     public Store<T> fork(String name, long size) {
-        Store<T> fork = store.fork(name, size);
-        return new CachedStore<>(fork, maxCacheSize, 0, fork.size() -1, false);
+        return fork.fork(name, size);
     }
 
     public boolean delete() {

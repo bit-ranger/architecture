@@ -30,7 +30,7 @@ public class FileStoreTest {
         File file = new File("/var/sort/architecture_user.csv");
         file.getParentFile().mkdirs();
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < numbers; i++) {
             long id = radom.nextLong();
             String line = id + ",中文名字A,中文密码,1";
             bw.write(line);
@@ -102,7 +102,11 @@ public class FileStoreTest {
         List<CsvRow> alfs = fs.get(0, numbers);
 
         for (int i = 0; i < numbers; i++) {
-            Assert.assertEquals(0, al.get(i).compareTo(alfs.get(i)));
+            try {
+                Assert.assertEquals(0, al.get(i).compareTo(alfs.get(i)));
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import static org.apache.commons.io.IOUtils.EOF;
 /**
  * @author bin.zhang
  */
+@NotThreadSafe
 public class FileStore<T extends Comparable<T>> implements Store<T> {
 
     private RandomAccessFile raf;
@@ -24,18 +26,37 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
 
     private long size = 0;
 
+    private int bufferSize;
+
+    private ByteBuffer byteBuffer;
+
+    private ByteBuffer unitBuffer;
+
     private ByteDataConverter<T> bdc;
 
+    private FileStore<T> fork;
+
+    private FileStore(){}
 
     public FileStore(String filePath, long size, ByteDataConverter<T> bdc){
-        try {
-            this.filePath = filePath;
-            this.size = size;
-            this.bdc = bdc;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this(filePath, size, bdc, 1000);
     }
+
+    /**
+     *
+     * @param filePath
+     * @param size
+     * @param bdc
+     * @param bufferNum 对多少条数据进行缓冲
+     */
+    public FileStore(String filePath, long size, ByteDataConverter<T> bdc, int bufferNum){
+        this.filePath = filePath;
+        this.size = size;
+        this.bdc = bdc;
+        //bufferSize 必须是整数倍
+        this.bufferSize = (bdc.unitBytes() + bdc.unitSeparator().length) * bufferNum;
+    }
+
 
     @Override
     public String name() {
@@ -44,12 +65,22 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
 
     @Override
     public FileStore<T> fork(String name, long size) {
-        return new FileStore<T>(name, size, bdc);
+
+        if(fork == null){
+            fork = new FileStore<T>(name, size , bdc);
+        } else {
+            fork.filePath = name;
+            fork.size = size;
+            fork.raf = null;
+        }
+
+        return fork;
     }
 
 
     private long seekToIndex(long index)  throws IOException {
         initRaf();
+        initBuffer();
         long seek = index == 0 ? 0 : index * (bdc.unitBytes() + bdc.unitSeparator().length);
         raf.seek(seek);
         return seek;
@@ -58,6 +89,7 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
     @Override
     public void close() {
         IOUtils.closeQuietly(raf);
+        raf = null;
     }
 
     @Override
@@ -79,11 +111,14 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
 
         try {
             seekToIndex(index);
-            byte[] buffer = ByteBuffer.allocate(bdc.unitBytes()).array();
+            unitBuffer.clear();
+            byte[] buffer = unitBuffer.array();
             read(raf, buffer, 0, bdc.unitBytes());
             return bdc.toData(buffer);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            unitBuffer.clear();
         }
     }
 
@@ -110,23 +145,51 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-        int num = Long.valueOf(length).intValue();
+
         try {
-            int wws = bdc.unitBytes() + bdc.unitSeparator().length;
-            byte[] buffer = ByteBuffer.allocate(wws * num).array();
             seekToIndex(index);
-            read(raf, buffer, 0, buffer.length);
+            int num = Long.valueOf(length).intValue();
+            int wws = bdc.unitBytes() + bdc.unitSeparator().length;
+            byteBuffer.clear();
+            byte[] buffer = byteBuffer.array();
+
             List<T> dataList = new ArrayList<>(num);
-            ByteBuffer subBuffer = ByteBuffer.allocate(bdc.unitBytes());
-            for (int i = 0; i < buffer.length; i+=wws) {
-                subBuffer.clear();
-                subBuffer.put(buffer, i, bdc.unitBytes());
-                T t = bdc.toData(subBuffer.array());
-                dataList.add(t);
+
+            //总字节
+            int tn = wws * num;
+            //已读取的字节数
+            int rn = 0;
+            //本次已读取的字节
+            int n = 0;
+
+            loop:
+            while ((n = read(raf, buffer, 0, bufferSize)) > 0){
+                ByteBuffer subBuffer = unitBuffer;
+                for (int i = 0; i < n; i+=wws) {
+                    subBuffer.clear();
+                    subBuffer.put(buffer, i, bdc.unitBytes());
+                    T t = bdc.toData(subBuffer.array());
+                    dataList.add(t);
+
+                    rn += wws;
+                    if(rn == tn){
+                        break loop;
+                    }
+
+                    if(rn > tn){
+                        throw new IllegalArgumentException(String.format("rn[%s] > tn[%s]", rn, tn));
+                    }
+                }
+
+
             }
+
             return dataList;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            byteBuffer.clear();
+            unitBuffer.clear();
         }
     }
 
@@ -153,20 +216,51 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             throw new IndexOutOfBoundsException("index:" + index + " size:" + size);
         }
 
-        int wws = bdc.unitBytes() + bdc.unitSeparator().length;
+
         try {
-            ByteBuffer buffer = ByteBuffer.allocate(wws * dataList.size());
+            seekToIndex(index);
+            int wws = bdc.unitBytes() + bdc.unitSeparator().length;
+            int tn = wws * dataList.size();
+
+            byteBuffer.clear();
+            ByteBuffer buffer = byteBuffer;
+
+            int n = 0;
             for (T t : dataList) {
                 byte[] data = bdc.toByteArray(t);
                 buffer.put(data);
+                n+= data.length;
                 if(bdc.unitSeparator().length > 0){
                     buffer.put(bdc.unitSeparator());
+                    n+=bdc.unitSeparator().length;
+                }
+
+                //满了
+                if(n % bufferSize == 0){
+                    raf.write(buffer.array());
+                    buffer.clear();
+                }
+
+                //光了
+                if(n == tn){
+                    break;
+                }
+
+                if(n > tn){
+                    throw new IllegalArgumentException(String.format("n[%s] > tn[%s]", n, tn));
                 }
             }
-            seekToIndex(index);
-            raf.write(buffer.array());
+
+            if(n % bufferSize > 0){
+                raf.write(buffer.array(), 0, n % bufferSize);
+                buffer.clear();
+            }
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            byteBuffer.clear();
         }
     }
 
@@ -187,6 +281,13 @@ public class FileStore<T extends Comparable<T>> implements Store<T> {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private void initBuffer(){
+        if(byteBuffer == null && unitBuffer == null){
+            byteBuffer  = ByteBuffer.allocate(bufferSize);
+            unitBuffer = ByteBuffer.allocate(bdc.unitBytes());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +13,12 @@ import java.util.List;
 /**
  * @author bin.zhang
  */
+@NotThreadSafe
 public class CachedStore<T extends Comparable<T>> implements Store<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CachedStore.class);
 
     private Store<T> store;
-
-    private int maxCacheSize = 10000;
 
     private long currentCacheBeginIndex;
 
@@ -27,6 +27,12 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
     private long cacheRangeEndIndex;
 
     private Object[] cacheList;
+
+    private int realCacheSize;
+
+    private CachedStore<T> fork;
+
+    private  boolean isClosed = false;
 
     public CachedStore(Store<T> store, int maxCacheSize, long cacheRangeBeginIndex, long cacheRangeEndIndex) {
         this(store, maxCacheSize, cacheRangeBeginIndex, cacheRangeEndIndex, true);
@@ -37,25 +43,21 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
         Assert.isTrue(cacheRangeEndIndex < store.size());
 
         this.store = store;
-        this.maxCacheSize = maxCacheSize;
         this.cacheRangeBeginIndex = cacheRangeBeginIndex;
         this.cacheRangeEndIndex = cacheRangeEndIndex;
 
         this.currentCacheBeginIndex = cacheRangeBeginIndex;
-        int realCacheSize = Math.min(maxCacheSize, Long.valueOf(cacheRangeEndIndex - cacheRangeBeginIndex).intValue() + 1);
+        realCacheSize = Math.min(maxCacheSize, Long.valueOf(cacheRangeEndIndex - cacheRangeBeginIndex).intValue() + 1);
         realCacheSize = Math.min(realCacheSize, Long.valueOf(store.size()).intValue());
         this.cacheList = new Object[realCacheSize];
 
         if(load){
-            List<T> dataList = store.get(currentCacheBeginIndex, cacheList.length);
-            if(dataList.size() != cacheList.length){
-                throw new IllegalArgumentException(String.format("dataList.size()[%s] != cacheList.length[%s]", dataList.size(), cacheList.length));
-            }
-            for (int i = 0; i < dataList.size(); i++) {
-                cacheList[i] = dataList.get(i);
-            }
+            List<T> dataList = store.get(currentCacheBeginIndex, realCacheSize);
+            dataList.toArray(cacheList);
         }
     }
+
+    private CachedStore(){}
 
     @Override
     public String name() {
@@ -64,16 +66,30 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
 
     @Override
     public CachedStore<T> fork(String name, long size) {
-        return new CachedStore<>(store.fork(name, size), maxCacheSize, 0, size-1);
+
+        if(fork == null){
+            fork = new CachedStore<>();
+            fork.cacheList = new Object[this.realCacheSize];
+            fork.cacheRangeBeginIndex = 0;
+        }
+        fork.store = store.fork(name, size);
+        fork.currentCacheBeginIndex = 0;
+        fork.cacheRangeEndIndex = size - 1;
+        int realCacheSize = Math.min(fork.cacheList.length, Long.valueOf(cacheRangeEndIndex - cacheRangeBeginIndex).intValue() + 1);
+        realCacheSize = Math.min(realCacheSize, Long.valueOf(size).intValue());
+        fork.realCacheSize = realCacheSize;
+
+        return fork;
     }
 
     @Override
     public void close() {
-        if(cacheList == null){
+        if(isClosed){
             return;
         }
-        cacheList = null;
+
         IOUtils.closeQuietly(store);
+        isClosed = true;
     }
 
     @Override
@@ -105,7 +121,7 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
     }
 
     private boolean inCurrentCache(long index){
-        return index >= currentCacheBeginIndex && index < currentCacheBeginIndex + cacheList.length;
+        return index >= currentCacheBeginIndex && index < currentCacheBeginIndex + realCacheSize;
     }
 
     private boolean outOfCacheRange(long index){
@@ -123,16 +139,14 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
 
     private void moveCache(long index){
         flush();
-        long maxCacheBeginIndex = cacheRangeEndIndex - cacheList.length + 1;
+        long maxCacheBeginIndex = cacheRangeEndIndex - realCacheSize + 1;
         currentCacheBeginIndex = Math.min(maxCacheBeginIndex, index);
-        List<T> dataList = store.get(currentCacheBeginIndex, cacheList.length);
-        for (int i = 0; i < cacheList.length; i++) {
-            cacheList[i] = dataList.get(i);
-        }
-
-        if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("moveCache@{} to {}, cause {}", hashCode() + ":" + name(), currentCacheBeginIndex, index);
-        }
+        List<T> dataList = store.get(currentCacheBeginIndex, realCacheSize);
+        Assert.isTrue(dataList.size() <= realCacheSize, "dataList.size() > realCacheSize");
+        dataList.toArray(cacheList);
+//        if(LOGGER.isDebugEnabled()){
+//            LOGGER.debug("moveCache@{} to {}, cause {}", hashCode() + ":" + name(), currentCacheBeginIndex, index);
+//        }
     }
 
     @Override
@@ -183,7 +197,7 @@ public class CachedStore<T extends Comparable<T>> implements Store<T> {
     }
 
     public void flush(){
-        ArrayList<T> al = new ArrayList<>(cacheList.length);
+        ArrayList<T> al = new ArrayList<>(realCacheSize);
         for (Object o : cacheList) {
             al.add((T)o);
         }
