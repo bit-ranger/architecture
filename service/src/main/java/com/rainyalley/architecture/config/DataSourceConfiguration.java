@@ -1,6 +1,5 @@
 package com.rainyalley.architecture.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +12,7 @@ import javax.sql.DataSource;
 public class DataSourceConfiguration {
 
     @Primary
-    @Bean(name = "primaryDataSource")
-    @Qualifier("primaryDataSource")
+    @Bean(name = "dataSource")
     @ConfigurationProperties(prefix="spring.datasource.primary")
     public DataSource primaryDataSource() {
         return DataSourceBuilder.create().build();
@@ -22,12 +20,11 @@ public class DataSourceConfiguration {
 
 
 
-    @Bean(name = "secondaryDataSource")
-    @Qualifier("secondaryDataSource")
-    @ConfigurationProperties(prefix="spring.datasource.secondary")
-    public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
+//    @Bean(name = "secondaryDataSource")
+//    @ConfigurationProperties(prefix="spring.datasource.secondary")
+//    public DataSource secondaryDataSource() {
+//        return DataSourceBuilder.create().build();
+//    }
 
 
 }

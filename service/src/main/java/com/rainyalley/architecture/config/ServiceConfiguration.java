@@ -21,7 +21,7 @@ public class ServiceConfiguration {
 
     static final String MAPPER_LOCATION = "classpath:mybatis/mapper/**.xml";
 
-    @Bean
+    @Bean(name = "transactionManager")
     @Primary
     public DataSourceTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);

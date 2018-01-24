@@ -14,9 +14,11 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,14 +30,20 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RequestMapping("/batch")
 public class BatchController {
 
-    @Resource(name = "batchJobRepository")
+    @Resource
     private JobRepository jobRepository;
 
-    @Resource(name = "batchTransactionManager")
-    private ResourcelessTransactionManager resourcelessTransactionManager;
-
-    @Resource(name = "batchJobLauncher")
+    @Resource
     private JobLauncher jobLauncher;
+
+    @Resource(name = "transactionManager")
+    private PlatformTransactionManager transactionManager;
+
+    @Bean
+    @Primary
+    public JobBuilderFactory jobBuilders(JobRepository jobRepository) throws Exception {
+        return new JobBuilderFactory(jobRepository);
+    }
 
 
     @RequestMapping("/user")
@@ -50,7 +58,7 @@ public class BatchController {
         writer.setResource(new FileSystemResource("src/main/resources/architecture_user_w.csv"));
         writer.setLineAggregator(new UserAggregator());
 
-        StepBuilderFactory stepBuilderFactory = new StepBuilderFactory(jobRepository, resourcelessTransactionManager);
+        StepBuilderFactory stepBuilderFactory = new StepBuilderFactory(jobRepository, transactionManager);
         Step step = stepBuilderFactory.get("step").<User,User>chunk(1).reader(reader).processor(processor).writer(writer).build();
 
         JobBuilderFactory jbf = new JobBuilderFactory(jobRepository);
@@ -59,6 +67,7 @@ public class BatchController {
         try {
             jobLauncher.run(job, new JobParameters());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
         }
 
