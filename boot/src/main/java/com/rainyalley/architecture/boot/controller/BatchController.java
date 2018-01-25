@@ -59,7 +59,7 @@ public class BatchController {
         writer.setLineAggregator(new UserAggregator());
 
         StepBuilderFactory stepBuilderFactory = new StepBuilderFactory(jobRepository, transactionManager);
-        Step step = stepBuilderFactory.get("step").<User,User>chunk(1).reader(reader).processor(processor).writer(writer).build();
+        Step step = stepBuilderFactory.get("step").<User,User>chunk(1).reader(reader).processor(processor).build();
 
         JobBuilderFactory jbf = new JobBuilderFactory(jobRepository);
         Job job = jbf.get("job").start(step).build();
