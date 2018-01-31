@@ -44,6 +44,7 @@ public class SpeedLimitInputStream extends FilterInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         //已读出字节数
         int trn = 0;
+        boolean eof = false;
         while (trn < len){
             long curr = System.currentTimeMillis();
             if(lastReadTime == -1){
@@ -61,6 +62,7 @@ public class SpeedLimitInputStream extends FilterInputStream {
             int arn = super.read(b, off + trn, rrn);
             //已读光
             if(arn == -1){
+                eof = true;
                 break;
             }
 
@@ -70,7 +72,11 @@ public class SpeedLimitInputStream extends FilterInputStream {
             sleep();
         }
 
-        return trn;
+        if(trn == 0 && eof){
+            return -1;
+        } else {
+            return trn;
+        }
     }
 
     private void sleep(){
