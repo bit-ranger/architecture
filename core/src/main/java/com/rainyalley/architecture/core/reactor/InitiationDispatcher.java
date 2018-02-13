@@ -32,7 +32,7 @@ public class InitiationDispatcher{
         // 用于套接字接受操作的操作集位。
         SelectionKey ssck = serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        // 利用selectionKey的attache功能绑定Acceptor, Acceptor叫做附加对象 如果有事件，触发Acceptor
+        // 利用selectionKey的attach功能绑定Acceptor, Acceptor叫做附加对象 如果有事件，触发Acceptor
         // 接收客户机的请求
         // 将给定的对象附加到此键。
         ssck.attach(new EventHandler(selector, serverSocketChannel));
