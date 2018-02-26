@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/batch"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans   
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<bean:job-repository id="jobRepository" data-source="dataSource"
+					transaction-manager="transactionManager" isolation-level-for-create="SERIALIZABLE"
+					table-prefix="BATCH_" max-varchar-length="1000" />
+
+
+	<!-- 作业调度器 异步调用 -->
+	<bean id="jobLauncher"
+			   class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+		<property name="taskExecutor" ref="jobTaskExecutor" /> <!-- 使用线程池处理 -->
+	</bean>
+
+	<bean id="jobTaskExecutor"
+		  class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="20" /> <!-- 线程池维护线程的最少数量 -->
+		<property name="keepAliveSeconds" value="300" /> <!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="maxPoolSize" value="100" /> <!-- 线程池维护线程的最大数量 -->
+		<property name="queueCapacity" value="100" /> <!-- 线程池所使用的缓冲队列 -->
+	</bean>
+
+	<bean class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+		<property name="jobRegistry" ref="jobRegistry" />
+	</bean>
+
+	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+
+	<!-- 作业查询 -->
+	<bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<!-- 作业执行器 -->
+	<bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+		<property name="jobLauncher" ref="jobLauncher" />
+		<property name="jobExplorer" ref="jobExplorer" />
+		<property name="jobRepository" ref="jobRepository" />
+		<property name="jobRegistry" ref="jobRegistry" />
+	</bean>
+
+
+	<bean id="demoFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="resource" value="architecture_user.csv"/>
+		<property name="lineMapper">
+			<bean class="com.rainyalley.architecture.batch.UserLineMapper"/>
+		</property>
+	</bean>
+
+	<bean id="demoItemProcessor" class="com.rainyalley.architecture.batch.UserItemProcessor"/>
+
+	<bean id="demoItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource" value="file:/var/architecture_user.new.csv"/>
+		<property name="lineAggregator">
+			<bean class="com.rainyalley.architecture.batch.UserAggregator"/>
+		</property>
+	</bean>
+
+	<bean:job id="demoJob" job-repository="jobRepository">
+		<bean:step id="firstStep">
+			<tasklet>
+				<chunk reader="demoFileItemReader"
+					   processor="demoItemProcessor"
+					   writer="demoItemWriter"
+					   processor-transactional="false"
+					   commit-interval="1" skip-limit="1000000000"
+					   retry-limit="3"  >
+					<!-- 跳过异常 -->
+					<skippable-exception-classes>
+						<include class="org.springframework.batch.item.file.FlatFileParseException"/>
+					</skippable-exception-classes>
+					<!-- 重试异常 -->
+					<retryable-exception-classes>
+						<include class="java.io.IOException" />
+					</retryable-exception-classes>
+				</chunk>
+				<no-rollback-exception-classes>
+					<include class="java.lang.Exception"/>
+				</no-rollback-exception-classes>
+			</tasklet>
+		</bean:step>
+	</bean:job>
+</beans>

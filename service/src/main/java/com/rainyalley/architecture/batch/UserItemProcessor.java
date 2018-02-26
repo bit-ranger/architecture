@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.boot.batch;
+package com.rainyalley.architecture.batch;
 
 import com.rainyalley.architecture.model.entity.User;
 import org.springframework.batch.item.ItemProcessor;

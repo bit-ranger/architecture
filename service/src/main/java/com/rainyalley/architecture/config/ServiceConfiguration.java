@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -17,6 +18,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @ComponentScan("com.rainyalley.architecture")
 @MapperScan(basePackages = "com.rainyalley.architecture.dao", sqlSessionFactoryRef = "sqlSessionFactory")
+@ImportResource({"classpath*:application-quartz.xml", "classpath*:application-batch.xml"})
 public class ServiceConfiguration {
 
     static final String MAPPER_LOCATION = "classpath:mybatis/mapper/**.xml";

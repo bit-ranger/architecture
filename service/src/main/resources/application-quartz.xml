@@ -5,7 +5,7 @@
       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
 	<!-- 调度触发器 -->
-	<bean id="testQuartzTrigger"
+	<bean id="demoQuartzTrigger"
 		  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="name" value="work_default_name" />
 		<property name="group" value="work_default" />
@@ -16,7 +16,7 @@
 				<!--false表示等上一个任务执行完后再开启新的任务 -->
 				<property name="concurrent" value="false" />
 				<property name="targetObject">
-					<bean class="com.rainyalley.architecture.boot.quartz.TestQuartz"/>
+					<bean class="com.rainyalley.architecture.quartz.DemoQuartz"/>
 				</property>
 				<property name="targetMethod">
 					<value>run</value>
@@ -33,7 +33,7 @@
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="testQuartzTrigger"/>
+				<ref bean="demoQuartzTrigger"/>
 			</list>
 		</property>
 	</bean>

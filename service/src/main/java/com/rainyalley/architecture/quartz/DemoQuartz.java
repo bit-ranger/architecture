@@ -1,6 +1,6 @@
-package com.rainyalley.architecture.boot.quartz;
+package com.rainyalley.architecture.quartz;
 
-public class TestQuartz {
+public class DemoQuartz {
 
     public void run(){
         System.out.println("run !!!!!!!!");
