@@ -25,7 +25,7 @@ public class BatchTest {
 
     @Test
     public void test() throws Exception {
-        jobOperator.start("demoJob", "token=3");
+        jobOperator.start("demoJob", "token=" + System.currentTimeMillis());
     }
 
 }

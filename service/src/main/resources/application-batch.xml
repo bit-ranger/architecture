@@ -9,7 +9,7 @@
 					table-prefix="BATCH_" max-varchar-length="1000" />
 
 
-	<!-- 作业调度器 异步调用 -->
+	 <!--作业调度器 异步调用 -->
 	<bean id="jobLauncher"
 			   class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
 		<property name="jobRepository" ref="jobRepository" />
@@ -30,12 +30,12 @@
 
 	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
 
-	<!-- 作业查询 -->
+	 <!--作业查询 -->
 	<bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
 
-	<!-- 作业执行器 -->
+	 <!--作业执行器 -->
 	<bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
 		<property name="jobLauncher" ref="jobLauncher" />
 		<property name="jobExplorer" ref="jobExplorer" />
