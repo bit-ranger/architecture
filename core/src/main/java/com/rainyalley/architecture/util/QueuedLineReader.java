@@ -14,12 +14,16 @@ public class QueuedLineReader{
     }
 
 
-    public void close() throws IOException{
+    public void close() {
         if(br == null){
             return;
         }
-        br.close();
-        br = null;
+        try {
+            br.close();
+            br = null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String peek(){

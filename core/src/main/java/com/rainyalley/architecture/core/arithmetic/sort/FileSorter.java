@@ -156,22 +156,42 @@ public class FileSorter {
             }).collect(Collectors.toList());
 
             while (true){
-                Optional<QueuedLineReader> minReader = qlrList.stream()
-                        .filter(p -> p.peek() != null)
-                        .min((p,n) -> comparator.compare(p.peek(), n.peek())
-                );
+                QueuedLineReader minReader = peekMinRemoveNull(qlrList);
                 //所有reader都读完了
-                if(!minReader.isPresent()){
+                if(minReader == null){
                     break;
                 }
 
-                String line = minReader.get().take();
+                String line = minReader.take();
                 mergedChunkFileWriter.write(line);
                 mergedChunkFileWriter.newLine();
             }
         }
 
         return mergedChunk;
+    }
+
+    private QueuedLineReader peekMinRemoveNull(List<QueuedLineReader> list){
+        Iterator<QueuedLineReader> i = list.iterator();
+        QueuedLineReader candidate = null;
+
+        while (i.hasNext()) {
+            QueuedLineReader next = i.next();
+
+            if(next.peek() == null){
+                next.close();
+                i.remove();
+                continue;
+            } else if(candidate == null){
+                candidate = next;
+                continue;
+            }
+
+            if (comparator.compare(next.peek(), candidate.peek()) < 0){
+                candidate = next;
+            }
+        }
+        return candidate;
     }
 
 

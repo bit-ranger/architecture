@@ -14,7 +14,7 @@ public class FileSorterTest {
     public void sort() throws Exception {
 
         Random radom = new Random();
-        int numbers = 1000000;
+        int numbers = 10000000;
         File file = new File("/var/sort/architecture_user.csv");
         File dest = new File("/var/sort/architecture_user.sorted.csv");
         file.getParentFile().mkdirs();
@@ -25,7 +25,7 @@ public class FileSorterTest {
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(file))){
             for (int i = 0; i < numbers; i++) {
                 long id = radom.nextLong();
-                String line = id + ",中文名字A,中文密码,1";
+                String line = String.valueOf(id);
                 memoryList.add(line);
                 bw.write(line);
                 bw.newLine();
@@ -33,8 +33,11 @@ public class FileSorterTest {
         }
 
         FileSorter sorter = new FileSorter((p,n) -> p.compareTo(n),
-                8, 10000, 1024*1024*2, new File("/var/tmp/fileSorter"), false);
+                8, 100000, 1024*1024*2, new File("/var/tmp/fileSorter"), false);
+        long start = System.currentTimeMillis();
         sorter.sort(file, dest);
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
 
         List<String> diskList   = new ArrayList<>(numbers);
         try(BufferedReader br = new BufferedReader(new FileReader(dest))){
