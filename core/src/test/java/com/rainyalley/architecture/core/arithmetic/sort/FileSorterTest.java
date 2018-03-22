@@ -14,7 +14,7 @@ public class FileSorterTest {
     public void sort() throws Exception {
 
         Random radom = new Random();
-        int numbers = 10000000;
+        int numbers = 100000000;
         File file = new File("/var/sort/architecture_user.csv");
         File dest = new File("/var/sort/architecture_user.sorted.csv");
         file.getParentFile().mkdirs();

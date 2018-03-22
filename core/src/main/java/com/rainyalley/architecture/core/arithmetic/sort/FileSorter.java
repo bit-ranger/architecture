@@ -242,11 +242,13 @@ public class FileSorter {
                 }
 
                 if(line == null || chunkRows.size() >= initialChunkSize){
-                    chunkRows.sort(comparator);
-                    Chunk chunk = initialChunk(rowNum, chunkRows, file);
-                    chunkList.add(chunk);
-                    rowNum += chunkRows.size();
-                    chunkRows.clear();
+                    if(chunkRows.size() > 0){
+                        chunkRows.sort(comparator);
+                        Chunk chunk = initialChunk(rowNum, chunkRows, file);
+                        chunkList.add(chunk);
+                        rowNum += chunkRows.size();
+                        chunkRows.clear();
+                    }
                 }
 
                 if(line == null){
