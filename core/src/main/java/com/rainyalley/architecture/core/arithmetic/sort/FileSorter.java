@@ -4,10 +4,12 @@ import com.rainyalley.architecture.util.Chunk;
 import com.rainyalley.architecture.util.QueuedLineReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.Assert;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,9 +56,21 @@ public class FileSorter {
     private int initialChunkSize = 1;
 
     /**
-     *
+     * 排序完成后是否删除临时文件
      */
     private boolean clean;
+
+    /**
+     * 0-4个线程活动
+     * 阻塞队列容量100
+     * 最大空闲时间10秒
+     */
+    private ThreadPoolExecutor threadPoolExecutor;
+
+    /**
+     * 每多少个合并任务执行一次
+     */
+    private int mergeTaskInvokeThreshold = 32;
 
     /**
      *
@@ -83,6 +97,12 @@ public class FileSorter {
         this.ioBufferSize = ioBufferSize;
         this.tmpDir = tmpDir;
         this.clean = clean;
+
+        //并发归并线程池，队列容量为归并路数
+        this.threadPoolExecutor = new ThreadPoolExecutor(4, 4, 10L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(512),
+                new CustomizableThreadFactory("fileSorterTPE-"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
 
@@ -93,34 +113,45 @@ public class FileSorter {
      * @throws IOException
      */
     public void sort(File original, File dest) throws IOException {
-        Assert.isTrue(original.exists(), String.format("original file not fond: %s", original.getPath()));
-        Assert.isTrue(!dest.exists(), String.format("dest file must not exist: %s", dest.getPath()));
-
-        File workDir = workDir(original);
-        if(!workDir.exists()){
-            workDir.mkdir();
-        } else {
-            FileUtils.cleanDirectory(workDir);
-        }
+        beforeSort(original, dest);
 
         List<Chunk> splitChunkList = split(original);
 
+        //块队列，将从此队列中不断取出块，合并后放入此队列
         Queue<Chunk> chunkQueue = new LinkedList<>(splitChunkList);
+        //任务列表，将由连接池执行，此列表中任务处理的所有chunk都属于相同的level
+        List<Callable<Chunk>> callableList = new ArrayList<>(mergeTaskInvokeThreshold);
+        //当前处理的chunk level
         int currentLevel = INITIAL_CHUNK_LEVEL;
+
         while (true){
+            //从队列中获取一组chunk
             List<Chunk> pollChunks =  pollChunks(chunkQueue, currentLevel);
+
+            //未取到同级chunk，执行合并
+            if(CollectionUtils.isEmpty(pollChunks)){
+                List<Chunk> mergedChunkList = invokeMergeTasks(callableList);
+                chunkQueue.addAll(mergedChunkList);
+                callableList.clear();
+            } else {
+                //合并Task
+                callableList.add(() -> merge(pollChunks, original));
+            }
+
+            //合并任务数量达到阈值，执行合并
+            if(callableList.size() >= mergeTaskInvokeThreshold){
+                List<Chunk> mergedChunkList = invokeMergeTasks(callableList);
+                chunkQueue.addAll(mergedChunkList);
+                callableList.clear();
+            }
+
+            //chunkQueue 中只有一个元素，表示此次合并是最终合并
+            if(chunkQueue.size() == 1){
+                break;
+            }
+
             if(CollectionUtils.isEmpty(pollChunks)){
                 currentLevel++;
-                continue;
-            }
-            //合并
-            Chunk mergedChunk = merge(pollChunks, original);
-            //chunkQueue 中没有后续的元素，表示此次合并是最终合并
-            if(chunkQueue.size() == 0){
-                chunkQueue.add(mergedChunk);
-                break;
-            } else {
-                chunkQueue.add(mergedChunk);
             }
         }
 
@@ -131,11 +162,46 @@ public class FileSorter {
             throw new IllegalStateException(String.format("rename failure: %s >>> %s", finalChunkFile.getPath(), dest.getPath()));
         }
 
-        if(clean){
-            FileUtils.deleteDirectory(workDir);
+        afterSort(original, dest);
+    }
+
+    private List<Chunk> invokeMergeTasks(List<Callable<Chunk>> callableList){
+        return callableList.stream().map(c -> threadPoolExecutor.submit(c)).map(this::get).collect(Collectors.toList());
+    }
+
+    private Chunk get(Future<Chunk> future){
+        try {
+            return future.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
+    private void beforeSort(File original, File dest) throws IOException{
+        Assert.isTrue(original.exists(), String.format("original file not fond: %s", original.getPath()));
+        Assert.isTrue(!dest.exists(), String.format("dest file must not exist: %s", dest.getPath()));
+
+        File workDir = workDir(original);
+        if(!workDir.exists()){
+            workDir.mkdir();
+        } else {
+            FileUtils.cleanDirectory(workDir);
+        }
+    }
+
+    private void afterSort(File original, File dest) throws IOException{
+        if(clean){
+            FileUtils.deleteDirectory(workDir(original));
+        }
+    }
+
+    /**
+     * 合并
+     * @param chunks
+     * @param originalFile
+     * @return
+     * @throws IOException
+     */
     private Chunk merge(List<Chunk> chunks, File originalFile) throws IOException{
         if(chunks.size() == 1){
             return chunks.get(0);
@@ -147,13 +213,7 @@ public class FileSorter {
         File mergedChunkFile = chunkFile(mergedChunk, originalFile);
 
         try(BufferedWriter mergedChunkFileWriter = new BufferedWriter(new FileWriter(mergedChunkFile))){
-            List<QueuedLineReader> qlrList = chunks.stream().map(c -> {
-                try {
-                    return new QueuedLineReader(new BufferedReader(new FileReader(chunkFile(c, originalFile))));
-                } catch (FileNotFoundException e) {
-                    throw new IllegalStateException(e);
-                }
-            }).collect(Collectors.toList());
+            List<QueuedLineReader> qlrList = chunks.stream().map(c -> createQueuedLineReader(c, originalFile)).collect(Collectors.toList());
 
             while (true){
                 QueuedLineReader minReader = peekMinRemoveNull(qlrList);
@@ -169,6 +229,14 @@ public class FileSorter {
         }
 
         return mergedChunk;
+    }
+
+    private QueuedLineReader createQueuedLineReader(Chunk chunk, File originalFile){
+        try {
+            return new QueuedLineReader(new BufferedReader(new FileReader(chunkFile(chunk, originalFile))));
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private QueuedLineReader peekMinRemoveNull(List<QueuedLineReader> list){
