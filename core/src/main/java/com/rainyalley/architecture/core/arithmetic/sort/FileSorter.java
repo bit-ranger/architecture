@@ -68,11 +68,6 @@ public class FileSorter {
     private ThreadPoolExecutor threadPoolExecutor;
 
     /**
-     * 每多少个合并任务执行一次
-     */
-    private int mergeTaskInvokeThreshold = 32;
-
-    /**
      *
      * @param comparator 行比较器
      * @param mergeWayNum 归并路数
@@ -99,8 +94,8 @@ public class FileSorter {
         this.clean = clean;
 
         //并发归并线程池，队列容量为归并路数
-        this.threadPoolExecutor = new ThreadPoolExecutor(4, 4, 10L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(512),
+        this.threadPoolExecutor = new ThreadPoolExecutor(8, 8, 10L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(8),
                 new CustomizableThreadFactory("fileSorterTPE-"),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
@@ -119,54 +114,40 @@ public class FileSorter {
 
         //块队列，将从此队列中不断取出块，合并后放入此队列
         Queue<Chunk> chunkQueue = new LinkedList<>(splitChunkList);
-        //任务列表，将由连接池执行，此列表中任务处理的所有chunk都属于相同的level
-        List<Callable<Chunk>> callableList = new ArrayList<>(mergeTaskInvokeThreshold);
+
         //当前处理的chunk level
         int currentLevel = INITIAL_CHUNK_LEVEL;
 
-        while (true){
+        List<Future<Chunk>> mergeFutureList = new ArrayList<>();
+        while (true) {
             //从队列中获取一组chunk
-            List<Chunk> pollChunks =  pollChunks(chunkQueue, currentLevel);
+            List<Chunk> pollChunks = pollChunks(chunkQueue, currentLevel);
 
-            //未取到同级chunk，执行合并
-            if(CollectionUtils.isEmpty(pollChunks)){
-                List<Chunk> mergedChunkList = invokeMergeTasks(callableList);
-                chunkQueue.addAll(mergedChunkList);
-                callableList.clear();
-            } else {
-                //合并Task
-                callableList.add(() -> merge(pollChunks, original));
+            //未取到同级chunk, 表示此级别应合并完成
+            if (CollectionUtils.isEmpty(pollChunks)) {
+                mergeFutureList.stream().map(this::get).forEach(chunkQueue::add);
+                mergeFutureList.clear();
+                //chunkQueue 中只有一个元素，表示此次合并是最终合并
+                if (chunkQueue.size() == 1) {
+                    break;
+                } else {
+                    currentLevel++;
+                    continue;
+                }
             }
 
-            //合并任务数量达到阈值，执行合并
-            if(callableList.size() >= mergeTaskInvokeThreshold){
-                List<Chunk> mergedChunkList = invokeMergeTasks(callableList);
-                chunkQueue.addAll(mergedChunkList);
-                callableList.clear();
-            }
-
-            //chunkQueue 中只有一个元素，表示此次合并是最终合并
-            if(chunkQueue.size() == 1){
-                break;
-            }
-
-            if(CollectionUtils.isEmpty(pollChunks)){
-                currentLevel++;
-            }
+            Future<Chunk> chunk = threadPoolExecutor.submit(() -> merge(pollChunks, original));
+            mergeFutureList.add(chunk);
         }
 
         Chunk finalChunk = chunkQueue.poll();
         File finalChunkFile = chunkFile(finalChunk, original);
-        boolean renamed =  finalChunkFile.renameTo(dest);
-        if(!renamed){
+        boolean renamed = finalChunkFile.renameTo(dest);
+        if (!renamed) {
             throw new IllegalStateException(String.format("rename failure: %s >>> %s", finalChunkFile.getPath(), dest.getPath()));
         }
 
         afterSort(original, dest);
-    }
-
-    private List<Chunk> invokeMergeTasks(List<Callable<Chunk>> callableList){
-        return callableList.stream().map(c -> threadPoolExecutor.submit(c)).map(this::get).collect(Collectors.toList());
     }
 
     private Chunk get(Future<Chunk> future){
@@ -212,7 +193,7 @@ public class FileSorter {
         Chunk mergedChunk = new Chunk(chunks.get(0).getLevel() + 1, chunks.get(0).getIdx(), mergeSize);
         File mergedChunkFile = chunkFile(mergedChunk, originalFile);
 
-        try(BufferedWriter mergedChunkFileWriter = new BufferedWriter(new FileWriter(mergedChunkFile))){
+        try(BufferedWriter mergedChunkFileWriter = new BufferedWriter(new FileWriter(mergedChunkFile), ioBufferSize)){
             List<QueuedLineReader> qlrList = chunks.stream().map(c -> createQueuedLineReader(c, originalFile)).collect(Collectors.toList());
 
             while (true){
@@ -233,7 +214,7 @@ public class FileSorter {
 
     private QueuedLineReader createQueuedLineReader(Chunk chunk, File originalFile){
         try {
-            return new QueuedLineReader(new BufferedReader(new FileReader(chunkFile(chunk, originalFile))));
+            return new QueuedLineReader(new BufferedReader(new FileReader(chunkFile(chunk, originalFile)), ioBufferSize));
         } catch (FileNotFoundException e) {
             throw new IllegalStateException(e);
         }
@@ -294,15 +275,15 @@ public class FileSorter {
      */
     private List<Chunk> split(File file) throws IOException{
 
-        List<Chunk> chunkList = new ArrayList<>();
+        List<Chunk> chunkList = Collections.emptyList();
 
         try(BufferedReader br = new BufferedReader(new FileReader(file), ioBufferSize)){
             int rowNum = INITIAL_ROW_NUM;
             String line = null;
             List<String> chunkRows = new ArrayList<>(initialChunkSize);
 
+            List<Future<Chunk>> splitFutureList = new ArrayList<>();
             while (true){
-
                 line = br.readLine();
 
                 if(line != null){
@@ -311,11 +292,18 @@ public class FileSorter {
 
                 if(line == null || chunkRows.size() >= initialChunkSize){
                     if(chunkRows.size() > 0){
-                        chunkRows.sort(comparator);
-                        Chunk chunk = initialChunk(rowNum, chunkRows, file);
-                        chunkList.add(chunk);
+                        final int rn = rowNum;
+                        final List<String> cr = chunkRows;
+
                         rowNum += chunkRows.size();
-                        chunkRows.clear();
+                        chunkRows = new ArrayList<>();
+
+                        Future<Chunk> chunk = threadPoolExecutor.submit(() -> {
+                            cr.sort(comparator);
+                            return initialChunk(rn, cr, file);
+                        });
+
+                        splitFutureList.add(chunk);
                     }
                 }
 
@@ -323,6 +311,7 @@ public class FileSorter {
                     break;
                 }
             }
+            chunkList = splitFutureList.stream().map(this::get).collect(Collectors.toList());
         }
         return chunkList;
     }
