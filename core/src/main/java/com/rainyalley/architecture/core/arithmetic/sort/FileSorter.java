@@ -4,17 +4,10 @@ import com.rainyalley.architecture.util.Chunk;
 import com.rainyalley.architecture.util.QueuedLineReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.Assert;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +16,7 @@ import java.util.stream.Stream;
  */
 public class FileSorter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileSorter.class);
+
 
     /**
      * 初始化块级别
@@ -61,16 +54,9 @@ public class FileSorter {
     private int initialChunkSize = 1;
 
     /**
-     * 排序完成后是否删除临时文件
+     *
      */
     private boolean clean;
-
-    /**
-     * 0-4个线程活动
-     * 阻塞队列容量100
-     * 最大空闲时间10秒
-     */
-    private ThreadPoolExecutor threadPoolExecutor;
 
     /**
      *
@@ -97,12 +83,6 @@ public class FileSorter {
         this.ioBufferSize = ioBufferSize;
         this.tmpDir = tmpDir;
         this.clean = clean;
-
-        //并发归并线程池，队列容量为归并路数
-        this.threadPoolExecutor = new ThreadPoolExecutor(8, 8, 10L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(8),
-                new CustomizableThreadFactory("fileSorterTPE-"),
-                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
 
@@ -113,57 +93,6 @@ public class FileSorter {
      * @throws IOException
      */
     public void sort(File original, File dest) throws IOException {
-        beforeSort(original, dest);
-
-        List<Chunk> splitChunkList = split(original);
-
-        //块队列，将从此队列中不断取出块，合并后放入此队列
-        Queue<Chunk> chunkQueue = new LinkedList<>(splitChunkList);
-
-        //当前处理的chunk level
-        int currentLevel = INITIAL_CHUNK_LEVEL;
-
-        List<Future<Chunk>> mergeFutureList = new ArrayList<>();
-        while (true) {
-            //从队列中获取一组chunk
-            List<Chunk> pollChunks = pollChunks(chunkQueue, currentLevel);
-
-            //未取到同级chunk, 表示此级别应合并完成
-            if (CollectionUtils.isEmpty(pollChunks)) {
-                mergeFutureList.stream().map(this::get).forEach(chunkQueue::add);
-                mergeFutureList.clear();
-                //chunkQueue 中只有一个元素，表示此次合并是最终合并
-                if (chunkQueue.size() == 1) {
-                    break;
-                } else {
-                    currentLevel++;
-                    continue;
-                }
-            }
-
-            Future<Chunk> chunk = threadPoolExecutor.submit(() -> merge(pollChunks, original));
-            mergeFutureList.add(chunk);
-        }
-
-        Chunk finalChunk = chunkQueue.poll();
-        File finalChunkFile = chunkFile(finalChunk, original);
-        boolean renamed = finalChunkFile.renameTo(dest);
-        if (!renamed) {
-            throw new IllegalStateException(String.format("rename failure: %s >>> %s", finalChunkFile.getPath(), dest.getPath()));
-        }
-
-        afterSort(original, dest);
-    }
-
-    private Chunk get(Future<Chunk> future){
-        try {
-            return future.get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void beforeSort(File original, File dest) throws IOException{
         Assert.isTrue(original.exists(), String.format("original file not fond: %s", original.getPath()));
         Assert.isTrue(!dest.exists(), String.format("dest file must not exist: %s", dest.getPath()));
 
@@ -173,30 +102,54 @@ public class FileSorter {
         } else {
             FileUtils.cleanDirectory(workDir);
         }
-    }
 
-    private void afterSort(File original, File dest) throws IOException{
+        List<Chunk> splitChunkList = split(original);
+
+        Queue<Chunk> chunkQueue = new LinkedList<>(splitChunkList);
+        int currentLevel = INITIAL_CHUNK_LEVEL;
+        while (true){
+            List<Chunk> pollChunks =  pollChunks(chunkQueue, currentLevel);
+            if(CollectionUtils.isEmpty(pollChunks)){
+                currentLevel++;
+                continue;
+            }
+            //合并
+            Chunk mergedChunk = merge(pollChunks, original);
+            //chunkQueue 中没有后续的元素，表示此次合并是最终合并
+            if(chunkQueue.size() == 0){
+                chunkQueue.add(mergedChunk);
+                break;
+            } else {
+                chunkQueue.add(mergedChunk);
+            }
+        }
+
+        Chunk finalChunk = chunkQueue.poll();
+        File finalChunkFile = chunkFile(finalChunk, original);
+        boolean renamed =  finalChunkFile.renameTo(dest);
+        if(!renamed){
+            throw new IllegalStateException(String.format("rename failure: %s >>> %s", finalChunkFile.getPath(), dest.getPath()));
+        }
+
         if(clean){
-            FileUtils.deleteDirectory(workDir(original));
+            FileUtils.deleteDirectory(workDir);
         }
     }
 
-    /**
-     * 合并
-     * @param chunks
-     * @param originalFile
-     * @return
-     * @throws IOException
-     */
     private Chunk merge(List<Chunk> chunks, File originalFile) throws IOException{
-
         Stream<Chunk> cs = chunks.stream();
         Integer mergeSize = cs.map(Chunk::getSize).reduce((p, n) -> p + n).get();
         Chunk mergedChunk = new Chunk(chunks.get(0).getLevel() + 1, chunks.get(0).getIdx(), mergeSize);
         File mergedChunkFile = chunkFile(mergedChunk, originalFile);
 
         try(BufferedWriter mergedChunkFileWriter = new BufferedWriter(new FileWriter(mergedChunkFile), ioBufferSize)){
-            List<QueuedLineReader> qlrList = chunks.stream().map(c -> createQueuedLineReader(c, originalFile)).collect(Collectors.toList());
+            List<QueuedLineReader> qlrList = chunks.stream().map(c -> {
+                try {
+                    return new QueuedLineReader(new BufferedReader(new FileReader(chunkFile(c, originalFile)), ioBufferSize));
+                } catch (FileNotFoundException e) {
+                    throw new IllegalStateException(e);
+                }
+            }).collect(Collectors.toList());
 
             while (true){
                 QueuedLineReader minReader = peekMinRemoveNull(qlrList);
@@ -211,19 +164,7 @@ public class FileSorter {
             }
         }
 
-
-        if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("merge size {}, {}", chunks.size(), chunks);
-        }
         return mergedChunk;
-    }
-
-    private QueuedLineReader createQueuedLineReader(Chunk chunk, File originalFile){
-        try {
-            return new QueuedLineReader(new BufferedReader(new FileReader(chunkFile(chunk, originalFile)), ioBufferSize));
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     private QueuedLineReader peekMinRemoveNull(List<QueuedLineReader> list){
@@ -281,15 +222,15 @@ public class FileSorter {
      */
     private List<Chunk> split(File file) throws IOException{
 
-        List<Chunk> chunkList = Collections.emptyList();
+        List<Chunk> chunkList = new ArrayList<>();
 
         try(BufferedReader br = new BufferedReader(new FileReader(file), ioBufferSize)){
             int rowNum = INITIAL_ROW_NUM;
             String line = null;
             List<String> chunkRows = new ArrayList<>(initialChunkSize);
 
-            List<Future<Chunk>> splitFutureList = new ArrayList<>();
             while (true){
+
                 line = br.readLine();
 
                 if(line != null){
@@ -298,18 +239,11 @@ public class FileSorter {
 
                 if(line == null || chunkRows.size() >= initialChunkSize){
                     if(chunkRows.size() > 0){
-                        final int rn = rowNum;
-                        final List<String> cr = chunkRows;
-
+                        chunkRows.sort(comparator);
+                        Chunk chunk = initialChunk(rowNum, chunkRows, file);
+                        chunkList.add(chunk);
                         rowNum += chunkRows.size();
-                        chunkRows = new ArrayList<>();
-
-                        Future<Chunk> chunk = threadPoolExecutor.submit(() -> {
-                            cr.sort(comparator);
-                            return initialChunk(rn, cr, file);
-                        });
-
-                        splitFutureList.add(chunk);
+                        chunkRows.clear();
                     }
                 }
 
@@ -317,7 +251,6 @@ public class FileSorter {
                     break;
                 }
             }
-            chunkList = splitFutureList.stream().map(this::get).collect(Collectors.toList());
         }
         return chunkList;
     }
