@@ -4,12 +4,17 @@ import com.rainyalley.architecture.util.Chunk;
 import com.rainyalley.architecture.util.QueuedLineReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.Assert;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,7 +23,7 @@ import java.util.stream.Stream;
  */
 public class FileSorter {
 
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSorter.class);
 
     /**
      * 初始化块级别
@@ -184,9 +189,6 @@ public class FileSorter {
      * @throws IOException
      */
     private Chunk merge(List<Chunk> chunks, File originalFile) throws IOException{
-        if(chunks.size() == 1){
-            return chunks.get(0);
-        }
 
         Stream<Chunk> cs = chunks.stream();
         Integer mergeSize = cs.map(Chunk::getSize).reduce((p, n) -> p + n).get();
@@ -209,6 +211,10 @@ public class FileSorter {
             }
         }
 
+
+        if(LOGGER.isDebugEnabled()){
+            LOGGER.debug("merge size {}, {}", chunks.size(), chunks);
+        }
         return mergedChunk;
     }
 
