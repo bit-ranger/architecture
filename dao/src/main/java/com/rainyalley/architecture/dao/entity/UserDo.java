@@ -41,24 +41,22 @@ public class UserDo implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
+        if (!(o instanceof UserDo)) return false;
 
-        UserDo user = (UserDo) o;
+        UserDo userDo = (UserDo) o;
 
-        if (this.id != user.id) return false;
-        if (this.name != null ? !this.name.equals(user.name) : user.name != null) return false;
-        return this.password != null ? this.password.equals(user.password) : user.password == null;
-
+        if (getId() != null ? !getId().equals(userDo.getId()) : userDo.getId() != null) return false;
+        if (getName() != null ? !getName().equals(userDo.getName()) : userDo.getName() != null) return false;
+        return getPassword() != null ? getPassword().equals(userDo.getPassword()) : userDo.getPassword() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = this.id != null ? this.id : 0;
-        result = 31 * result + (this.name != null ? this.name.hashCode() : 0);
-        result = 31 * result + (this.password != null ? this.password.hashCode() : 0);
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
         return result;
     }
-
 
     @Override
     public String toString() {

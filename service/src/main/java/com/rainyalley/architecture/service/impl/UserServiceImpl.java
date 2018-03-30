@@ -23,7 +23,7 @@ public class UserServiceImpl extends ServiceBasicSupport<User,UserDo> implements
     private UserMapper userMapper;
 
 
-    @CachePut(key = "#p0.id")
+    @CachePut(key = "#result.id")
     @Override
     public User save(User obj) {
         this.validate(obj);

@@ -1,7 +1,6 @@
 package com.rainyalley.architecture.service.impl;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.dao.entity.UserDo;
 import com.rainyalley.architecture.service.BootApplication;
 import com.rainyalley.architecture.service.UserService;
 import com.rainyalley.architecture.service.model.User;
@@ -46,7 +45,7 @@ public class UserServiceImplTest {
         user.setName("hello");
         user.setPassword("world");
         user = userService.save(user);
-        UserDo entity =  userService.get(user.getId());
+        User entity =  userService.get(user.getId());
         Assert.assertEquals(entity, user);
     }
 
