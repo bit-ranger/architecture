@@ -37,6 +37,16 @@
 		<dependency>
 			<groupId>com.rainyalley.architecture</groupId>
 			<artifactId>service</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.rainyalley.architecture</groupId>
+					<artifactId>dao</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.rainyalley.architecture</groupId>
+					<artifactId>external</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!--<dependency>-->
@@ -63,6 +73,7 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 		</dependency>
+
 
 	</dependencies>
 

@@ -1,9 +1,9 @@
 package com.rainyalley.architecture.service.impl;
 
 
-import com.rainyalley.architecture.dao.Dao;
-import com.rainyalley.architecture.dao.UserDao;
-import com.rainyalley.architecture.model.entity.User;
+import com.rainyalley.architecture.dao.BaseMapper;
+import com.rainyalley.architecture.dao.mapper.UserMapper;
+import com.rainyalley.architecture.dao.entity.UserDo;
 import com.rainyalley.architecture.service.UserService;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
@@ -15,28 +15,28 @@ import javax.annotation.Resource;
 
 @CacheConfig(cacheNames = "user")
 @Service
-public class UserServiceImpl extends ServiceBasicSupport<User> implements UserService {
+public class UserServiceImpl extends ServiceBasicSupport<UserDo> implements UserService {
 
     @Resource
-    private UserDao userDao;
+    private UserMapper userDao;
 
 
     @CachePut(key = "#p0.id")
     @Override
-    public User save(User obj) {
+    public UserDo save(UserDo obj) {
         this.validate(obj);
         return super.save(obj);
     }
 
     @Override
-    protected Dao<User> getDao() {
+    protected BaseMapper<UserDo> getDao() {
         return userDao;
     }
 
     @Cacheable(key = "#p0")
     @Override
-    public User get(int id) {
-        User p = new User();
+    public UserDo get(int id) {
+        UserDo p = new UserDo();
         p.setId(id);
         return super.get(p);
     }

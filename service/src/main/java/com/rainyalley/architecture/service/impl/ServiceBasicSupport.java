@@ -2,7 +2,7 @@ package com.rainyalley.architecture.service.impl;
 
 import com.rainyalley.architecture.core.BeanMapConvertor;
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.dao.Dao;
+import com.rainyalley.architecture.dao.BaseMapper;
 import com.rainyalley.architecture.service.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -63,7 +63,7 @@ public abstract class ServiceBasicSupport<T> implements Service<T> {
     }
 
 
-    protected abstract Dao<T> getDao();
+    protected abstract BaseMapper<T> getDao();
 
 
     public void setValidatorFactory(ValidatorFactory validatorFactory) {

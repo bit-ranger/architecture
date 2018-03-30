@@ -1,10 +1,10 @@
 package com.rainyalley.architecture.service;
 
 
-import com.rainyalley.architecture.model.entity.User;
+import com.rainyalley.architecture.dao.entity.UserDo;
 
 
-public interface UserService extends Service<User> {
+public interface UserService extends Service<UserDo> {
 
-    User get(int id);
+    UserDo get(int id);
 }

@@ -4,7 +4,7 @@
 
     <properties>
         <architecture-version>0.0.1-SNAPSHOT</architecture-version>
-        <kotlin.version>1.2.0</kotlin.version>
+        <kotlin.version>1.2.31</kotlin.version>
     </properties>
 
     <groupId>com.rainyalley.architecture</groupId>
@@ -24,8 +24,11 @@
 
     <modules>
         <module>core</module>
+        <module>dao</module>
+        <module>external</module>
         <module>service</module>
         <module>boot</module>
+        <module>batch</module>
     </modules>
 
     <repositories>
@@ -108,6 +111,30 @@
                 <version>${architecture-version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.rainyalley.architecture</groupId>
+                <artifactId>dao</artifactId>
+                <version>${architecture-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.rainyalley.architecture</groupId>
+                <artifactId>external</artifactId>
+                <version>${architecture-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.rainyalley.architecture</groupId>
+                <artifactId>service</artifactId>
+                <version>${architecture-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.rainyalley.architecture</groupId>
+                <artifactId>batch</artifactId>
+                <version>${architecture-version}</version>
+            </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -126,12 +153,6 @@
                 <groupId>org.glassfish.web</groupId>
                 <artifactId>javax.el</artifactId>
                 <version>2.2.4</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.rainyalley.architecture</groupId>
-                <artifactId>service</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>

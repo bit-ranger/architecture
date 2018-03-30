@@ -1,8 +1,8 @@
 package com.rainyalley.architecture.service.impl;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.config.ServiceConfiguration;
-import com.rainyalley.architecture.model.entity.User;
+import com.rainyalley.architecture.service.config.ServiceConfig;
+import com.rainyalley.architecture.dao.entity.UserDo;
 import com.rainyalley.architecture.service.UserService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {ServiceConfiguration.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {ServiceConfig.class})
 @SpringBootApplication
 @Transactional
 public class UserServiceImplTest {
@@ -29,13 +29,13 @@ public class UserServiceImplTest {
     @Test
     @Rollback
     public void save() throws Exception {
-        List<User> userListBefore = userService.get(new User(), new Page());
-        User user = new User();
+        List<UserDo> userListBefore = userService.get(new UserDo(), new Page());
+        UserDo user = new UserDo();
         user.setName("hello");
         user.setPassword("world");
         userService.save(user);
 
-        List<User> userListAfter = userService.get(new User(), new Page());
+        List<UserDo> userListAfter = userService.get(new UserDo(), new Page());
         System.out.println(userListAfter);
         Assert.assertEquals(1, userListAfter.size() - userListBefore.size());
     }
@@ -43,11 +43,11 @@ public class UserServiceImplTest {
     @Test
     @Rollback
     public void get() throws Exception {
-        User user = new User();
+        UserDo user = new UserDo();
         user.setName("hello");
         user.setPassword("world");
         userService.save(user);
-        User entity =  userService.get(user.getId());
+        UserDo entity =  userService.get(user.getId());
         Assert.assertEquals(entity, user);
     }
 

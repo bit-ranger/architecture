@@ -1,9 +1,9 @@
 package com.rainyalley.architecture
 
-import com.rainyalley.architecture.model.entity.User
+import com.rainyalley.architecture.dao.entity.UserDo
 
 
-fun printUser(u:User){
+fun printUser(u: UserDo){
     println(u)
 }
 
