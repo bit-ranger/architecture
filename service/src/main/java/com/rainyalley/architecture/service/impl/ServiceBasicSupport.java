@@ -28,12 +28,13 @@ public abstract class ServiceBasicSupport<B,D> implements Service<B> {
     @Transactional
     public B save(B obj) {
         List<B> pojoList = this.get(obj, new Page());
+        D d = toDo(obj);
         if (pojoList == null || pojoList.isEmpty()) {
-            this.getDao().insert(toDo(obj));
+            this.getDao().insert(d);
         } else {
-            this.getDao().update(toDo(obj));
+            this.getDao().update(d);
         }
-        return obj;
+        return toBo(d);
     }
 
     @Override

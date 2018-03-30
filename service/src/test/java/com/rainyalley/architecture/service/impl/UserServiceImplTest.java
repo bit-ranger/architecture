@@ -45,7 +45,7 @@ public class UserServiceImplTest {
         User user = new User();
         user.setName("hello");
         user.setPassword("world");
-        userService.save(user);
+        user = userService.save(user);
         UserDo entity =  userService.get(user.getId());
         Assert.assertEquals(entity, user);
     }
