@@ -12,58 +12,63 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 实现了{@link Service}中所有方法的默认实现类
  * 该类可作为事务的通用实现
  *
- * @param <T>
+ * @param <B>
  */
-public abstract class ServiceBasicSupport<T> implements Service<T> {
+public abstract class ServiceBasicSupport<B,D> implements Service<B> {
 
     private Validator validator;
 
     @Override
     @Transactional
-    public T save(T obj) {
-        List<T> pojoList = this._get(obj, new Page());
+    public B save(B obj) {
+        List<B> pojoList = this.get(obj, new Page());
         if (pojoList == null || pojoList.isEmpty()) {
-            this.getDao().insert(obj);
+            this.getDao().insert(toDo(obj));
         } else {
-            this.getDao().update(obj);
+            this.getDao().update(toDo(obj));
         }
         return obj;
     }
 
     @Override
     @Transactional
-    public int remove(T obj) {
-        return this.getDao().delete(obj);
+    public int remove(B obj) {
+        return this.getDao().delete(toDo(obj));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public T get(T obj) {
-        List<T> pojoList = this._get(obj, new Page());
+    public B get(B obj) {
+        List<B> pojoList = this.get(obj, new Page());
         if (pojoList == null || pojoList.isEmpty()) {
             return null;
         }
         return pojoList.get(0);
     }
 
-    private List<T> _get(T obj, Page page) {
+    private List<B> doGet(B obj, Page page) {
         Map<String, Object> params = BeanMapConvertor.merge(obj, page);
-        return this.getDao().select(params);
+        return this.getDao().select(params).stream().map(this::toBo).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<T> get(T obj, Page page) {
-        return this._get(obj, page);
+    public List<B> get(B obj, Page page) {
+        return this.doGet(obj, page);
     }
 
 
-    protected abstract BaseMapper<T> getDao();
+    protected abstract BaseMapper<D> getDao();
+
+    protected abstract  D toDo(B b);
+
+    protected abstract  B toBo(D d);
 
 
     public void setValidatorFactory(ValidatorFactory validatorFactory) {

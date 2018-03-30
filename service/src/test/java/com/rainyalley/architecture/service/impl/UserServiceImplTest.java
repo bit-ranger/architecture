@@ -1,13 +1,13 @@
 package com.rainyalley.architecture.service.impl;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.service.config.ServiceConfig;
 import com.rainyalley.architecture.dao.entity.UserDo;
+import com.rainyalley.architecture.service.BootApplication;
 import com.rainyalley.architecture.service.UserService;
+import com.rainyalley.architecture.service.model.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -17,8 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {ServiceConfig.class})
-@SpringBootApplication
+@SpringBootTest(classes = {BootApplication.class})
 @Transactional
 public class UserServiceImplTest {
 
@@ -29,13 +28,13 @@ public class UserServiceImplTest {
     @Test
     @Rollback
     public void save() throws Exception {
-        List<UserDo> userListBefore = userService.get(new UserDo(), new Page());
-        UserDo user = new UserDo();
+        List<User> userListBefore = userService.get(new User(), new Page());
+        User user = new User();
         user.setName("hello");
         user.setPassword("world");
         userService.save(user);
 
-        List<UserDo> userListAfter = userService.get(new UserDo(), new Page());
+        List<User> userListAfter = userService.get(new User(), new Page());
         System.out.println(userListAfter);
         Assert.assertEquals(1, userListAfter.size() - userListBefore.size());
     }
@@ -43,7 +42,7 @@ public class UserServiceImplTest {
     @Test
     @Rollback
     public void get() throws Exception {
-        UserDo user = new UserDo();
+        User user = new User();
         user.setName("hello");
         user.setPassword("world");
         userService.save(user);
