@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.boot.config;
 
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter{
         WebContentInterceptor webContent = new WebContentInterceptor();
         webContent.setCacheControl(CacheControl.maxAge(10, TimeUnit.HOURS));
 
-
         registry.addInterceptor(webContent).addPathPatterns("/user/**");
         super.addInterceptors(registry);
     }
@@ -52,13 +52,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public FilterRegistrationBean multipartFilter(){
+    public FilterRegistrationBean hiddenHttpMethodFilter(){
         FilterRegistrationBean registration = new FilterRegistrationBean();
         HiddenHttpMethodFilter filter =  new HiddenHttpMethodFilter();
         registration.setOrder(1);
         registration.setFilter(filter);
         registration.setName("hiddenHttpMethodFilter");
-        registration.addServletNames("dispatcherServlet");
+        registration.addServletNames(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
         return registration;
     }
 

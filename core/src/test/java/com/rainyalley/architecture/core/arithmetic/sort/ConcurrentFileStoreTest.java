@@ -16,7 +16,7 @@ public class ConcurrentFileStoreTest {
 
 
 
-    @Before
+//    @Before
     public void before(){
         integers.clear();
         for (int i = 0; i < numbers; i++) {
@@ -24,27 +24,24 @@ public class ConcurrentFileStoreTest {
         }
     }
 
-    @AfterClass
+//    @AfterClass
     public static void afterClass(){
         is2.close();
         is.close();
     }
 
 
-    @Test
     public void get() throws Exception {
         is.set(0, integers);
         List<Integer> dataList = is.get(0,numbers);
         Assert.assertEquals(dataList, integers);
     }
 
-    @Test
     public void set() throws Exception {
         is.set(0, integers);
     }
 
 
-    @Test
     public void copyFrom() throws Exception {
         is.set(0, integers);
         is2.copyFrom(0, is, 0, numbers);

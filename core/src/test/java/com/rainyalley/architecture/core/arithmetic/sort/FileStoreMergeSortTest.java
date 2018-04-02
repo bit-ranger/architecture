@@ -2,10 +2,9 @@ package com.rainyalley.architecture.core.arithmetic.sort;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
+import org.junit.After;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -17,7 +16,7 @@ public class FileStoreMergeSortTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileStoreMergeSortTest.class);
 
-    @Test
+
     public void sort() throws Exception {
 
         Charset charset = Charset.forName("UTF-8");
@@ -68,7 +67,7 @@ public class FileStoreMergeSortTest {
 
 
             LOGGER.debug("set ArrayList");
-            ArrayList<CsvRow> al = new ArrayList();
+            ArrayList<CsvRow> al = new ArrayList<CsvRow>();
             br = new BufferedReader(new FileReader(file));
             try {
                 String line = null;
@@ -89,7 +88,7 @@ public class FileStoreMergeSortTest {
 
             LOGGER.debug("assert");
             for (int i = 0; i < pair.getLeft(); i++) {
-                Assert.isTrue(ies.get(i).compareTo(al.get(i))  == 0);
+                org.junit.Assert.assertTrue(ies.get(i).compareTo(al.get(i))  == 0);
             }
 
             LOGGER.debug("complete");
@@ -97,6 +96,12 @@ public class FileStoreMergeSortTest {
             file.delete();
             ies.delete();
         }
+    }
+
+    @After
+    public void after(){
+        new File("/var/sort/architecture_user.csv").delete();
+
     }
 
 }

@@ -1,7 +1,10 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,15 +13,22 @@ import java.util.Random;
 
 public class FileSorterTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSorterTest.class);
+
     @Test
     public void sort() throws Exception {
 
-        System.out.println(System.getProperties().getProperty("java.io.tmpdir"));
+
+
+        LOGGER.info("java.io.tmpdir: {}", System.getProperties().getProperty("java.io.tmpdir"));
 
         Random radom = new Random();
-        int numbers = 10000000;
+        int numbers = 100000;
         File file = new File("/var/sort/architecture_user.csv");
         File dest = new File("/var/sort/architecture_user.sorted.csv");
+        if(dest.exists()){
+            dest.delete();
+        }
         file.getParentFile().mkdirs();
 
         List<String> memoryList = new ArrayList<>(numbers);
@@ -35,11 +45,11 @@ public class FileSorterTest {
         }
 
         FileSorter sorter = new FileSorter((p,n) -> p.compareTo(n),
-                8, 50000, 1024*1024*2, new File("/var/tmp/fileSorter"), false);
+                8, 5000, 1024*1024*2, new File("/var/tmp/fileSorter"), true);
         long start = System.currentTimeMillis();
         sorter.sort(file, dest);
         long end = System.currentTimeMillis();
-        System.out.println(end - start);
+        LOGGER.info("elapsed time {}", end - start);
 
         List<String> diskList   = new ArrayList<>(numbers);
         try(BufferedReader br = new BufferedReader(new FileReader(dest))){
@@ -53,4 +63,10 @@ public class FileSorterTest {
         Assert.assertEquals(memoryList, diskList);
     }
 
+    @After
+    public void after(){
+        new File("/var/sort/architecture_user.csv").delete();
+        new File("/var/sort/architecture_user.sorted.csv").delete();
+
+    }
 }

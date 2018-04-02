@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.service.impl;
 
 import com.rainyalley.architecture.core.Page;
-import com.rainyalley.architecture.service.BootApplication;
+import com.rainyalley.architecture.service.ServiceConfig;
 import com.rainyalley.architecture.service.UserService;
 import com.rainyalley.architecture.service.model.User;
 import org.junit.Assert;
@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {BootApplication.class})
+@SpringBootTest(classes = {ServiceConfig.class})
 @Transactional
 public class UserServiceImplTest {
 

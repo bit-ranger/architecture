@@ -13,17 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.core.IsNot.not;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class UserControllerTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -42,10 +39,12 @@ public class UserControllerTest {
 
     @Test
     public void get() throws Exception {
-        ResultActions ra = mvc.perform(MockMvcRequestBuilders.get("/user/1").accept(MediaType.APPLICATION_JSON));
-        ra.andExpect(status().isOk());
-        ra.andExpect(header().string("Transfer-Encoding", not("chunked")));
-        ra.andExpect(content().json("{\"id\":1,\"name\":\"中文名字A\",\"password\":\"中文密码\"}"));
+        ResultActions ra = mvc.perform(MockMvcRequestBuilders.get("/user/X").accept(MediaType.APPLICATION_JSON));
+//        ra.andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON.toString()));
+//        ra.andExpect(header().string("Transfer-Encoding", not("chunked")));
+//        MvcResult result = ra.andReturn();
+        ra.andExpect(status().isNotFound());
+
     }
 
     @Test

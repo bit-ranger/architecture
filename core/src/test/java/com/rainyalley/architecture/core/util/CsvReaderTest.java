@@ -1,8 +1,11 @@
 package com.rainyalley.architecture.core.util;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -17,14 +20,32 @@ public class CsvReaderTest {
 
     private CsvReader reader;
 
+    private BufferedWriter writer;
+
+
     @Before
     public  void before() throws Exception{
-        reader = new CsvReader(Channels.newInputStream(Files.newByteChannel(Paths.get(CsvReaderTest.class.getResource("/architecture_user.csv").toURI()), StandardOpenOption.READ)), charset);
+        File file = new File("/var/csvReader/architecture_user.csv");
+        if(!file.exists()){
+            file.getParentFile().mkdirs();
+        }
+
+        writer = new BufferedWriter(new FileWriter(file));
+
+        for (int i = 0; i < 8; i++) {
+            writer.write("1");
+            writer.newLine();
+        }
+        writer.flush();
+
+        reader = new CsvReader(Channels.newInputStream(Files.newByteChannel(Paths.get("/var/csvReader/architecture_user.csv"), StandardOpenOption.READ)), charset);
     }
 
     @After
     public  void after() throws IOException {
         reader.close();
+        writer.close();
+        new File("/var/csvReader/architecture_user.csv").delete();
     }
 
     @Test
@@ -40,7 +61,7 @@ public class CsvReaderTest {
 
     @Test
     public void rows() throws Exception {
-        Assert.assertEquals(reader.rows().mapToLong(p ->1L).sum(), 8);
+        Assert.assertEquals(8, reader.rows().mapToLong(p ->1L).sum());
     }
 
 }

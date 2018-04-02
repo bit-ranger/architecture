@@ -1,11 +1,9 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -17,7 +15,6 @@ public class DoubleWayReadStoreMergeSortTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DoubleWayReadStoreMergeSortTest.class);
 
-    @Test
     public void sort() throws Exception {
 
         Charset charset = Charset.forName("UTF-8");
@@ -42,53 +39,33 @@ public class DoubleWayReadStoreMergeSortTest {
 
 
         LOGGER.debug("set FileStore");
-
         DoubleWayReadStore<CsvRow> ies = new DoubleWayReadStore<CsvRow>(new FileStore<>("/var/sort/architecture_user.es", pair.getLeft(), new CsvByteDataConverter(pair.getRight(), charset)), 2000000/pair.getRight());
 
-        br = new BufferedReader(new FileReader(file));
-        try {
+        try(BufferedReader brb = new BufferedReader(new FileReader(file))){
             int index = 0;
             String line = null;
-            while ((line = br.readLine()) != null){
+            while ((line = brb.readLine()) != null){
                 CsvRow csvRow = new CsvRow(line);
                 ies.set(index, csvRow);
                 index++;
             }
             br.close();
             ies.flush();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(br);
         }
 
         try {
-
-            Thread.sleep(10000);
-
             LOGGER.debug("sort");
             DoubleWayReadStoreMergeSort sort = new DoubleWayReadStoreMergeSort();
-
             sort.sort(ies);
 
-
-
             LOGGER.debug("set ArrayList");
-            ArrayList<CsvRow> al = new ArrayList();
-            br = new BufferedReader(new FileReader(file));
-            try {
+            ArrayList<CsvRow> al = new ArrayList<CsvRow>();
+            try(BufferedReader brc = new BufferedReader(new FileReader(file))){
                 String line = null;
-                while ((line = br.readLine()) != null) {
+                while ((line = brc.readLine()) != null) {
                     CsvRow csvRow = new CsvRow(line);
                     al.add(csvRow);
                 }
-                br.close();
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(br);
             }
 
             LOGGER.debug("sort ArrayList");
@@ -96,17 +73,15 @@ public class DoubleWayReadStoreMergeSortTest {
 
             LOGGER.debug("assert");
             for (int i = 0; i < pair.getLeft(); i++) {
-                Assert.isTrue(ies.getLeftWay(i).compareTo(al.get(i)) == 0);
+                Assert.assertTrue(ies.getLeftWay(i).compareTo(al.get(i)) == 0);
             }
 
             LOGGER.debug("complete");
-
-            file.delete();
-            ies.delete();
         } catch (Exception e){
             throw new RuntimeException(e);
         } finally {
-
+            file.delete();
+            ies.delete();
         }
     }
 

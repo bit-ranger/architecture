@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.dao.mapper;
 
-import com.rainyalley.architecture.dao.BootApplication;
+import com.rainyalley.architecture.dao.DaoConfig;
 import com.rainyalley.architecture.dao.entity.UserDo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = BootApplication.class)
+@SpringBootTest(classes = DaoConfig.class)
 @Transactional
 public class UserMapperTest {
 

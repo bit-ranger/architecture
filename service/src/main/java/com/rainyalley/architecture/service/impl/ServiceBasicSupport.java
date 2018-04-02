@@ -84,7 +84,7 @@ public abstract class ServiceBasicSupport<B,D> implements Service<B> {
     }
 
     protected <T> void resolveConstraint(Set<ConstraintViolation<T>> result) {
-        Assert.notNull(result);
+        Assert.notNull(result, "result can not be null");
         if (result.size() > 0) {
             StringBuilder message = new StringBuilder();
             Iterator<ConstraintViolation<T>> iterator = result.iterator();
