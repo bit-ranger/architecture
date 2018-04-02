@@ -1,0 +1,19 @@
+logging:
+    level:
+        com.rainyalley.architecture: DEBUG
+
+spring:
+    datasource:
+        type: org.apache.commons.dbcp2.BasicDataSource
+        url: jdbc:mysql://localhost:3306/architecture
+        username: root
+        password:
+        driver-class-name: com.mysql.jdbc.Driver
+        dbcp2:
+            default-transaction-isolation: 1
+
+mybatis:
+    type-aliases-package: com.rainyalley.architecture.dao.entity
+    mapper-locations: classpath*:mapper/*Mapper.xml
+    check-config-location: false
+    executor-type: SIMPLE
