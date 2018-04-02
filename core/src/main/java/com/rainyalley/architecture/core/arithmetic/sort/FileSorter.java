@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.core.arithmetic.sort;
 
-import com.rainyalley.architecture.service.util.Chunk;
-import com.rainyalley.architecture.service.util.QueuedLineReader;
+import com.rainyalley.architecture.core.util.Chunk;
+import com.rainyalley.architecture.core.util.QueuedLineReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;

@@ -11,6 +11,12 @@ spring:
         driver-class-name: com.mysql.jdbc.Driver
         dbcp2:
             default-transaction-isolation: 1
+    redis:
+        host: localhost
+        port: 6379
+        database: 0
+        pool:
+            max-active: 8
 
 mybatis:
     type-aliases-package: com.rainyalley.architecture.dao.entity
