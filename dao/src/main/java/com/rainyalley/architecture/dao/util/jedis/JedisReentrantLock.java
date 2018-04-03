@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.dao.util;
+package com.rainyalley.architecture.dao.util.jedis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rainyalley.architecture.core.util.Lock;

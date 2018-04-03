@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.dao.util;
 
+import com.rainyalley.architecture.dao.util.jedis.JedisReentrantLock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
