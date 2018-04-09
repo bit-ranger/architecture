@@ -4,13 +4,27 @@ logging:
 
 spring:
     datasource:
-        type: org.apache.commons.dbcp2.BasicDataSource
-        url: jdbc:mysql://localhost:3306/architecture
-        username: root
-        password:
-        driver-class-name: com.mysql.jdbc.Driver
-        dbcp2:
-            default-transaction-isolation: 1
+            type: com.alibaba.druid.pool.DruidDataSource
+            url: jdbc:mysql://localhost:3306/architecture
+            username: root
+            password:
+            driver-class-name: com.mysql.jdbc.Driver
+            druid:
+                default-transaction-isolation: 2
+                maxActive: 20
+                initialSize: 10
+                minIdle: 10
+                maxWait: 5
+                timeBetweenEvictionRunsMillis: 60000
+                minEvictableIdleTimeMillis: 300000
+                validationQuery: SELECT 'x'
+                testWhileIdle: true
+                testOnBorrow: false
+                testOnReturn: false
+                poolPreparedStatements: false
+                maxPoolPreparedStatementPerConnectionSize: 20
+                filters: stat
+                connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
     redis:
         host: localhost
         port: 6379
