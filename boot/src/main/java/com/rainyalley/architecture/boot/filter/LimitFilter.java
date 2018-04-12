@@ -119,20 +119,20 @@ public class LimitFilter extends OncePerRequestFilter {
             return false;
         }
 
-        if(concurrency.incrementAndGet() > limitConfig.getMaxConcurrency()){
-            concurrency.decrementAndGet();
-            return false;
-        }
-
         AtomicInteger tarCon = instantTargetConcurrency(target);
         if(tarCon.get() >= limitConfig.getMaxConcurrency(target)){
             return false;
         }
 
-        if(tarCon.incrementAndGet() >= limitConfig.getMaxConcurrency(target)){
+        int newCon = concurrency.incrementAndGet();
+        int newTarCon = tarCon.incrementAndGet();
+
+        if(newCon > limitConfig.getMaxConcurrency() || newTarCon > limitConfig.getMaxConcurrency(target)){
+            concurrency.decrementAndGet();
             tarCon.decrementAndGet();
             return false;
         }
+
 
         return true;
     }
