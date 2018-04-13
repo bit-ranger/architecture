@@ -11,11 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.rainyalley.architecture.boot.filter.LimitFilter.RejectReason.*;
+
 public class LimitFilter extends OncePerRequestFilter {
 
-    private LimitConfig limitConfig;
+    private LimitStrategy limitConfig;
 
-    private LimitStatistics limitStatistics;
+    private LimitStatisticsStrategy limitStatistics;
 
     /**
      * 并发量
@@ -30,40 +32,44 @@ public class LimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
 
-        String callerId = determineCallerId(request);
         String target = determineTarget(request);
+        String callerId = determineCallerId(request);
 
-        //判断权限
-        if(!limitConfig.hasAuth(target, callerId)){
-            reject(request, response);
+        if(limitConfig.isValidCall(request)){
+            limitStatistics.increaseInvaidCallTimes(target, callerId);
+            reject(INVALID, request, response);
             return;
         }
 
-        //申请目标并发量，
-        //该方法必须在hasAuth之后执行，以确保target是有效的，
-        //否则恶意的调动可能使target数量膨胀引发内存泄露
+        limitStatistics.increaseCallTimes(target, callerId);
+
         if(!tryAcquireConcurrency(target)){
-            reject(request, response);
+            reject(NO_CONCURRENCY, request, response);
             return;
         }
 
         try{
-
-
-
+            //判断权限
+            if(!limitConfig.hasAuth(target, callerId)){
+                reject(NO_AUTH, request, response);
+                return;
+            }
 
             try {
                 //申请吞吐量
-                boolean tryRate = tryAcquireRate(target, callerId);
-                if(!tryRate){
-                    reject(request, response);
+                if(!tryAcquireRate(target)){
+                    reject(NO_RATE, request, response);
                     return;
                 }
 
-                limitStatistics.increaseCallTimes(target, callerId);
+                if(!tryAcquireCallerRate(target, callerId)){
+                    reject(NO_CALLER_RATE, request, response);
+                    return;
+                }
 
+                filterChain.doFilter(request, response);
             } finally {
-                instantTargetConcurrency(target).decrementAndGet();
+                getOrInstantTargetConcurrency(target).decrementAndGet();
             }
         } finally {
             concurrency.decrementAndGet();
@@ -77,7 +83,7 @@ public class LimitFilter extends OncePerRequestFilter {
      * @param target 目标
      * @return 获取或者实例化目标并发量
      */
-    private AtomicInteger instantTargetConcurrency(String target){
+    private AtomicInteger getOrInstantTargetConcurrency(String target){
         AtomicInteger tarCon = targetConcurrency.get(target);
         if(tarCon != null){
             return tarCon;
@@ -106,9 +112,10 @@ public class LimitFilter extends OncePerRequestFilter {
         return request.getParameter("target");
     }
 
-    protected void reject(HttpServletRequest request, HttpServletResponse response){
+    protected void reject(RejectReason reason, HttpServletRequest request, HttpServletResponse response){
 
     }
+
 
     /**
      *
@@ -119,7 +126,7 @@ public class LimitFilter extends OncePerRequestFilter {
             return false;
         }
 
-        AtomicInteger tarCon = instantTargetConcurrency(target);
+        AtomicInteger tarCon = getOrInstantTargetConcurrency(target);
         if(tarCon.get() >= limitConfig.getMaxConcurrency(target)){
             return false;
         }
@@ -133,7 +140,22 @@ public class LimitFilter extends OncePerRequestFilter {
             return false;
         }
 
+        return true;
+    }
 
+    /**
+     * 申请吞吐量
+     * @param target 目标
+     * @return
+     */
+    private boolean tryAcquireRate(String target){
+        if(!limitConfig.getRateLimiter().tryAcquire()){
+            return false;
+        }
+
+        if(!limitConfig.getTargetRateLimiter(target).tryAcquire()){
+            return false;
+        }
         return true;
     }
 
@@ -143,22 +165,44 @@ public class LimitFilter extends OncePerRequestFilter {
      * @param callerId 调用者
      * @return
      */
-    private boolean tryAcquireRate(String target, String callerId){
-        if(!limitConfig.getRateLimiter().tryAcquire()){
-            return false;
-        }
-
+    private boolean tryAcquireCallerRate(String target, String callerId){
         if(!limitConfig.getRateLimiter(callerId).tryAcquire()){
-            return false;
-        }
-
-        if(!limitConfig.getTargetRateLimiter(target).tryAcquire()){
             return false;
         }
 
         if(!limitConfig.getTargetRateLimiter(target, callerId).tryAcquire()){
             return false;
         }
+
         return true;
     }
+
+
+    protected enum  RejectReason{
+        /**
+         * 非法访问
+         */
+        INVALID,
+
+        /**
+         * 无权访问
+         */
+        NO_AUTH,
+
+        /**
+         * 无并发量
+         */
+        NO_CONCURRENCY,
+
+        /**
+         * 无吞吐量
+         */
+        NO_RATE,
+
+        /**
+         * 无调用者专属吞吐量
+         */
+        NO_CALLER_RATE
+    }
+
 }

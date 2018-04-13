@@ -2,7 +2,9 @@ package com.rainyalley.architecture.boot.filter;
 
 import com.google.common.util.concurrent.RateLimiter;
 
-public interface LimitConfig {
+import javax.servlet.http.HttpServletRequest;
+
+public interface LimitStrategy {
 
     /**
      *
@@ -27,6 +29,13 @@ public interface LimitConfig {
      * @return 每用户每接口吞吐量控制
      */
     RateLimiter getTargetRateLimiter(String target, String callerId);
+
+
+    /**
+     * @param request
+     * @return 是否有效的请求
+     */
+    boolean isValidCall(HttpServletRequest request);
 
     /**
      *
