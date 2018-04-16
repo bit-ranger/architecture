@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.boot.filter;
 
-public interface LimitStatisticsStrategy {
+public interface StatisticsStrategy {
 
 
     long getCallTimes(String target);
