@@ -229,28 +229,19 @@ public class LimitFilter extends OncePerRequestFilter {
             }
         }
 
-
-
         AtomicExecutor atomicInvoker = new AtomicExecutor();
-
         if(useGlobal){
             addToAtomicInvoker(atomicInvoker, globalConcurrency, gloMaxCon);
         }
-
         if(useTarget){
             addToAtomicInvoker(atomicInvoker, tarCon, tarMaxCon);
         }
-
         if(useCaller){
             addToAtomicInvoker(atomicInvoker, callCon, callMaxCon);
         }
-
         if(useTargetCaller){
             addToAtomicInvoker(atomicInvoker, tarCallCon, tarCallMaxCon);
         }
-
-
-
         if(!atomicInvoker.execute()){
             return false;
         }
