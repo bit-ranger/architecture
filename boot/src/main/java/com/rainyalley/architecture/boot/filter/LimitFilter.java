@@ -42,7 +42,7 @@ public class LimitFilter extends OncePerRequestFilter {
         String callerId = determineCallerId(request);
 
         if(limitStrategy.isValidCall(request)){
-            statisticsStrategy.increaseInvaidCallTimes(target, callerId);
+            statisticsStrategy.increaseInvaidCallTimes(callerId);
             reject(INVALID, request, response);
             return;
         }
@@ -154,7 +154,7 @@ public class LimitFilter extends OncePerRequestFilter {
      * @return
      */
     private boolean tryAcquireRate(String target){
-        if(!limitStrategy.getRateLimiter().tryAcquire()){
+        if(!limitStrategy.getGlobalRateLimiter().tryAcquire()){
             return false;
         }
 
@@ -171,7 +171,7 @@ public class LimitFilter extends OncePerRequestFilter {
      * @return
      */
     private boolean tryAcquireCallerRate(String target, String callerId){
-        if(!limitStrategy.getRateLimiter(callerId).tryAcquire()){
+        if(!limitStrategy.getGlobalRateLimiter(callerId).tryAcquire()){
             return false;
         }
 

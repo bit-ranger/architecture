@@ -10,23 +10,23 @@ public interface LimitStrategy {
      *
      * @return 全局吞吐量控制
      */
-    RateLimiter getRateLimiter();
+    RateLimiter getGlobalRateLimiter();
 
     /**
      *
-     * @return 每用户吞吐量控制
+     * @return 指定用户全局吞吐量控制
      */
-    RateLimiter getRateLimiter(String callerId);
+    RateLimiter getGlobalRateLimiter(String callerId);
 
     /**
      *
-     * @return 每接口吞吐量控制
+     * @return 指定接口吞吐量控制
      */
     RateLimiter getTargetRateLimiter(String target);
 
     /**
      *
-     * @return 每用户每接口吞吐量控制
+     * @return 指定用户与接口吞吐量控制
      */
     RateLimiter getTargetRateLimiter(String target, String callerId);
 
