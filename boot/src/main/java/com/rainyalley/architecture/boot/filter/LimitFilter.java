@@ -1,5 +1,7 @@
 package com.rainyalley.architecture.boot.filter;
 
+import com.rainyalley.architecture.core.util.AtomicExecutor;
+import com.rainyalley.architecture.core.util.AtomicRunner;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -190,17 +192,17 @@ public class LimitFilter extends OncePerRequestFilter {
      */
     private boolean tryAcquireConcurrency(String target, String caller, AcquireConcurrencySnapshot acs){
         int gloMaxCon = limitStrategy.getGlobalLimit() != null ? limitStrategy.getGlobalLimit().getMaxConcurrency() : 0;
-        gloMaxCon = Integer.max(gloMaxCon, 0);
-        if(gloMaxCon > 0){
+        boolean useGlobal = gloMaxCon > 0;
+        if(useGlobal){
             if(globalConcurrency.get() >= gloMaxCon){
                 return false;
             }
         }
 
         int tarMaxCon = limitStrategy.getTargetLimit(target) != null ? limitStrategy.getTargetLimit(target).getMaxConcurrency() : 0;
-        tarMaxCon = Integer.max(tarMaxCon, 0);
+        boolean useTarget = tarMaxCon > 0;
         AtomicInteger tarCon = null;
-        if(tarMaxCon > 0){
+        if(useTarget){
             tarCon = getOrInstantTargetConcurrency(target);
             if(tarCon.get() >= tarMaxCon){
                 return false;
@@ -208,9 +210,9 @@ public class LimitFilter extends OncePerRequestFilter {
         }
 
         int callMaxCon = limitStrategy.getCallerLimit(caller) != null ? limitStrategy.getCallerLimit(caller).getMaxConcurrency() : 0;
-        callMaxCon = Integer.max(callMaxCon, 0);
+        boolean useCaller = callMaxCon > 0;
         AtomicInteger callCon = null;
-        if(callMaxCon > 0) {
+        if(useCaller) {
             callCon = getOrInstantTargetConcurrency(target);
             if (callCon.get() >= callMaxCon) {
                 return false;
@@ -218,58 +220,38 @@ public class LimitFilter extends OncePerRequestFilter {
         }
 
         int tarCallMaxCon = limitStrategy.getTargetCallerLimit(target, caller) != null ? limitStrategy.getTargetCallerLimit(target, caller).getMaxConcurrency() : 0;
-        tarCallMaxCon = Integer.max(tarCallMaxCon, 0);
+        boolean useTargetCaller = tarCallMaxCon > 0;
         AtomicInteger tarCallCon = null;
-        if(tarCallMaxCon > 0) {
+        if(useTargetCaller) {
             tarCallCon = getOrInstantTargetCallerConcurrency(target + ":" + caller);
             if (tarCallCon.get() >= tarCallMaxCon) {
                 return false;
             }
         }
 
-        int gloNewCon = Integer.MIN_VALUE;
-        int tarNewCon = Integer.MIN_VALUE;
-        int callNewCon = Integer.MIN_VALUE;
-        int tarCallNewCon = Integer.MIN_VALUE;
 
-        if(gloMaxCon > 0){
-            gloNewCon = globalConcurrency.incrementAndGet();
+
+        AtomicExecutor atomicInvoker = new AtomicExecutor();
+
+        if(useGlobal){
+            addToAtomicInvoker(atomicInvoker, globalConcurrency, gloMaxCon);
         }
 
-        if(tarMaxCon > 0){
-            tarNewCon = tarCon.incrementAndGet();
+        if(useTarget){
+            addToAtomicInvoker(atomicInvoker, tarCon, tarMaxCon);
+        }
+
+        if(useCaller){
+            addToAtomicInvoker(atomicInvoker, callCon, callMaxCon);
+        }
+
+        if(useTargetCaller){
+            addToAtomicInvoker(atomicInvoker, tarCallCon, tarCallMaxCon);
         }
 
 
-        if(callMaxCon > 0){
-            callNewCon = callCon.incrementAndGet();
-        }
 
-        if(tarCallMaxCon > 0){
-            tarCallNewCon = tarCallCon.incrementAndGet();
-        }
-
-        boolean targetCallerFail = tarCallNewCon > tarCallMaxCon;
-        if(targetCallerFail){
-            tarCallCon.decrementAndGet();
-        }
-
-        boolean callerFail = callNewCon > callMaxCon;
-        if(callerFail){
-            callCon.decrementAndGet();
-        }
-
-        boolean targetFail = tarNewCon > tarMaxCon;
-        if(targetFail){
-            tarCon.decrementAndGet();
-        }
-
-        boolean globalFail = gloNewCon > gloMaxCon;
-        if(globalFail){
-            globalConcurrency.decrementAndGet();
-        }
-
-        if(targetCallerFail || callerFail || targetFail || globalFail){
+        if(!atomicInvoker.execute()){
             return false;
         }
 
@@ -278,6 +260,24 @@ public class LimitFilter extends OncePerRequestFilter {
         acs.callerMax = callMaxCon;
         acs.targetCallerMax = tarCallMaxCon;
         return true;
+    }
+
+    private void addToAtomicInvoker(AtomicExecutor invoker, AtomicInteger integer, int max){
+        invoker.add(new AtomicRunner() {
+            @Override
+            public boolean run() {
+                int newCon  = integer.incrementAndGet();
+                return newCon <= max;
+            }
+
+            @Override
+            public void commit() {}
+
+            @Override
+            public void rollback() {
+                integer.decrementAndGet();
+            }
+        });
     }
 
     private void releaseConcurrency(String target, String caller, AcquireConcurrencySnapshot acs){
