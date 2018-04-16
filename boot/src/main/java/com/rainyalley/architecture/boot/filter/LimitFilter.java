@@ -269,7 +269,7 @@ public class LimitFilter extends OncePerRequestFilter {
             globalConcurrency.decrementAndGet();
         }
 
-        if(callerFail || targetFail || globalFail){
+        if(targetCallerFail || callerFail || targetFail || globalFail){
             return false;
         }
 
