@@ -66,7 +66,9 @@ public class DefaultLimitStrategy implements LimitStrategy {
         GlobalLimitInfo globalLimitInfo = limitInfoStorage.getGlobalLimitInfo();
         globalLimit = new Limit();
         globalLimit.setMaxConcurrency(globalLimitInfo.getMaxConcurrency());
-        globalLimit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(globalLimitInfo.getPermitsPerSecond())), globalLimitInfo.getWarmupPeriod(), TimeUnit.SECONDS));
+        if(globalLimitInfo.getPermitsPerSecond() > 0 && globalLimitInfo.getWarmupPeriod() > 0){
+            globalLimit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(globalLimitInfo.getPermitsPerSecond())), globalLimitInfo.getWarmupPeriod(), TimeUnit.SECONDS));
+        }
         validTargetSet = globalLimitInfo.getValidTargetSet();
 
         List<TargetLimitInfo> targetLimitInfo = limitInfoStorage.getTargetLimitInfo();
@@ -74,7 +76,9 @@ public class DefaultLimitStrategy implements LimitStrategy {
         for (TargetLimitInfo tli : targetLimitInfo) {
             Limit limit = new Limit();
             limit.setMaxConcurrency(tli.getMaxConcurrency());
-            limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(tli.getPermitsPerSecond())), tli.getWarmupPeriod(), TimeUnit.SECONDS));
+            if(tli.getPermitsPerSecond() > 0 && tli.getWarmupPeriod() > 0){
+                limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(tli.getPermitsPerSecond())), tli.getWarmupPeriod(), TimeUnit.SECONDS));
+            }
             targetLimit.put(tli.getTarget(), limit);
 
         }
@@ -84,21 +88,24 @@ public class DefaultLimitStrategy implements LimitStrategy {
         for (CallerLimitInfo cli : callerLimitInfo) {
             Limit limit = new Limit();
             limit.setMaxConcurrency(cli.getMaxConcurrency());
-            limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(cli.getPermitsPerSecond())), cli.getWarmupPeriod(), TimeUnit.SECONDS));
+            if(cli.getPermitsPerSecond() > 0 && cli.getWarmupPeriod() > 0){
+                limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(cli.getPermitsPerSecond())), cli.getWarmupPeriod(), TimeUnit.SECONDS));
+            }
             targetLimit.put(cli.getCaller(), limit);
         }
 
         List<TargetCallerLimitInfo> targetCallerLimitInfo = limitInfoStorage.getTargetCallerLimitInfo();
         targetCallerLimit = new HashMap<>(targetCallerLimitInfo.size());
-        targetCallerAuth = new HashSet<>(targetCallerLimitInfo.size());
         for (TargetCallerLimitInfo tcli : targetCallerLimitInfo) {
             Limit limit = new Limit();
             limit.setMaxConcurrency(tcli.getMaxConcurrency());
-            limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(tcli.getPermitsPerSecond())), tcli.getWarmupPeriod(), TimeUnit.SECONDS));
-            targetLimit.put(toKey(tcli.getTarget(), tcli.getCaller()), limit);
-
-            targetCallerAuth.add(toKey(tcli.getTarget(), tcli.getCaller()));
+            if(tcli.getPermitsPerSecond() > 0 && tcli.getWarmupPeriod() > 0){
+                limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(tcli.getPermitsPerSecond())), tcli.getWarmupPeriod(), TimeUnit.SECONDS));
+            }
+            targetCallerLimit.put(toKey(tcli.getTarget(), tcli.getCaller()), limit);
         }
+
+        targetCallerAuth = targetCallerLimit.keySet();
     }
 
     private String toKey(String target, String caller){
