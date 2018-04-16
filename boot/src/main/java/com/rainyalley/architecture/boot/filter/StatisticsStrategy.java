@@ -7,36 +7,36 @@ public interface StatisticsStrategy {
      * @param target
      * @return
      */
-    long getCallTimes(String target);
+    long getTimes(String target);
 
     /**
      * 获取指定用户调用指定目标的次数
      * @param target
-     * @param callerId
+     * @param caller
      * @return
      */
-    long getCallTimes(String target, String callerId);
+    long getTimes(String target, String caller);
 
     /**
      * 获取无效调用的总次数
      * @return
      */
-    long getInvaidCallTimes();
+    long getInvalidTimes();
 
     /**
      * 获取指定用户的无效调用次数
      * @param callerId
      * @return
      */
-    long getInvaidCallTimes(String callerId);
+    long getInvalidTimes(String callerId);
 
     /**
      * 增加调用次数
      * @param target 目标
-     * @param callerId 调用者
+     * @param caller 调用者
      * @return 次数
      */
-    long increaseCallTimes(String target, String callerId);
+    long increaseTimes(String target, String caller);
 
 
     /**
@@ -44,5 +44,5 @@ public interface StatisticsStrategy {
      * @param callerId 调用者
      * @return
      */
-    long increaseInvaidCallTimes(String callerId);
+    long increaseInvalidTimes(String callerId);
 }

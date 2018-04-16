@@ -3,49 +3,109 @@ package com.rainyalley.architecture.boot.filter;
 import com.google.common.util.concurrent.RateLimiter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 默认的限制策略
  */
 public class DefaultLimitStrategy implements LimitStrategy {
 
+    private LimitInfoStorage limitInfoStorage;
+
+    private Limit globalLimit;
+
+    private Map<String, Limit> targetLimit;
+
+    private Map<String, Limit> callerLimit;
+
+    private Map<String, Limit> targetCallerLimit;
+
+    private Set<String> targetCallerAuth;
+
+    private Set<String> validTargetSet;
+
     @Override
-    public RateLimiter getGlobalRateLimiter() {
-        return null;
+    public Limit getGlobalLimit() {
+        return globalLimit;
     }
 
     @Override
-    public RateLimiter getGlobalRateLimiter(String callerId) {
-        return null;
+    public Limit getCallerLimit(String caller) {
+        return callerLimit.get(caller);
     }
 
     @Override
-    public RateLimiter getTargetRateLimiter(String target) {
-        return null;
+    public Limit getTargetLimit(String target) {
+        return targetLimit.get(target);
     }
 
     @Override
-    public RateLimiter getTargetRateLimiter(String target, String callerId) {
-        return null;
+    public Limit getTargetCallerLimit(String target, String caller) {
+        return targetCallerLimit.get(toKey(target, caller));
     }
 
     @Override
     public boolean isValidCall(HttpServletRequest request) {
-        return false;
+        String target = determineTarget(request);
+        return validTargetSet.contains(target);
     }
 
     @Override
-    public boolean hasAuth(String target, String callerId) {
-        return false;
+    public boolean hasAuth(String target, String caller) {
+        String key = toKey(target, caller);
+        return targetCallerAuth.contains(key);
     }
 
-    @Override
-    public int getMaxConcurrency() {
-        return 0;
+    public void setLimitInfoStorage(LimitInfoStorage limitInfoStorage) {
+        this.limitInfoStorage = limitInfoStorage;
+        init();
     }
 
-    @Override
-    public int getMaxConcurrency(String target) {
-        return 0;
+    private void init(){
+        GlobalLimitInfo globalLimitInfo = limitInfoStorage.getGlobalLimitInfo();
+        globalLimit = new Limit();
+        globalLimit.setMaxConcurrency(globalLimitInfo.getMaxConcurrency());
+        globalLimit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(globalLimitInfo.getPermitsPerSecond())), globalLimitInfo.getWarmupPeriod(), TimeUnit.SECONDS));
+        validTargetSet = globalLimitInfo.getValidTargetSet();
+
+        List<TargetLimitInfo> targetLimitInfo = limitInfoStorage.getTargetLimitInfo();
+        targetLimit = new HashMap<>(targetLimitInfo.size());
+        for (TargetLimitInfo tli : targetLimitInfo) {
+            Limit limit = new Limit();
+            limit.setMaxConcurrency(tli.getMaxConcurrency());
+            limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(tli.getPermitsPerSecond())), tli.getWarmupPeriod(), TimeUnit.SECONDS));
+            targetLimit.put(tli.getTarget(), limit);
+
+        }
+
+        List<CallerLimitInfo> callerLimitInfo = limitInfoStorage.getCallerLimitInfo();
+        callerLimit = new HashMap<>(callerLimitInfo.size());
+        for (CallerLimitInfo cli : callerLimitInfo) {
+            Limit limit = new Limit();
+            limit.setMaxConcurrency(cli.getMaxConcurrency());
+            limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(cli.getPermitsPerSecond())), cli.getWarmupPeriod(), TimeUnit.SECONDS));
+            targetLimit.put(cli.getCaller(), limit);
+        }
+
+        List<TargetCallerLimitInfo> targetCallerLimitInfo = limitInfoStorage.getTargetCallerLimitInfo();
+        targetCallerLimit = new HashMap<>(targetCallerLimitInfo.size());
+        targetCallerAuth = new HashSet<>(targetCallerLimitInfo.size());
+        for (TargetCallerLimitInfo tcli : targetCallerLimitInfo) {
+            Limit limit = new Limit();
+            limit.setMaxConcurrency(tcli.getMaxConcurrency());
+            limit.setRateLimiter(RateLimiter.create(Double.valueOf(String.valueOf(tcli.getPermitsPerSecond())), tcli.getWarmupPeriod(), TimeUnit.SECONDS));
+            targetLimit.put(toKey(tcli.getTarget(), tcli.getCaller()), limit);
+
+            targetCallerAuth.add(toKey(tcli.getTarget(), tcli.getCaller()));
+        }
+    }
+
+    private String toKey(String target, String caller){
+        return target + ":" + caller;
+    }
+
+    private String determineTarget(HttpServletRequest request){
+        return "";
     }
 }
