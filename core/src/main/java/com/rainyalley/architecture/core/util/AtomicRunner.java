@@ -2,9 +2,11 @@ package com.rainyalley.architecture.core.util;
 
 public interface AtomicRunner {
 
+    boolean runnable();
+
     boolean run();
 
-    void commit();
+    boolean commit();
 
-    void rollback();
+    boolean rollback();
 }

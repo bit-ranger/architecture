@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.boot.filter;
 
 import com.rainyalley.architecture.core.util.AtomicExecutor;
-import com.rainyalley.architecture.core.util.AtomicRunner;
+import com.rainyalley.architecture.core.util.AtomicRunnerAdapter;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -229,7 +229,7 @@ public class LimitFilter extends OncePerRequestFilter {
             }
         }
 
-        AtomicExecutor atomicInvoker = new AtomicExecutor();
+        AtomicExecutor atomicInvoker = new AtomicExecutor(4);
         if(useGlobal){
             addToAtomicInvoker(atomicInvoker, globalConcurrency, gloMaxCon);
         }
@@ -254,7 +254,7 @@ public class LimitFilter extends OncePerRequestFilter {
     }
 
     private void addToAtomicInvoker(AtomicExecutor invoker, AtomicInteger integer, int max){
-        invoker.add(new AtomicRunner() {
+        invoker.add(new AtomicRunnerAdapter() {
             @Override
             public boolean run() {
                 int newCon  = integer.incrementAndGet();
@@ -262,11 +262,9 @@ public class LimitFilter extends OncePerRequestFilter {
             }
 
             @Override
-            public void commit() {}
-
-            @Override
-            public void rollback() {
+            public boolean rollback() {
                 integer.decrementAndGet();
+                return true;
             }
         });
     }
