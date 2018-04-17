@@ -36,7 +36,7 @@ public interface StatisticsStrategy {
      * @param caller 调用者
      * @return 次数
      */
-    long increaseTimes(String target, String caller);
+    long incTimes(String target, String caller);
 
 
     /**
@@ -44,5 +44,29 @@ public interface StatisticsStrategy {
      * @param callerId 调用者
      * @return
      */
-    long increaseInvalidTimes(String callerId);
+    long incInvalidTimes(String callerId);
+
+    int getGlobalConcurrency();
+
+    int incGlobalConcurrency();
+
+    int decGlobalConcurrency();
+
+    int getTargetConcurrency(String target);
+
+    int incTargetConcurrency(String target);
+
+    int decTargetConcurrency(String target);
+
+    int getCallerConcurrency(String caller);
+
+    int incCallerConcurrency(String caller);
+
+    int decCallerConcurrency(String caller);
+
+    int getTargetCallerConcurrency(String target, String caller);
+
+    int incTargetCallerConcurrency(String target, String caller);
+
+    int decTargetCallerConcurrency(String target, String caller);
 }

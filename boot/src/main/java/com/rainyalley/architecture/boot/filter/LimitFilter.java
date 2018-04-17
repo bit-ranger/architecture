@@ -10,8 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.rainyalley.architecture.boot.filter.LimitFilter.RejectReason.*;
 
@@ -21,39 +19,18 @@ public class LimitFilter extends OncePerRequestFilter {
 
     private StatisticsStrategy statisticsStrategy;
 
-    /**
-     * 全局并发
-     */
-    private AtomicInteger globalConcurrency = new AtomicInteger(0);
-
-    /**
-     * 目标并发表
-     */
-    private MapValueInitial<String,AtomicInteger> targetConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
-
-    /**
-     * 调用者并发表
-     */
-    private MapValueInitial<String,AtomicInteger> callerConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
-
-    /**
-     * 目标调用者并发表
-     */
-    private MapValueInitial<String,AtomicInteger> targetCallerConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
-
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String target = determineTarget(request);
         String caller = determineCaller(request);
 
         if(limitStrategy.isValidCall(request)){
-            statisticsStrategy.increaseInvalidTimes(caller);
+            statisticsStrategy.incInvalidTimes(caller);
             reject(INVALID, request, response);
             return;
         }
 
-        statisticsStrategy.increaseTimes(target, caller);
+        statisticsStrategy.incTimes(target, caller);
 
         //判断权限
         if(!limitStrategy.hasAuth(target, caller)){
@@ -102,53 +79,95 @@ public class LimitFilter extends OncePerRequestFilter {
         int gloMaxCon = limitStrategy.getGlobalLimit() != null ? limitStrategy.getGlobalLimit().getMaxConcurrency() : 0;
         boolean useGlobal = gloMaxCon > 0;
         if(useGlobal){
-            if(globalConcurrency.get() >= gloMaxCon){
+            if(statisticsStrategy.getGlobalConcurrency() >= gloMaxCon){
                 return false;
             }
         }
 
         int tarMaxCon = limitStrategy.getTargetLimit(target) != null ? limitStrategy.getTargetLimit(target).getMaxConcurrency() : 0;
         boolean useTarget = tarMaxCon > 0;
-        AtomicInteger tarCon = null;
         if(useTarget){
-            tarCon = targetConcurrency.get(target);
-            if(tarCon.get() >= tarMaxCon){
+            if(statisticsStrategy.getTargetConcurrency(target) >= tarMaxCon){
                 return false;
             }
         }
 
         int callMaxCon = limitStrategy.getCallerLimit(caller) != null ? limitStrategy.getCallerLimit(caller).getMaxConcurrency() : 0;
         boolean useCaller = callMaxCon > 0;
-        AtomicInteger callCon = null;
         if(useCaller) {
-            callCon = callerConcurrency.get(target);
-            if (callCon.get() >= callMaxCon) {
+            if (statisticsStrategy.getCallerConcurrency(caller) >= callMaxCon) {
                 return false;
             }
         }
 
         int tarCallMaxCon = limitStrategy.getTargetCallerLimit(target, caller) != null ? limitStrategy.getTargetCallerLimit(target, caller).getMaxConcurrency() : 0;
         boolean useTargetCaller = tarCallMaxCon > 0;
-        AtomicInteger tarCallCon = null;
         if(useTargetCaller) {
-            tarCallCon = targetCallerConcurrency.get(toKey(target, caller));
-            if (tarCallCon.get() >= tarCallMaxCon) {
+            if (statisticsStrategy.getTargetCallerConcurrency(target, caller) >= tarCallMaxCon) {
                 return false;
             }
         }
 
         AtomicExecutor atomicInvoker = new AtomicExecutor(4);
         if(useGlobal){
-            addToAtomicInvoker(atomicInvoker, globalConcurrency, gloMaxCon);
+            atomicInvoker.add(new AtomicRunnerAdapter() {
+                @Override
+                public boolean run() {
+                    int newCon = statisticsStrategy.incGlobalConcurrency();
+                    return newCon <= gloMaxCon;
+                }
+
+                @Override
+                public boolean rollback() {
+                    statisticsStrategy.decGlobalConcurrency();
+                    return true;
+                }
+            });
         }
         if(useTarget){
-            addToAtomicInvoker(atomicInvoker, tarCon, tarMaxCon);
+            atomicInvoker.add(new AtomicRunnerAdapter() {
+                @Override
+                public boolean run() {
+                    int newCon = statisticsStrategy.incTargetConcurrency(target);
+                    return newCon <= tarMaxCon;
+                }
+
+                @Override
+                public boolean rollback() {
+                    statisticsStrategy.decTargetConcurrency(target);
+                    return true;
+                }
+            });
         }
         if(useCaller){
-            addToAtomicInvoker(atomicInvoker, callCon, callMaxCon);
+            atomicInvoker.add(new AtomicRunnerAdapter() {
+                @Override
+                public boolean run() {
+                    int newCon = statisticsStrategy.incCallerConcurrency(caller);
+                    return newCon <= callMaxCon;
+                }
+
+                @Override
+                public boolean rollback() {
+                    statisticsStrategy.decCallerConcurrency(caller);
+                    return true;
+                }
+            });
         }
         if(useTargetCaller){
-            addToAtomicInvoker(atomicInvoker, tarCallCon, tarCallMaxCon);
+            atomicInvoker.add(new AtomicRunnerAdapter() {
+                @Override
+                public boolean run() {
+                    int newCon = statisticsStrategy.incTargetCallerConcurrency(target, caller);
+                    return newCon <= tarCallMaxCon;
+                }
+
+                @Override
+                public boolean rollback() {
+                    statisticsStrategy.decTargetCallerConcurrency(target, caller);
+                    return true;
+                }
+            });
         }
         if(!atomicInvoker.execute()){
             return false;
@@ -161,34 +180,19 @@ public class LimitFilter extends OncePerRequestFilter {
         return true;
     }
 
-    private void addToAtomicInvoker(AtomicExecutor invoker, AtomicInteger integer, int max){
-        invoker.add(new AtomicRunnerAdapter() {
-            @Override
-            public boolean run() {
-                int newCon  = integer.incrementAndGet();
-                return newCon <= max;
-            }
-
-            @Override
-            public boolean rollback() {
-                integer.decrementAndGet();
-                return true;
-            }
-        });
-    }
 
     private void releaseConcurrency(String target, String caller, AcquireConcurrencySnapshot acs){
         if(acs.targetCallerMax > 0){
-            targetCallerConcurrency.get(toKey(target, caller)).decrementAndGet();
+            statisticsStrategy.decTargetCallerConcurrency(target, caller);
         }
         if(acs.callerMax > 0){
-            callerConcurrency.get(caller).decrementAndGet();
+            statisticsStrategy.decCallerConcurrency(caller);
         }
         if(acs.targetMax > 0){
-            targetConcurrency.get(target);
+            statisticsStrategy.decTargetConcurrency(target);
         }
         if(acs.globalMax > 0){
-            globalConcurrency.decrementAndGet();
+            statisticsStrategy.decGlobalConcurrency();
         }
     }
 
@@ -226,9 +230,7 @@ public class LimitFilter extends OncePerRequestFilter {
         return true;
     }
 
-    private String toKey(String target, String caller){
-        return target + ":" + caller;
-    }
+
 
 
     protected enum  RejectReason{

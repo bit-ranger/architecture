@@ -1,17 +1,44 @@
 package com.rainyalley.architecture.boot.filter;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class DefaultStatisticsStrategy implements StatisticsStrategy {
 
-    private Map<String, AtomicInteger> targetCallerTimes = new HashMap<>();
+    /**
+     * 全局并发
+     */
+    private AtomicInteger globalConcurrency = new AtomicInteger(0);
 
-    private ReentrantLock targetCallerTimesLock = new ReentrantLock();
+    /**
+     * 目标并发表
+     */
+    private MapValueInitial<String,AtomicInteger> targetConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
 
+    /**
+     * 调用者并发表
+     */
+    private MapValueInitial<String,AtomicInteger> callerConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
+
+    /**
+     * 目标调用者并发表
+     */
+    private MapValueInitial<String,AtomicInteger> targetCallerConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
+
+    /**
+     * 调用者调用目标的次数表
+     */
+    private MapValueInitial<String,AtomicInteger> targetCallerTimes = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
+
+    /**
+     * 无效调用次数
+     */
     private AtomicInteger invalidTimes = new AtomicInteger(0);
+
+    /**
+     * 调用者无效调用次数
+     */
+    private MapValueInitial<String,AtomicInteger> callerInvalidTimes = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
 
     @Override
     public long getTimes(String target) {
@@ -20,7 +47,7 @@ public class DefaultStatisticsStrategy implements StatisticsStrategy {
 
     @Override
     public long getTimes(String target, String caller) {
-        return getOrInstantTargetCallerTimes(toKey(target, caller)).get();
+        return targetCallerTimes.get(toKey(target, caller)).get();
     }
 
     @Override
@@ -30,40 +57,80 @@ public class DefaultStatisticsStrategy implements StatisticsStrategy {
 
     @Override
     public long getInvalidTimes(String callerId) {
-        return 0;
+        return callerInvalidTimes.get(callerId).get();
     }
 
     @Override
-    public long increaseTimes(String target, String caller) {
-        return getOrInstantTargetCallerTimes(toKey(target, caller)).incrementAndGet();
+    public long incTimes(String target, String caller) {
+        return targetCallerTimes.get(toKey(target, caller)).incrementAndGet();
     }
 
     @Override
-    public long increaseInvalidTimes(String callerId) {
-        return invalidTimes.incrementAndGet();
+    public long incInvalidTimes(String callerId) {
+        invalidTimes.incrementAndGet();
+        return callerInvalidTimes.get(callerId).incrementAndGet();
     }
 
-
-
-    private AtomicInteger getOrInstantTargetCallerTimes(String targetCaller){
-        AtomicInteger tarCallCon = targetCallerTimes.get(targetCaller);
-        if(tarCallCon != null){
-            return tarCallCon;
-        }
-
-        targetCallerTimesLock.lock();
-        try{
-            AtomicInteger tarCallConOld = targetCallerTimes.get(targetCaller);
-            if(tarCallConOld != null){
-                return tarCallConOld;
-            }
-            AtomicInteger tarCallConNew = new AtomicInteger(0);
-            targetCallerTimes.put(targetCaller, tarCallConNew);
-            return tarCallConNew;
-        } finally {
-            targetCallerTimesLock.unlock();
-        }
+    @Override
+    public int getGlobalConcurrency() {
+        return globalConcurrency.get();
     }
+
+    @Override
+    public int incGlobalConcurrency() {
+        return globalConcurrency.incrementAndGet();
+    }
+
+    @Override
+    public int decGlobalConcurrency() {
+        return globalConcurrency.decrementAndGet();
+    }
+
+    @Override
+    public int getTargetConcurrency(String target) {
+        return targetConcurrency.get(target).get();
+    }
+
+    @Override
+    public int incTargetConcurrency(String target) {
+        return targetConcurrency.get(target).incrementAndGet();
+    }
+
+    @Override
+    public int decTargetConcurrency(String target) {
+        return targetConcurrency.get(target).decrementAndGet();
+    }
+
+    @Override
+    public int getCallerConcurrency(String caller) {
+        return callerConcurrency.get(caller).get();
+    }
+
+    @Override
+    public int incCallerConcurrency(String caller) {
+        return callerConcurrency.get(caller).incrementAndGet();
+    }
+
+    @Override
+    public int decCallerConcurrency(String caller) {
+        return callerConcurrency.get(caller).decrementAndGet();
+    }
+
+    @Override
+    public int getTargetCallerConcurrency(String target, String caller) {
+        return targetCallerConcurrency.get(toKey(target, caller)).get();
+    }
+
+    @Override
+    public int incTargetCallerConcurrency(String target, String caller) {
+        return targetCallerConcurrency.get(toKey(target, caller)).incrementAndGet();
+    }
+
+    @Override
+    public int decTargetCallerConcurrency(String target, String caller) {
+        return targetCallerConcurrency.get(toKey(target, caller)).decrementAndGet();
+    }
+
 
     private String toKey(String target, String caller){
         return target + ":" + caller;
