@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.rainyalley.architecture.boot.filter.LimitFilter.RejectReason.*;
 
@@ -30,38 +29,21 @@ public class LimitFilter extends OncePerRequestFilter {
     /**
      * 目标并发表
      */
-    private HashMap<String, AtomicInteger> targetConcurrency = new HashMap<>(32);
+    private MapValueInitial<String,AtomicInteger> targetConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
 
     /**
      * 调用者并发表
      */
-    private HashMap<String, AtomicInteger> callerConcurrency = new HashMap<>(32);
+    private MapValueInitial<String,AtomicInteger> callerConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
 
     /**
      * 目标调用者并发表
      */
-    private HashMap<String, AtomicInteger> targetCallerConcurrency = new HashMap<>(32);
-
-    /**
-     * 目标并发表锁
-     */
-    private ReentrantLock callerConcurrencyLock = new ReentrantLock();
-
-    /**
-     * 调用者并发表锁
-     */
-    private ReentrantLock targetConcurrencyLock = new ReentrantLock();
-
-    /**
-     * 目标调用者并发表锁
-     */
-    private ReentrantLock targetCallerConcurrencyLock = new ReentrantLock();
+    private MapValueInitial<String,AtomicInteger> targetCallerConcurrency = new MapValueInitial<>(new HashMap<>(32), () -> new AtomicInteger(0));
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-
         String target = determineTarget(request);
         String caller = determineCaller(request);
 
@@ -101,80 +83,6 @@ public class LimitFilter extends OncePerRequestFilter {
 
 
 
-    /**
-     * @param target 目标
-     * @return 获取或者实例化目标并发量
-     */
-    private AtomicInteger getOrInstantTargetConcurrency(String target){
-        AtomicInteger tarCon = targetConcurrency.get(target);
-        if(tarCon != null){
-            return tarCon;
-        }
-
-        targetConcurrencyLock.lock();
-        try{
-            AtomicInteger tarConOld = targetConcurrency.get(target);
-            if(tarConOld != null){
-                return tarConOld;
-            }
-            AtomicInteger tarConNew = new AtomicInteger(0);
-            targetConcurrency.put(target, tarConNew);
-            return tarConNew;
-        } finally {
-            targetConcurrencyLock.unlock();
-        }
-    }
-
-    /**
-     * @param target 目标
-     * @return 获取或者实例化目标并发量
-     */
-    private AtomicInteger getOrInstantCallerConcurrency(String target){
-        AtomicInteger callCon = callerConcurrency.get(target);
-        if(callCon != null){
-            return callCon;
-        }
-
-        callerConcurrencyLock.lock();
-        try{
-            AtomicInteger callConOld = callerConcurrency.get(target);
-            if(callConOld != null){
-                return callConOld;
-            }
-            AtomicInteger callConNew = new AtomicInteger(0);
-            callerConcurrency.put(target, callConNew);
-            return callConNew;
-        } finally {
-            callerConcurrencyLock.unlock();
-        }
-    }
-
-
-    /**
-     * @param targetCaller 目标调用者
-     * @return 获取或者实例化目标并发量
-     */
-    private AtomicInteger getOrInstantTargetCallerConcurrency(String targetCaller){
-        AtomicInteger tarCallCon = targetCallerConcurrency.get(targetCaller);
-        if(tarCallCon != null){
-            return tarCallCon;
-        }
-
-        targetCallerConcurrencyLock.lock();
-        try{
-            AtomicInteger tarCallConOld = targetCallerConcurrency.get(targetCaller);
-            if(tarCallConOld != null){
-                return tarCallConOld;
-            }
-            AtomicInteger tarCallConNew = new AtomicInteger(0);
-            targetCallerConcurrency.put(targetCaller, tarCallConNew);
-            return tarCallConNew;
-        } finally {
-            targetCallerConcurrencyLock.unlock();
-        }
-    }
-
-
     protected String determineCaller(HttpServletRequest request){
         return request.getParameter("userId");
     }
@@ -203,7 +111,7 @@ public class LimitFilter extends OncePerRequestFilter {
         boolean useTarget = tarMaxCon > 0;
         AtomicInteger tarCon = null;
         if(useTarget){
-            tarCon = getOrInstantTargetConcurrency(target);
+            tarCon = targetConcurrency.get(target);
             if(tarCon.get() >= tarMaxCon){
                 return false;
             }
@@ -213,7 +121,7 @@ public class LimitFilter extends OncePerRequestFilter {
         boolean useCaller = callMaxCon > 0;
         AtomicInteger callCon = null;
         if(useCaller) {
-            callCon = getOrInstantTargetConcurrency(target);
+            callCon = callerConcurrency.get(target);
             if (callCon.get() >= callMaxCon) {
                 return false;
             }
@@ -223,7 +131,7 @@ public class LimitFilter extends OncePerRequestFilter {
         boolean useTargetCaller = tarCallMaxCon > 0;
         AtomicInteger tarCallCon = null;
         if(useTargetCaller) {
-            tarCallCon = getOrInstantTargetCallerConcurrency(target + ":" + caller);
+            tarCallCon = targetCallerConcurrency.get(toKey(target, caller));
             if (tarCallCon.get() >= tarCallMaxCon) {
                 return false;
             }
@@ -271,13 +179,13 @@ public class LimitFilter extends OncePerRequestFilter {
 
     private void releaseConcurrency(String target, String caller, AcquireConcurrencySnapshot acs){
         if(acs.targetCallerMax > 0){
-            getOrInstantTargetCallerConcurrency(caller).decrementAndGet();
+            targetCallerConcurrency.get(toKey(target, caller)).decrementAndGet();
         }
         if(acs.callerMax > 0){
-            getOrInstantCallerConcurrency(caller).decrementAndGet();
+            callerConcurrency.get(caller).decrementAndGet();
         }
         if(acs.targetMax > 0){
-            getOrInstantTargetConcurrency(target);
+            targetConcurrency.get(target);
         }
         if(acs.globalMax > 0){
             globalConcurrency.decrementAndGet();
@@ -316,6 +224,10 @@ public class LimitFilter extends OncePerRequestFilter {
         }
 
         return true;
+    }
+
+    private String toKey(String target, String caller){
+        return target + ":" + caller;
     }
 
 

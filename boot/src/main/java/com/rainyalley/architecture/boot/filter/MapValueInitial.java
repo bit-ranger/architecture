@@ -1,9 +1,16 @@
 package com.rainyalley.architecture.boot.filter;
 
+import net.jcip.annotations.ThreadSafe;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 从Map中获取指定的初始值
+ * @author bin.zhang
+ */
+@ThreadSafe
 public class MapValueInitial<K,V> {
 
     private Map<K,V> map;
