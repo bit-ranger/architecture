@@ -1,6 +1,5 @@
 package com.rainyalley.architecture.service.impl;
 
-import com.rainyalley.architecture.core.Page;
 import com.rainyalley.architecture.service.ServiceTestConfig;
 import com.rainyalley.architecture.service.UserService;
 import com.rainyalley.architecture.service.model.User;
@@ -12,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ServiceTestConfig.class})
@@ -27,16 +26,15 @@ public class UserServiceImplTest{
 
     @Test
     @Rollback
+    @Transactional
     public void save() throws Exception {
-        List<User> userListBefore = userService.get(new User(), new Page());
         User user = new User();
         user.setName("hello");
         user.setPassword("world");
-        userService.save(user);
+        user = userService.save(user);
 
-        List<User> userListAfter = userService.get(new User(), new Page());
-        logger.debug(userListAfter.toString());
-        Assert.assertEquals(1, userListAfter.size() - userListBefore.size());
+        User userAfter = userService.get(user.getId());
+        Assert.assertNotNull(userAfter);
     }
 
     @Test

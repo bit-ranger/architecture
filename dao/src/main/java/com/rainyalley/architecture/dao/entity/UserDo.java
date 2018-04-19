@@ -1,26 +1,32 @@
 package com.rainyalley.architecture.dao.entity;
 
+import com.rainyalley.architecture.core.Id;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 
-public class UserDo implements Serializable {
+public class UserDo implements Serializable,Id {
 
     private static final long serialVersionUID = 2894257361469960272L;
 
-    private Integer id;
+    @NotBlank
+    private String id;
+    @NotBlank
     private String name;
+    @NotBlank
     private String password;
 
-    public Integer getId() {
-        return this.id;
+    @Override
+    public String getId() {
+        return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    @NotBlank
+
     public String getName() {
         return this.name;
     }
@@ -29,7 +35,6 @@ public class UserDo implements Serializable {
         this.name = name;
     }
 
-    @NotBlank
     public String getPassword() {
         return this.password;
     }
@@ -58,13 +63,13 @@ public class UserDo implements Serializable {
         return result;
     }
 
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("User{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", password='").append(password).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("name", name)
+                .append("password", password)
+                .toString();
     }
 }

@@ -1,15 +1,14 @@
 package com.rainyalley.architecture.dao;
 
 
-import java.util.List;
-import java.util.Map;
+import com.rainyalley.architecture.core.Id;
 
 /**
  * 数据访问顶层接口
  *
  * @param <T>
  */
-public interface BaseMapper<T> {
+public interface BaseMapper<T extends Id> {
 
     /**
      * 添加一个对象
@@ -22,10 +21,9 @@ public interface BaseMapper<T> {
     /**
      * 删除一个对象
      *
-     * @param obj 将被删除的对象
      * @return 受影响的对象个数
      */
-    int delete(T obj);
+    int delete(String id);
 
     /**
      * 更新一个对象
@@ -36,9 +34,9 @@ public interface BaseMapper<T> {
     int update(T obj);
 
     /**
-     * 获取一组对象
-     *
-     * @return 对象列表
+     * 获取
+     * @param id
+     * @return
      */
-    List<T> select(Map<String, Object> params);
+    T get(String id);
 }

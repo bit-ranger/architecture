@@ -1,16 +1,14 @@
 package com.rainyalley.architecture.service;
 
 
-import com.rainyalley.architecture.core.Page;
-
-import java.util.List;
+import com.rainyalley.architecture.core.Id;
 
 /**
  * 事务顶层接口
  *
  * @param <T>
  */
-public interface Service<T> {
+public interface Service<T extends Id> {
     /**
      * 保存一个对象
      *
@@ -22,25 +20,15 @@ public interface Service<T> {
     /**
      * 删除一个对象
      *
-     * @param obj 将被删除的对象
+     * @param id 将被删除的对象
      * @return 受影响的对象个数
      */
-    int remove(T obj);
+    int remove(String id);
 
     /**
      * 获取一个对象
      *
-     * @param obj 存放查询信息的对象
      * @return 获取的对象
      */
-    T get(T obj);
-
-    /**
-     * 获取一组对象
-     *
-     * @param obj  存放查询信息的对象
-     * @param page 分页信息
-     * @return 对象列表
-     */
-    List<T> get(T obj, Page page);
+    T get(String id);
 }

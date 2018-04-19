@@ -1,18 +1,17 @@
 package com.rainyalley.architecture.service.impl;
 
-import com.rainyalley.architecture.core.BeanMapConvertor;
-import com.rainyalley.architecture.core.Page;
+import com.rainyalley.architecture.core.Id;
 import com.rainyalley.architecture.dao.BaseMapper;
 import com.rainyalley.architecture.service.Service;
+import com.rainyalley.architecture.service.util.ValidationInfo;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.*;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 实现了{@link Service}中所有方法的默认实现类
@@ -20,48 +19,41 @@ import java.util.stream.Collectors;
  *
  * @param <B>
  */
-public abstract class ServiceBasicSupport<B,D> implements Service<B> {
+public abstract class ServiceBasicSupport<B extends Id,D extends Id> implements Service<B> {
 
     private Validator validator;
 
     @Override
     @Transactional
     public B save(B obj) {
-        List<B> pojoList = this.get(obj, new Page());
         D d = toDo(obj);
-        if (pojoList == null || pojoList.isEmpty()) {
-            this.getDao().insert(d);
+        if(obj.getId() == null){
+            getDao().insert(d);
         } else {
-            this.getDao().update(d);
+            getDao().update(d);
         }
-        return toBo(d);
+
+        d = getDao().get(d.getId());
+        assertion(d);
+        B b = toBo(d);
+        assertion(b);
+        return b;
     }
 
     @Override
     @Transactional
-    public int remove(B obj) {
-        return this.getDao().delete(toDo(obj));
+    public int remove(String id) {
+        return this.getDao().delete(id);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public B get(B obj) {
-        List<B> pojoList = this.get(obj, new Page());
-        if (pojoList == null || pojoList.isEmpty()) {
-            return null;
-        }
-        return pojoList.get(0);
-    }
-
-    private List<B> doGet(B obj, Page page) {
-        Map<String, Object> params = BeanMapConvertor.merge(obj, page);
-        return this.getDao().select(params).stream().map(this::toBo).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<B> get(B obj, Page page) {
-        return this.doGet(obj, page);
+    public B get(String id) {
+        D d = getDao().get(id);
+        assertion(d);
+        B b = toBo(d);
+        assertion(d);
+        return b;
     }
 
 
@@ -83,24 +75,23 @@ public abstract class ServiceBasicSupport<B,D> implements Service<B> {
         return this.validator;
     }
 
-    protected <T> void resolveConstraint(Set<ConstraintViolation<T>> result) {
+    protected <T> void resolveConstraint(Id obj, Set<ConstraintViolation<T>> result) {
         Assert.notNull(result, "result can not be null");
-        if (result.size() > 0) {
-            StringBuilder message = new StringBuilder();
-            Iterator<ConstraintViolation<T>> iterator = result.iterator();
-            while (iterator.hasNext()) {
-                ConstraintViolation<T> constraint = iterator.next();
-                message.append(constraint.getPropertyPath()).append(" ");
-                message.append(constraint.getMessage());
-                if (iterator.hasNext()) {
-                    message.append(", ");
-                }
-            }
-            throw new ValidationException(message.toString());
+        if (result.size() == 0) {
+            return;
         }
+
+        Map<String,Object> map = new HashMap<>(result.size());
+        Iterator<ConstraintViolation<T>> iterator = result.iterator();
+        while (iterator.hasNext()) {
+            ConstraintViolation<T> constraint = iterator.next();
+            map.put(constraint.getPropertyPath().toString(), constraint.getInvalidValue());
+        }
+        ValidationInfo info = new ValidationInfo(obj.getId(), map);
+        throw new ValidationException(info.toString());
     }
 
-    <T> void validate(T object, Class<?>... groups) {
-        this.resolveConstraint(this.validator().validate(object, groups));
+    protected void assertion(Id obj){
+        resolveConstraint(obj, validator().validate(obj));
     }
 }

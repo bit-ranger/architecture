@@ -4,18 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rainyalley.architecture.dao.mapper.UserMapper">
 
-    <select id="select" resultType="com.rainyalley.architecture.dao.entity.UserDo">
-        select * from user
-        <where>
-            <if test="id!=null">id=#{id}</if>
-            <if test="name!=null">AND name=#{name}</if>
-            <if test="password!=null">AND password=#{password}</if>
-        </where>
-    </select>
-
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into user(name,password,enabled) values(#{name},#{password},TRUE)
-        <selectKey  resultType="int" keyProperty="id">
+        <selectKey resultType="java.lang.String" keyProperty="id">
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
@@ -32,4 +23,8 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="get" resultType="com.rainyalley.architecture.dao.entity.UserDo">
+        SELECT id,name,password FROM user;
+    </select>
 </mapper>

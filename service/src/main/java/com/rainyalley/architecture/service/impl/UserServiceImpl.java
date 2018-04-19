@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -25,8 +26,8 @@ public class UserServiceImpl extends ServiceBasicSupport<User,UserDo> implements
 
     @CachePut(key = "#result.id")
     @Override
+    @Transactional
     public User save(User obj) {
-        this.validate(obj);
         return super.save(obj);
     }
 
@@ -37,31 +38,25 @@ public class UserServiceImpl extends ServiceBasicSupport<User,UserDo> implements
 
     @Override
     protected UserDo toDo(User b) {
-        UserDo userDo  = new UserDo();
-        try {
-            PropertyUtils.copyProperties(userDo, b);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return userDo;
+        UserDo d  = new UserDo();
+        d.setId(b.getId());
+        d.setName(b.getName());
+        d.setPassword(b.getPassword());
+        return d;
     }
 
     @Override
     protected User toBo(UserDo d) {
         User user  = new User();
-        try {
-            PropertyUtils.copyProperties(user, d);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        user.setId(d.getId());
+        user.setName(d.getName());
+        user.setPassword(d.getPassword());
         return user;
     }
 
     @Cacheable(key = "#p0")
     @Override
-    public User get(int id) {
-        User p = new User();
-        p.setId(id);
-        return super.get(p);
+    public User get(String id) {
+        return super.get(id);
     }
 }
