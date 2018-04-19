@@ -4,8 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+@Order(1)
 @Component
 @Aspect
 public class ServiceLoggerAspect {

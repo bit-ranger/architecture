@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @MapperScan(basePackages="com.rainyalley.architecture.dao.mapper")
 public class DaoConfig {
+
 
 
     @Primary
@@ -67,7 +69,7 @@ public class DaoConfig {
 
         @Primary
         @Bean("dataSource")
-        public DataSource routingDataSource(@Qualifier("primaryDataSource") DataSource writeDataSource, @Qualifier("secondaryDataSource") DataSource readDataSource){
+        public RoutingDataSource routingDataSource(@Qualifier("primaryDataSource") DataSource writeDataSource, @Qualifier("secondaryDataSource") DataSource readDataSource){
             RoutingDataSource rds = new RoutingDataSource();
             Map<Object, Object> map = new HashMap<>(4);
             map.put("primary", writeDataSource);
@@ -78,4 +80,8 @@ public class DaoConfig {
         }
     }
 
+
+    private void configRedisTemplate(RedisTemplate<Object, Object> redisTemplate){
+
+    }
 }

@@ -39,10 +39,12 @@ public class UserServiceImplTest{
 
     @Test
     @Rollback
+    @Transactional
     public void get() throws Exception {
         User user = new User();
         user.setName("hello");
         user.setPassword("world");
+        //user = userService.save(user);
         user = userService.save(user);
         User entity =  userService.get(user.getId());
         Assert.assertEquals(entity, user);
