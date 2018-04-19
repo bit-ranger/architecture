@@ -33,7 +33,7 @@ public interface BaseMapper<T> {
      * @param obj 将被更新的对象
      * @return 受影响的对象个数
      */
-    T update(T obj);
+    int update(T obj);
 
     /**
      * 获取一组对象

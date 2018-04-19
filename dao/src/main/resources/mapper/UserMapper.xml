@@ -27,8 +27,7 @@
     <update id="update">
         update user
         <set>
-            id=#{id}
-            <if test="name!=null">name=#{name}</if>
+            <if test="name!=null">name=#{name},</if>
             <if test="password!=null">password=#{password}</if>
         </set>
         where id = #{id}
