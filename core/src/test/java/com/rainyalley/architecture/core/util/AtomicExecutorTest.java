@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class AtomicExecutorTest {
 
-    private AtomicExecutor ae = new AtomicExecutor();
+    private AtomicExecutor ae = new AtomicExecutor(2);
 
     @Test
     public void add() throws Exception {
