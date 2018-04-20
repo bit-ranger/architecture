@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Order(1)
 @Component
 @Aspect
@@ -24,7 +26,7 @@ public class ServiceLoggerAspect {
         Object[] args = joinPoint.getArgs();
 
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug(String.format("After Returning, method : %s, args : %s, return : %s", method, args, result));
+            this.logger.debug(String.format("%s(%s) = %s", method, Arrays.toString(args), result));
         }
     }
 
@@ -33,8 +35,8 @@ public class ServiceLoggerAspect {
         String method = joinPoint.getSignature().toLongString();
         Object[] args = joinPoint.getArgs();
 
-        if (this.logger.isErrorEnabled()) {
-            this.logger.error(String.format("After Throwing, method : %s, args : %s, throwable : %s", method, args, throwable));
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(String.format("%s(%s)", method, Arrays.toString(args)), throwable);
         }
     }
 }

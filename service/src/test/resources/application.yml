@@ -1,6 +1,7 @@
 logging:
     level:
         com.rainyalley.architecture: DEBUG
+        org.springframework.cache.interceptor.CacheInterceptor: trace
 
 spring:
     datasource:

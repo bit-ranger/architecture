@@ -1,12 +1,12 @@
 package com.rainyalley.architecture.dao.entity;
 
+import com.rainyalley.architecture.core.AbstractJsonObject;
 import com.rainyalley.architecture.core.Identical;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 
-public class UserDo implements Serializable,Identical {
+public class UserDo extends AbstractJsonObject implements Serializable,Identical {
 
     private static final long serialVersionUID = 2894257361469960272L;
 
@@ -61,15 +61,5 @@ public class UserDo implements Serializable,Identical {
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
         return result;
-    }
-
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("id", id)
-                .append("name", name)
-                .append("password", password)
-                .toString();
     }
 }
