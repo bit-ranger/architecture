@@ -1,12 +1,12 @@
 package com.rainyalley.architecture.dao.entity;
 
-import com.rainyalley.architecture.core.Id;
+import com.rainyalley.architecture.core.Identical;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 
-public class UserDo implements Serializable,Id {
+public class UserDo implements Serializable,Identical {
 
     private static final long serialVersionUID = 2894257361469960272L;
 

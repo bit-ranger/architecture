@@ -1,7 +1,11 @@
 package com.rainyalley.architecture.core;
 
 
-public interface Id{
+/**
+ * @author brave
+ *
+ */
+public interface Identical {
 
     String getId();
 }

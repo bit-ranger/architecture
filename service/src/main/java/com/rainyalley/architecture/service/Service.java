@@ -1,14 +1,14 @@
 package com.rainyalley.architecture.service;
 
 
-import com.rainyalley.architecture.core.Id;
+import com.rainyalley.architecture.core.Identical;
 
 /**
  * 事务顶层接口
  *
  * @param <T>
  */
-public interface Service<T extends Id> {
+public interface Service<T extends Identical> {
     /**
      * 保存一个对象
      *

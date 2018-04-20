@@ -23,11 +23,11 @@ public class SecondaryDataSourceAspect {
     private RoutingDataSource routingDataSource;
 
     @Around(value = "@annotation(secondary)")
-    public void doBefore(ProceedingJoinPoint joinPoint, Secondary secondary) throws Throwable{
+    public Object doBefore(ProceedingJoinPoint joinPoint, Secondary secondary) throws Throwable{
 
         String ck = routingDataSource.getCurrentKey();
         if(StringUtils.isNotBlank(ck)){
-            return;
+            return joinPoint.proceed(joinPoint.getArgs());
         }
 
         routingDataSource.setCurrentKey(secondary.value());
@@ -36,7 +36,7 @@ public class SecondaryDataSourceAspect {
         }
 
         try {
-            joinPoint.proceed();
+            return joinPoint.proceed(joinPoint.getArgs());
         } finally {
             routingDataSource.removeCurrentKey();
             if(logger.isDebugEnabled()){

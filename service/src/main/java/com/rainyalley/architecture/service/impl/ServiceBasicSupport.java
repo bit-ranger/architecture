@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.service.impl;
 
-import com.rainyalley.architecture.core.Id;
+import com.rainyalley.architecture.core.Identical;
 import com.rainyalley.architecture.dao.BaseMapper;
 import com.rainyalley.architecture.service.Service;
 import com.rainyalley.architecture.service.util.ValidationInfo;
@@ -19,7 +19,7 @@ import java.util.Set;
  *
  * @param <B>
  */
-public abstract class ServiceBasicSupport<B extends Id,D extends Id> implements Service<B> {
+public abstract class ServiceBasicSupport<B extends Identical,D extends Identical> implements Service<B> {
 
     private Validator validator;
 
@@ -75,7 +75,7 @@ public abstract class ServiceBasicSupport<B extends Id,D extends Id> implements 
         return this.validator;
     }
 
-    protected <T> void resolveConstraint(Id obj, Set<ConstraintViolation<T>> result) {
+    protected <T> void resolveConstraint(Identical obj, Set<ConstraintViolation<T>> result) {
         Assert.notNull(result, "result can not be null");
         if (result.size() == 0) {
             return;
@@ -91,7 +91,7 @@ public abstract class ServiceBasicSupport<B extends Id,D extends Id> implements 
         throw new ValidationException(info.toString());
     }
 
-    protected void assertion(Id obj){
+    protected void assertion(Identical obj){
         resolveConstraint(obj, validator().validate(obj));
     }
 }

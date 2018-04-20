@@ -1,14 +1,14 @@
 package com.rainyalley.architecture.dao;
 
 
-import com.rainyalley.architecture.core.Id;
+import com.rainyalley.architecture.core.Identical;
 
 /**
  * 数据访问顶层接口
  *
  * @param <T>
  */
-public interface BaseMapper<T extends Id> {
+public interface BaseMapper<T extends Identical> {
 
     /**
      * 添加一个对象
