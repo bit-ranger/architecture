@@ -1,6 +1,5 @@
 package com.rainyalley.architecture.batch;
 
-import com.rainyalley.architecture.dao.user.User;
 import org.springframework.batch.item.file.transform.LineAggregator;
 
 public class UserAggregator implements LineAggregator<User> {

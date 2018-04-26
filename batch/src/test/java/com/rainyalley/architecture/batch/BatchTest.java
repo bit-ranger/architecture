@@ -1,13 +1,12 @@
 package com.rainyalley.architecture.batch;
 
-import com.rainyalley.architecture.service.config.ServiceConfig;
+import com.rainyalley.architecture.config.BatchConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
@@ -15,9 +14,9 @@ import org.springframework.util.Assert;
 import javax.annotation.Resource;
 import java.util.Set;
 
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {ServiceConfig.class})
-@SpringBootApplication
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {BatchConfig.class})
 public class BatchTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

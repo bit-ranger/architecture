@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.external.util;
 
-import com.rainyalley.architecture.core.exception.ConversionException;
+import com.rainyalley.architecture.exception.ConversionException;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;

@@ -33,7 +33,7 @@ spring:
             max-active: 8
 
 mybatis:
-    type-aliases-package: com.rainyalley.architecture.dao.entity
+    type-aliases-package: com.rainyalley.architecture.entity
     mapper-locations: classpath*:mapper/*Mapper.xml
     check-config-location: false
     executor-type: SIMPLE

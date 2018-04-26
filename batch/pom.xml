@@ -15,16 +15,6 @@
         <dependency>
             <groupId>com.rainyalley.architecture</groupId>
             <artifactId>service</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.rainyalley.architecture</groupId>
-                    <artifactId>dao</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.rainyalley.architecture</groupId>
-                    <artifactId>external</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
