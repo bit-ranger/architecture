@@ -1,6 +1,5 @@
 package com.rainyalley.architecture;
 
-import com.didispace.swagger.EnableSwagger2Doc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -15,7 +14,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 		"com.rainyalley.architecture.aop",
 		"com.rainyalley.architecture.impl"},
 	exclude = {DataSourceAutoConfiguration.class})
-@EnableSwagger2Doc
 public class BootApplication {
 
 	public static void main(String[] args) {
