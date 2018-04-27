@@ -5,7 +5,7 @@ import lombok.Data;
 
 
 @Data
-public class UserPostPo {
+public class UserPo {
 
     @ApiModelProperty(value = "姓名", required = true)
     private String name;

@@ -1,9 +1,10 @@
 package com.rainyalley.architecture.controller;
 
 import com.rainyalley.architecture.model.User;
-import com.rainyalley.architecture.po.UserPostPo;
+import com.rainyalley.architecture.po.UserPo;
 import com.rainyalley.architecture.service.UserService;
 import com.rainyalley.architecture.vo.UserVo;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -15,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 
+@Api(value = "user", description = "用户信息管理")
 @RestController
 @RequestMapping(value = "/user", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserController{
@@ -49,7 +51,7 @@ public class UserController{
 
     @ApiOperation(value="提交用户信息")
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<UserVo> list(@RequestBody UserPostPo userPostPo){
+    public ResponseEntity<UserVo> list(@RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }
 
@@ -60,4 +62,11 @@ public class UserController{
         return ResponseEntity.ok(new UserVo());
     }
 
+
+    @ApiOperation(value="修改用户信息")
+    @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
+    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT)
+    public ResponseEntity<UserVo> put(@PathVariable("id") String id, @RequestBody UserPo userPo){
+        return ResponseEntity.ok(new UserVo());
+    }
 }
