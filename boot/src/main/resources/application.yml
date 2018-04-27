@@ -42,6 +42,33 @@ mybatis:
     executor-type: SIMPLE
 
 
+management:
+    port: 11111
+    context-path: /admin
+    security.enabled: true
+
+endpoints:
+    metrics:
+        sensitive: false
+        enabled: true
+    health:
+        sensitive: false
+        enabled: true
+
+swagger:
+    title: spring-boot-starter-swagger
+    description: Starter for swagger 2.x
+    version: 1.3.0.RELEASE
+    license: Apache License, Version 2.0
+    licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+    termsOfServiceUrl: https://github.com/dyc87112/spring-boot-starter-swagger
+    contact.name: WakelessDragon
+    contact.url: https://github.com/WakelessDragon
+    contact.email: sincerebravefight@gmail.com
+    base-package: com.rainyalley.architecture.controller
+    base-path: /**
+    exclude-path: /error, /admin/**
+
 extend:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
@@ -66,3 +93,7 @@ extend:
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
             connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
+            
+            
+
+
