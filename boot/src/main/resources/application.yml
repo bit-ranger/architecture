@@ -10,6 +10,7 @@ spring:
             password:
             driver-class-name: com.mysql.jdbc.Driver
             druid:
+                name: primary
                 default-transaction-isolation: 2
                 maxActive: 20
                 initialSize: 10
@@ -49,6 +50,7 @@ extend:
         password:
         driver-class-name: com.mysql.jdbc.Driver
         druid:
+            name: secondary
             default-transaction-isolation: 1
             maxActive: 20
             initialSize: 10
@@ -63,4 +65,4 @@ extend:
             poolPreparedStatements: false
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100

@@ -20,7 +20,7 @@ public class Swagger2Config {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.rainyalley.architecture.boot.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.rainyalley.architecture.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
