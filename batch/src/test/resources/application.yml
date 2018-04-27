@@ -24,7 +24,7 @@ spring:
                 poolPreparedStatements: false
                 maxPoolPreparedStatementPerConnectionSize: 20
                 filters: stat
-                connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+                connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
     redis:
         host: localhost
         port: 6379
@@ -33,6 +33,9 @@ spring:
             max-active: 8
     cache:
         type: redis
+    batch:
+      initialize-schema: always
+
 
 mybatis:
     type-aliases-package: com.rainyalley.architecture.entity
@@ -63,4 +66,4 @@ extend:
             poolPreparedStatements: false
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100

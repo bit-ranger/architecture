@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.config;
 
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
@@ -10,19 +10,18 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.WebContentInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 @ServletComponentScan
-public class WebMvcConfig extends WebMvcConfigurerAdapter{
+public class WebMvcConfig implements WebMvcConfigurer {
 
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
 
 //        registry.addResourceHandler("/user/**")
 //                .addResourceLocations("/user/")
@@ -35,12 +34,11 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter{
         webContent.setCacheControl(CacheControl.maxAge(10, TimeUnit.HOURS));
 
         registry.addInterceptor(webContent).addPathPatterns("/user/**");
-        super.addInterceptors(registry);
     }
 
     @Bean
-    public FilterRegistrationBean characterEncodingFilter(){
-        FilterRegistrationBean registration = new FilterRegistrationBean();
+    public FilterRegistrationBean<CharacterEncodingFilter> characterEncodingFilter(){
+        FilterRegistrationBean<CharacterEncodingFilter> registration = new FilterRegistrationBean<>();
         CharacterEncodingFilter filter =  new CharacterEncodingFilter();
         registration.setOrder(1);
         registration.setFilter(filter);
@@ -52,8 +50,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public FilterRegistrationBean hiddenHttpMethodFilter(){
-        FilterRegistrationBean registration = new FilterRegistrationBean();
+    public FilterRegistrationBean<HiddenHttpMethodFilter> hiddenHttpMethodFilter(){
+        FilterRegistrationBean<HiddenHttpMethodFilter> registration = new FilterRegistrationBean<>();
         HiddenHttpMethodFilter filter =  new HiddenHttpMethodFilter();
         registration.setOrder(1);
         registration.setFilter(filter);
