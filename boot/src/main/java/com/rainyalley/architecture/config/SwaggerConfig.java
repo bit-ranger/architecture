@@ -1,13 +1,13 @@
 package com.rainyalley.architecture.config;
 
-import com.didispace.swagger.EnableSwagger2Doc;
+import com.spring4all.swagger.EnableSwagger2Doc;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableSwagger2Doc
 @Configuration
-public class SwaggerConfig extends WebMvcConfigurerAdapter {
+public class SwaggerConfig  implements WebMvcConfigurer {
 
 
     @Override
