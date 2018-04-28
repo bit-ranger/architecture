@@ -37,8 +37,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<CharacterEncodingFilter> characterEncodingFilter(){
-        FilterRegistrationBean<CharacterEncodingFilter> registration = new FilterRegistrationBean<>();
+    public FilterRegistrationBean characterEncodingFilter(){
+        FilterRegistrationBean registration = new FilterRegistrationBean();
         CharacterEncodingFilter filter =  new CharacterEncodingFilter();
         registration.setOrder(1);
         registration.setFilter(filter);
@@ -50,8 +50,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<HiddenHttpMethodFilter> hiddenHttpMethodFilter(){
-        FilterRegistrationBean<HiddenHttpMethodFilter> registration = new FilterRegistrationBean<>();
+    public FilterRegistrationBean hiddenHttpMethodFilter(){
+        FilterRegistrationBean registration = new FilterRegistrationBean();
         HiddenHttpMethodFilter filter =  new HiddenHttpMethodFilter();
         registration.setOrder(1);
         registration.setFilter(filter);

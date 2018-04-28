@@ -53,7 +53,6 @@
 			<groupId>com.didispace</groupId>
 			<artifactId>spring-boot-starter-swagger</artifactId>
 		</dependency>
-
 	</dependencies>
 
 </project>
