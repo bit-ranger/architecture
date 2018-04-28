@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.external.util;
+package com.rainyalley.architecture.util;
 
 import com.rainyalley.architecture.exception.ConversionException;
 import net.jcip.annotations.NotThreadSafe;

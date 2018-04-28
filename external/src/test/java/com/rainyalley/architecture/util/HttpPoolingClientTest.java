@@ -1,7 +1,6 @@
 package com.rainyalley.architecture.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.external.util.HttpPoolingClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ public class HttpPoolingClientTest{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private com.rainyalley.architecture.external.util.HttpPoolingClient client = new HttpPoolingClient();
+    private HttpPoolingClient client = new HttpPoolingClient();
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
