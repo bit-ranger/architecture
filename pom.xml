@@ -4,8 +4,8 @@
 
     <properties>
         <maven.compiler.release>9</maven.compiler.release>
-        <maven.compiler.source>1.9</maven.compiler.source>
-        <maven.compiler.target>1.9</maven.compiler.target>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
         <architecture-version>0.0.1-SNAPSHOT</architecture-version>
         <kotlin.version>1.2.31</kotlin.version>
     </properties>
@@ -245,6 +245,12 @@
                 <version>1.7.25</version>
             </dependency>
 
+
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -258,14 +264,37 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                     <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>--add-modules java.xml.bind</arg>
+                    </compilerArgs>
+                    <fork>true</fork>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-modules java.xml.bind
+                        --illegal-access=deny
+                    </argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-modules java.xml.bind
+                        --illegal-access=deny
+                    </argLine>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
