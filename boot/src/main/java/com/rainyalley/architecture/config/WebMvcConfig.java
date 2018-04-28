@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.config;
 
+import freemarker.log.Logger;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -19,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 @ServletComponentScan
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    static {
+        System.setProperty(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY, String.valueOf(Logger.LIBRARY_NAME_SLF4J));
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
