@@ -1,36 +1,31 @@
-logging:
-    level:
-        com.rainyalley.architecture: DEBUG
-
 spring:
     datasource:
-            type: com.alibaba.druid.pool.DruidDataSource
-            url: jdbc:mysql://localhost:3306/architecture
-            username: root
-            password:
-            driver-class-name: com.mysql.jdbc.Driver
-            druid:
-                default-transaction-isolation: 2
-                maxActive: 20
-                initialSize: 10
-                minIdle: 10
-                maxWait: 5
-                timeBetweenEvictionRunsMillis: 60000
-                minEvictableIdleTimeMillis: 300000
-                validationQuery: SELECT 'x'
-                testWhileIdle: true
-                testOnBorrow: false
-                testOnReturn: false
-                poolPreparedStatements: false
-                maxPoolPreparedStatementPerConnectionSize: 20
-                filters: stat
-                connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/architecture
+        username: root
+        password:
+        driver-class-name: com.mysql.jdbc.Driver
+        druid:
+            name: primary
+            default-transaction-isolation: 2
+            maxActive: 20
+            initialSize: 10
+            minIdle: 10
+            maxWait: 5
+            timeBetweenEvictionRunsMillis: 60000
+            minEvictableIdleTimeMillis: 300000
+            validationQuery: SELECT 'x'
+            testWhileIdle: true
+            testOnBorrow: false
+            testOnReturn: false
+            poolPreparedStatements: false
+            maxPoolPreparedStatementPerConnectionSize: 20
+            filters: stat
+            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
     redis:
         host: localhost
         port: 6379
         database: 0
-        pool:
-            max-active: 8
     cache:
         type: redis
 
@@ -40,6 +35,19 @@ mybatis:
     check-config-location: false
     executor-type: SIMPLE
 
+swagger:
+    title: spring-boot-starter-swagger
+    description: Starter for swagger 2.x
+    version: 1.3.0.RELEASE
+    license: Apache License, Version 2.0
+    licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+    termsOfServiceUrl: https://github.com/WakelessDragon/architecture
+    contact.name: WakelessDragon
+    contact.url: https://github.com/WakelessDragon
+    contact.email: sincerebravefight@gmail.com
+    base-package: com.rainyalley.architecture.controller
+    base-path: /**
+    exclude-path: /error, /admin/**
 
 extend:
     datasource:
@@ -49,6 +57,7 @@ extend:
         password:
         driver-class-name: com.mysql.jdbc.Driver
         druid:
+            name: secondary
             default-transaction-isolation: 1
             maxActive: 20
             initialSize: 10
@@ -63,4 +72,24 @@ extend:
             poolPreparedStatements: false
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
+
+
+management:
+    endpoints:
+        enabled-by-default: true
+    server:
+        port: 8080
+    endpoint:
+        health:
+            show-details: when_authorized
+        sessions:
+            enabled: true
+
+
+            
+            
+logging:
+    level:
+        com.rainyalley.architecture: DEBUG
+

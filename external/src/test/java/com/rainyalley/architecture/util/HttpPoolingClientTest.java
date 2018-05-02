@@ -1,7 +1,6 @@
 package com.rainyalley.architecture.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.external.util.HttpPoolingClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -16,11 +15,11 @@ import java.util.concurrent.Executors;
 
 public class HttpPoolingClientTest{
 
-    private ExecutorService es =  Executors.newFixedThreadPool(100);
+    private ExecutorService es =  Executors.newFixedThreadPool(2);
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private com.rainyalley.architecture.external.util.HttpPoolingClient client = new HttpPoolingClient();
+    private HttpPoolingClient client = new HttpPoolingClient();
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -43,8 +42,8 @@ public class HttpPoolingClientTest{
     public void post() throws Exception {
         Map<String,String> map = new HashMap<String,String>();
         map.put("aaa", "bbbb");
-        CountDownLatch cl = new CountDownLatch(100);
-        for (int i = 0; i < 100; i++) {
+        CountDownLatch cl = new CountDownLatch(2);
+        for (int i = 0; i < 2; i++) {
             final int fi = i;
             es.execute(new Runnable() {
                 @Override

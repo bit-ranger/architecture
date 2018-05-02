@@ -1,8 +1,3 @@
-logging:
-    level:
-        com.rainyalley.architecture: DEBUG
-        org.springframework.cache.interceptor.CacheInterceptor: trace
-
 spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
@@ -30,8 +25,6 @@ spring:
         host: localhost
         port: 6379
         database: 0
-        pool:
-            max-active: 8
     cache:
         type: redis
 
@@ -65,3 +58,9 @@ extend:
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
             connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+
+
+logging:
+    level:
+        com.rainyalley.architecture: DEBUG
+        org.springframework.cache.interceptor.CacheInterceptor: trace

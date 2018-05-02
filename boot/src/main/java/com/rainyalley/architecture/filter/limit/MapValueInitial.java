@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.filter;
+package com.rainyalley.architecture.filter.limit;
 
 import net.jcip.annotations.ThreadSafe;
 

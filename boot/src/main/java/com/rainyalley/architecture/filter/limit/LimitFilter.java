@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.filter;
+package com.rainyalley.architecture.filter.limit;
 
 import com.rainyalley.architecture.util.AtomicExecutor;
 import com.rainyalley.architecture.util.AtomicRunnerAdapter;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.rainyalley.architecture.filter.LimitFilter.RejectReason.*;
+import static com.rainyalley.architecture.filter.limit.LimitFilter.RejectReason.*;
 
 public class LimitFilter extends OncePerRequestFilter {
 
