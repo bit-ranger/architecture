@@ -1,5 +1,7 @@
 package com.rainyalley.architecture.config;
 
+import com.rainyalley.architecture.interceptor.xss.JsoupXssInterceptor;
+import com.rainyalley.architecture.vo.ErrorVo;
 import freemarker.log.Logger;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -7,6 +9,11 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,6 +23,7 @@ import org.springframework.web.servlet.mvc.WebContentInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
+@ControllerAdvice
 @Configuration
 @ServletComponentScan
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -37,7 +45,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         WebContentInterceptor webContent = new WebContentInterceptor();
         webContent.setCacheControl(CacheControl.maxAge(10, TimeUnit.HOURS));
 
+        JsoupXssInterceptor jsoupXssInterceptor = new JsoupXssInterceptor();
+
         registry.addInterceptor(webContent).addPathPatterns("/user/**");
+        registry.addInterceptor(jsoupXssInterceptor).addPathPatterns("/**");
     }
 
     @Bean
@@ -62,6 +73,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registration.setName("hiddenHttpMethodFilter");
         registration.addServletNames(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
         return registration;
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public ResponseEntity<ErrorVo> defaultErrorHandler(Exception e) {
+        ErrorVo info = new ErrorVo();
+        info.setMessage(e.getMessage());
+        info.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(info);
     }
 
 }

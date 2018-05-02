@@ -1,8 +1,6 @@
-package com.rainyalley.architecture.filter;
+package com.rainyalley.architecture.filter.limit;
 
-public class TargetCallerLimitInfo {
-
-    private String caller;
+public class TargetLimitInfo {
 
     private String target;
 
@@ -12,15 +10,6 @@ public class TargetCallerLimitInfo {
 
     private long warmupPeriod;
 
-    private boolean hasAuth;
-
-    public String getCaller() {
-        return caller;
-    }
-
-    public void setCaller(String caller) {
-        this.caller = caller;
-    }
 
     public String getTarget() {
         return target;
@@ -28,6 +17,14 @@ public class TargetCallerLimitInfo {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public int getMaxConcurrency() {
+        return maxConcurrency;
+    }
+
+    public void setMaxConcurrency(int maxConcurrency) {
+        this.maxConcurrency = maxConcurrency;
     }
 
     public long getPermitsPerSecond() {
@@ -44,21 +41,5 @@ public class TargetCallerLimitInfo {
 
     public void setWarmupPeriod(long warmupPeriod) {
         this.warmupPeriod = warmupPeriod;
-    }
-
-    public boolean isHasAuth() {
-        return hasAuth;
-    }
-
-    public void setHasAuth(boolean hasAuth) {
-        this.hasAuth = hasAuth;
-    }
-
-    public int getMaxConcurrency() {
-        return maxConcurrency;
-    }
-
-    public void setMaxConcurrency(int maxConcurrency) {
-        this.maxConcurrency = maxConcurrency;
     }
 }
