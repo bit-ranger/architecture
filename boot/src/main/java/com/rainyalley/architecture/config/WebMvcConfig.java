@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.config;
 
-import com.rainyalley.architecture.interceptor.xss.JsoupXssInterceptor;
+import com.rainyalley.architecture.exception.XssException;
 import com.rainyalley.architecture.vo.ErrorVo;
 import freemarker.log.Logger;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
@@ -45,10 +45,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         WebContentInterceptor webContent = new WebContentInterceptor();
         webContent.setCacheControl(CacheControl.maxAge(10, TimeUnit.HOURS));
 
-        JsoupXssInterceptor jsoupXssInterceptor = new JsoupXssInterceptor();
-
         registry.addInterceptor(webContent).addPathPatterns("/user/**");
-        registry.addInterceptor(jsoupXssInterceptor).addPathPatterns("/**");
     }
 
     @Bean
@@ -75,9 +72,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return registration;
     }
 
+    @ExceptionHandler(value = XssException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorVo> xssExceptionHandler(Exception e) {
+        ErrorVo info = new ErrorVo();
+        info.setMessage(e.getMessage());
+        info.setCode(HttpStatus.BAD_REQUEST.value());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(info);
+    }
+
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public ResponseEntity<ErrorVo> defaultErrorHandler(Exception e) {
+    public ResponseEntity<ErrorVo> defaultExceptionHandler(Exception e) {
         ErrorVo info = new ErrorVo();
         info.setMessage(e.getMessage());
         info.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

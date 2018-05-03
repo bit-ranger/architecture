@@ -18,7 +18,7 @@ import java.util.List;
 
 @Api(value = "user", description = "用户信息管理")
 @RestController
-@RequestMapping(value = "/user", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/user", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserController{
 
     @Resource
@@ -50,7 +50,7 @@ public class UserController{
 
 
     @ApiOperation(value="提交用户信息")
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserVo> list(@RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }
@@ -65,7 +65,7 @@ public class UserController{
 
     @ApiOperation(value="修改用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserVo> put(@PathVariable("id") String id, @RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }

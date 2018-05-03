@@ -50,6 +50,10 @@ public abstract class ServiceBasicSupport<B extends Identical,D extends Identica
     @Transactional(readOnly = true)
     public B get(String id) {
         D d = getDao().get(id);
+        if(d == null){
+            return null;
+        }
+
         assertion(d);
         B b = toBo(d);
         assertion(d);
