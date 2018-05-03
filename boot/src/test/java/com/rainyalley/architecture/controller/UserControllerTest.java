@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rainyalley.architecture.BootApplication;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +52,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void list() throws Exception {
+    public void post() throws Exception {
+        Map<String,String> param = new HashMap<>();
+        param.put("age", "qwe");
+        ResultActions ra = mvc.perform(MockMvcRequestBuilders.post("/user")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(new ObjectMapper().writeValueAsString(param)));
+        ra.andExpect(status().isBadRequest());
     }
 
 }

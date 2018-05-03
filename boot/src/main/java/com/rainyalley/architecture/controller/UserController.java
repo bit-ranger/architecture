@@ -11,8 +11,10 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,7 +53,7 @@ public class UserController{
 
     @ApiOperation(value="提交用户信息")
     @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserVo> list(@RequestBody UserPo userPo){
+    public ResponseEntity<UserVo> post(@RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }
 
@@ -68,5 +70,11 @@ public class UserController{
     @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserVo> put(@PathVariable("id") String id, @RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
+    }
+
+    @ApiOperation(value="提交用户信息")
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<List<UserVo>> postMulti(@RequestParam(value = "user") String[] userPos, @RequestParam(value = "file") List<MultipartFile> file){
+        return ResponseEntity.ok(Arrays.asList(new UserVo(), new UserVo()));
     }
 }

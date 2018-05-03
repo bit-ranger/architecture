@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,18 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {BootApplication.class})
 @AutoConfigureMockMvc
-public class JsoupXssFilterTest implements ApplicationContextAware {
+public class XssFilterTest implements ApplicationContextAware {
 
     private MockMvc mvc;
-
-    private XssFilter jsoupXssFilter = new XssFilter();
 
     private ApplicationContext applicationContext;
 
     @Before
     public void setUp() throws Exception {
-        jsoupXssFilter.init(new MockFilterConfig());
-        mvc = MockMvcBuilders.webAppContextSetup((WebApplicationContext)applicationContext).addFilter(jsoupXssFilter, "/*").build();
+        mvc = MockMvcBuilders.webAppContextSetup((WebApplicationContext)applicationContext).addFilter(new XssFilter()).build();
     }
 
 
@@ -55,6 +52,23 @@ public class JsoupXssFilterTest implements ApplicationContextAware {
         String body = new ObjectMapper().writeValueAsString(param);
         ResultActions ra = mvc.perform(MockMvcRequestBuilders.post("/user").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(body));
         ra.andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @Test
+    public void doFilterMultipart() throws Exception {
+
+        MockMultipartFile firstFile = new MockMultipartFile("file", "filename.txt", "text/plain", "some xml".getBytes());
+        MockMultipartFile secondFile = new MockMultipartFile("file", "other-file-name.data", "text/plain", "some other type".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("file", "", "application/json", "{\"json\": \"someValue\"}".getBytes());
+
+        mvc.perform(MockMvcRequestBuilders.multipart("/user")
+                .file(firstFile)
+                .file(secondFile)
+                .file(jsonFile)
+                .param("user", "{\"name\": \"someValue>\"}")
+                .param("user", "{\"age\": \"someValue\"}")
+        )
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
     @Test

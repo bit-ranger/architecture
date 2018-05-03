@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.filter.xss;
 
-import com.rainyalley.architecture.exception.XssException;
+import com.rainyalley.architecture.exception.BadRequestException;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -70,7 +70,7 @@ class XssCheckServletInputStream extends ServletInputStream {
     private void checkAndResetBuffer(){
         String str = new String(buffer, 0, bufferEndPosition + 1, charset);
         if(!xssChecker.isValid(str)){
-            throw new XssException("The request body contains invalid tag");
+            throw new BadRequestException("The request body contains invalid tag");
         }
 
         //tail bytes move to head

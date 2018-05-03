@@ -1,7 +1,7 @@
 package com.rainyalley.architecture.filter.xss;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.exception.XssException;
+import com.rainyalley.architecture.exception.BadRequestException;
 import com.rainyalley.architecture.vo.ErrorVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
@@ -20,13 +20,11 @@ import java.util.Map;
  */
 public class XssFilter implements Filter {
 
-    private  XssChecker xssChecker;
+    private  XssChecker xssChecker = new SimpleXssChecker();
 
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        xssChecker = new SimpleXssChecker();
-    }
+    public void init(FilterConfig filterConfig) throws ServletException { }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -38,7 +36,7 @@ public class XssFilter implements Filter {
 
         try {
             doFilterInternal(httpRequest, httpResponse, chain);
-        } catch (XssException e){
+        } catch (BadRequestException e){
             ErrorVo info = new ErrorVo();
             info.setMessage(e.getMessage());
             info.setCode(HttpStatus.BAD_REQUEST.value());
@@ -53,7 +51,7 @@ public class XssFilter implements Filter {
     private void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain) throws IOException, ServletException{
         if(HttpMethod.GET.name().equalsIgnoreCase(httpRequest.getMethod())){
             if(xssChecker.isValid(httpRequest.getQueryString())){
-                throw new XssException("The query string contains invalid tag");
+                throw new BadRequestException("The query string contains invalid tag");
             }
         }
 
@@ -63,7 +61,7 @@ public class XssFilter implements Filter {
                 for (Map.Entry<String,String[]> entry : httpRequest.getParameterMap().entrySet()) {
                     for (String s : entry.getValue()) {
                         if(xssChecker.isValid(s)){
-                            throw new XssException(String.format("The parameter %s contains invalid tag", entry.getKey()));
+                            throw new BadRequestException(String.format("The parameter %s contains invalid tag", entry.getKey()));
                         }
                     }
                 }

@@ -15,4 +15,7 @@ public class UserPo {
 
     @ApiModelProperty(value = "邮箱", required = false)
     private String email;
+
+    @ApiModelProperty(value = "年龄", required = false)
+    private int age;
 }
