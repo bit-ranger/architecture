@@ -50,7 +50,7 @@ public class XssFilter implements Filter {
 
     private void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain) throws IOException, ServletException{
         if(HttpMethod.GET.name().equalsIgnoreCase(httpRequest.getMethod())){
-            if(xssChecker.isValid(httpRequest.getQueryString())){
+            if(!xssChecker.isValid(httpRequest.getQueryString())){
                 throw new BadRequestException("The query string contains invalid tag");
             }
         }
@@ -60,7 +60,7 @@ public class XssFilter implements Filter {
             if(StringUtils.contains(contentType, MediaType.APPLICATION_FORM_URLENCODED_VALUE)){
                 for (Map.Entry<String,String[]> entry : httpRequest.getParameterMap().entrySet()) {
                     for (String s : entry.getValue()) {
-                        if(xssChecker.isValid(s)){
+                        if(!xssChecker.isValid(s)){
                             throw new BadRequestException(String.format("The parameter %s contains invalid tag", entry.getKey()));
                         }
                     }
