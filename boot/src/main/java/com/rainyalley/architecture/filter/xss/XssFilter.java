@@ -49,6 +49,10 @@ public class XssFilter implements Filter {
     }
 
     private void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain) throws IOException, ServletException{
+        if(!xssChecker.isValid(httpRequest.getRequestURI())){
+            throw new BadRequestException("The uri string contains invalid tag");
+        }
+
         if(HttpMethod.GET.name().equalsIgnoreCase(httpRequest.getMethod())){
             if(!xssChecker.isValid(httpRequest.getQueryString())){
                 throw new BadRequestException("The query string contains invalid tag");
