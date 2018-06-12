@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
+/**
+ * @author bin.zhang
+ */
 public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemStreamItemReader<T> implements ItemReader<T>, InitializingBean {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
