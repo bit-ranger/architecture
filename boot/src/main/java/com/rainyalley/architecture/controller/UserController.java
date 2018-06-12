@@ -11,14 +11,16 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @Api(value = "user", description = "用户信息管理")
 @RestController
-@RequestMapping(value = "/user", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/user", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserController{
 
     @Resource
@@ -50,8 +52,8 @@ public class UserController{
 
 
     @ApiOperation(value="提交用户信息")
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<UserVo> list(@RequestBody UserPo userPo){
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<UserVo> post(@RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }
 
@@ -65,8 +67,14 @@ public class UserController{
 
     @ApiOperation(value="修改用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserVo> put(@PathVariable("id") String id, @RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
+    }
+
+    @ApiOperation(value="提交用户信息")
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<List<UserVo>> postMulti(@RequestParam(value = "user") String[] userPos, @RequestParam(value = "file") List<MultipartFile> file){
+        return ResponseEntity.ok(Arrays.asList(new UserVo(), new UserVo()));
     }
 }

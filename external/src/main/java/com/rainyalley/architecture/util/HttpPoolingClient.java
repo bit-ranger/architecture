@@ -31,10 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author bin.zhang
@@ -53,7 +50,13 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
     /**
      * 将请求标记为可重试
      */
-    private final static String http_req_retry = "http.request_retry";
+    private final static String HTTP_REQ_RETRY = "http.request.retry";
+
+    /**
+     * 请求的uuid
+     */
+    private final static String HTTP_REQ_UUID = "http.request.uuid";
+    
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -123,28 +126,21 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
     protected String receiveString(final HttpUriRequest request, final HttpContext context) throws IOException{
         CloseableHttpResponse response = null;
         try {
-            if(logger.isDebugEnabled()){
-                logger.debug(String.format("send %s >>> %s", request, context));
-            }
-
+            context.setAttribute(HTTP_REQ_UUID, UUID.randomUUID());
             response = this.execute(request, context);
             HttpEntity httpEntity = response.getEntity();
             String respString = httpEntity != null ? EntityUtils.toString(httpEntity, charset) : null;
-
             if(logger.isDebugEnabled()){
-                logger.debug(String.format("recv %s >>> %s\n%s", request, response, respString));
+                logger.debug(String.format("receiveString: %s >>> %s @ %s", request, respString, context));
+            }
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
+                throw new IllegalStateException();
             }
 
-            int respStatus = response.getStatusLine().getStatusCode();
-
-            if (respStatus == HttpStatus.SC_OK) {
-                return respString;
-            } else {
-                throw new IllegalStateException(String.format("expect %s, actual %s", HttpStatus.SC_OK, respStatus));
-            }
+            return respString;
         } catch (Exception e) {
             if(logger.isErrorEnabled()){
-                logger.error(String.format("error %s >>> %s", request, context), e);
+                logger.error(String.format("receiveString: %s >>> %s:%s @ %s", request, e.getClass().getName(), e.getMessage(), context));
             }
             throw e;
         } finally {
@@ -170,7 +166,7 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         }
 
         try {
-            return receiveString(httpGet, null);
+            return receiveString(httpGet, new BasicHttpContext());
         } finally {
             httpGet.releaseConnection();
         }
@@ -216,7 +212,7 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         try {
             BasicHttpContext context = new BasicHttpContext();
             if(retry){
-                context.setAttribute(http_req_retry, true);
+                context.setAttribute(HTTP_REQ_RETRY, true);
             }
             return receiveString(httpPost, context);
         } finally {
@@ -262,7 +258,7 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         try {
             BasicHttpContext context = new BasicHttpContext();
             if(retry){
-                context.setAttribute(http_req_retry, true);
+                context.setAttribute(HTTP_REQ_RETRY, true);
             }
             return receiveString(httpPost, context);
         } finally {
@@ -299,7 +295,7 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
     /**
      * 指定的请求将重试
      */
-    private static class SpecificHttpRequestRetryHandler extends StandardHttpRequestRetryHandler{
+    private class SpecificHttpRequestRetryHandler extends StandardHttpRequestRetryHandler{
 
         public SpecificHttpRequestRetryHandler(int retryCount, boolean requestSentRetryEnabled) {
             super(retryCount, requestSentRetryEnabled);
@@ -309,23 +305,28 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
             boolean retry = super.retryRequest(exception, executionCount, context);
 
-            //如果之前已判断为可重试，则重试
+
+            if(!retry){
+                retry = exception instanceof NoHttpResponseException;
+            }
+
+            if(!retry){
+                //如果之前判断为不可重试，此判断是否指定为重试
+                retry =  Boolean.TRUE.equals(context.getAttribute(HTTP_REQ_RETRY));
+            }
+
             if(retry){
-                return true;
+                if(logger.isDebugEnabled()){
+                    logger.debug(String.format("retryRequest: %s >>> %s, %s@%s", context.getAttribute(HTTP_REQ_UUID), executionCount, exception.getMessage(), exception.getClass().getName()));
+                }
             }
 
-            if (executionCount > this.getRetryCount()) {
-                //超过次数则不重试
-                return false;
-            }
-
-            //如果之前判断为不可重试，此判断是否指定为重试
-            return Boolean.TRUE.equals(context.getAttribute(http_req_retry));
+            return retry;
 
         }
     }
 
-    private static class ShowEntityHttpPost extends HttpPost{
+    private class ShowEntityHttpPost extends HttpPost{
 
         private boolean showEntity = false;
 
