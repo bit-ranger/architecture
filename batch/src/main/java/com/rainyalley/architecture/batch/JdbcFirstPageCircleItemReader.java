@@ -8,6 +8,7 @@ import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
 
@@ -28,6 +29,10 @@ public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemSt
     private RowMapper rowMapper;
 
     private PagingQueryProvider queryProvider;
+
+    private PreparedStatementSetter preparedStatementSetter;
+
+    private String[] sqlValues;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -80,7 +85,7 @@ public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemSt
             results.clear();
         }
 
-        List<T> result = jdbcTemplate.query(firstPageSql, rowMapper);
+        List<T> result = jdbcTemplate.query(firstPageSql, preparedStatementSetter, rowMapper);
 
         results.addAll(result);
     }
@@ -128,5 +133,21 @@ public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemSt
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public PreparedStatementSetter getPreparedStatementSetter() {
+        return preparedStatementSetter;
+    }
+
+    public void setPreparedStatementSetter(PreparedStatementSetter preparedStatementSetter) {
+        this.preparedStatementSetter = preparedStatementSetter;
+    }
+
+    public String[] getSqlValues() {
+        return sqlValues;
+    }
+
+    public void setSqlValues(String[] sqlValues) {
+        this.sqlValues = sqlValues;
     }
 }

@@ -28,6 +28,12 @@ spring:
     cache:
         type: redis
 
+    batch:
+        job:
+          enabled: false
+        initialize-schema: always
+        table-prefix: BATCH_
+
 mybatis:
     type-aliases-package: com.rainyalley.architecture.entity
     mapper-locations: classpath*:mapper/*Mapper.xml
