@@ -95,13 +95,18 @@
 				<property name="dataSource" ref="dataSource" />
 				<property name="selectClause" value="select id, stat, crt_time" />
 				<property name="fromClause" value="from batch_data" />
-				<property name="whereClause" value="where stat='0'"/>
+				<property name="whereClause" value="where stat=?"/>
 				<property name="sortKey" value="crt_time" />
 			</bean>
 		</property>
+		<property name="preparedStatementSetter">
+			<bean class="com.rainyalley.architecture.batch.BatchDataSqlSetter"/>
+		</property>
+		<property name="sqlValues" value="0"/>
 		<property name="rowMapper">
 			<bean class="com.rainyalley.architecture.batch.BatchDataRowMapper"/>
 		</property>
+
 	</bean>
 	<bean id="passThroughItemProcessor" class="org.springframework.batch.item.support.PassThroughItemProcessor"/>
 	<bean id="nopItemWriter" class="com.rainyalley.architecture.batch.NopItemWriter"/>
@@ -130,4 +135,6 @@
 			</tasklet>
 		</bean:step>
 	</bean:job>
+
+	<bean id="jdbcFirstPageRunner" class="com.rainyalley.architecture.batch.JdbcFirstPageRunner"/>
 </beans>
