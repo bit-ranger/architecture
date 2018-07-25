@@ -264,6 +264,10 @@
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                     <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>--add-modules</arg>
+                        <arg>java.xml.ws.annotation</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
