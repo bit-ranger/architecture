@@ -1,23 +1,23 @@
 package com.rainyalley.architecture.filter.limit;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public class CallerRuntime {
 
     /**
      * 调用者
      */
-    private String caller;
+    private String caller = StringUtils.EMPTY;
+
+    /**
+     *  目标
+     */
+    private String target  = StringUtils.EMPTY;
 
     /**
      * 当前并发量
      */
-    private int currConcurrency;
-
-    /**
-     * 访问记录
-     */
-    private List<AccessInfo> accessInfoList;
+    private int currConcurrency = 0;
 
     public String getCaller() {
         return caller;
@@ -35,14 +35,14 @@ public class CallerRuntime {
         this.currConcurrency = currConcurrency;
     }
 
-    public List<AccessInfo> getAccessInfoList() {
-        return accessInfoList;
+
+    public String getTarget() {
+        return target;
     }
 
-    public void setAccessInfoList(List<AccessInfo> accessInfoList) {
-        this.accessInfoList = accessInfoList;
+    public void setTarget(String target) {
+        this.target = target;
     }
-
 
     @Override
     public String toString() {
@@ -52,10 +52,10 @@ public class CallerRuntime {
         sb.append("\"@super\":\"").append(super.toString()).append("\"");
         sb.append("\"caller\":\"")
                 .append(caller).append('\"');
+        sb.append(",\"target\":\"")
+                .append(target).append('\"');
         sb.append(",\"currConcurrency\":")
                 .append(currConcurrency);
-        sb.append(",\"accessInfoList\":")
-                .append(accessInfoList);
         sb.append('}');
         return sb.toString();
     }

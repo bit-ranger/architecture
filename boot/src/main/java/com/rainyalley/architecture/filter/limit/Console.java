@@ -1,13 +1,23 @@
 package com.rainyalley.architecture.filter.limit;
 
+import java.util.List;
+
 /**
  * @author bin.zhang
  */
 public interface Console {
 
-    CallerLimit getCallerLimit(String caller);
+    List<String> getCallerAuth(String caller);
 
-    CallerRuntime getCallerRuntime(String caller);
+    boolean hasAuth(String caller, String target);
+
+    long getCallerAccessCount(String caller);
+
+    List<Access> getCallerAccessList(String caller, long start, long end);
+
+    CallerLimit getCallerLimit(String caller, String target);
+
+    CallerRuntime getCallerRuntime(String caller, String target);
 
     TargetLimit getTargetLimit(String target);
 
@@ -16,8 +26,6 @@ public interface Console {
     boolean acquireConcurrency(String caller, String target);
 
     boolean releaseConcurrency(String caller, String target);
-
-    boolean hasAuth(String caller, String target);
 
     boolean access(String caller, String target);
 }

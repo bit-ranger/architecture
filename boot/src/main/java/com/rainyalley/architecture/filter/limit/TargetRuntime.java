@@ -1,10 +1,14 @@
 package com.rainyalley.architecture.filter.limit;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class TargetRuntime {
 
-    private long accessTimes;
+    private String target = StringUtils.EMPTY;
 
-    private long lastAccessTime;
+    private long accessTimes = 0;
+
+    private long lastAccessTime = 0;
 
     /**
      * 当前并发量
@@ -35,13 +39,23 @@ public class TargetRuntime {
         this.currConcurrency = currConcurrency;
     }
 
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"@class\":\"com.rainyalley.architecture.filter.limit.TargetRuntime\"");
         sb.append("\"@super\":\"").append(super.toString()).append("\"");
-        sb.append("\"accessTimes\":")
+        sb.append("\"target\":\"")
+                .append(target).append('\"');
+        sb.append(",\"accessTimes\":")
                 .append(accessTimes);
         sb.append(",\"lastAccessTime\":")
                 .append(lastAccessTime);

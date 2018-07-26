@@ -1,5 +1,6 @@
 package com.rainyalley.architecture.filter.limit;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -7,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static com.rainyalley.architecture.filter.limit.RejectReason.*;
 
@@ -48,17 +50,17 @@ public abstract class AbstractLimitFilter extends OncePerRequestFilter {
 
     private boolean notFrequency(String caller, String target){
         TargetLimit targetLimit = console.getTargetLimit(target);
-        CallerLimit callerLimit = console.getCallerLimit(caller);
         if(targetLimit.getMinInterval() > 0){
             TargetRuntime rt = console.getTargetRuntime(target);
             return System.currentTimeMillis() - rt.getLastAccessTime() >= targetLimit.getMinInterval();
         }
 
+        CallerLimit callerLimit = console.getCallerLimit(caller, target);
         if(callerLimit.getMinInterval() > 0){
-            CallerRuntime rt = console.getCallerRuntime(caller);
+            List<Access> accessList = console.getCallerAccessList(caller, 0, 1);
             long lastAccessTime = 0;
-            if(!rt.getAccessInfoList().isEmpty()){
-                lastAccessTime = rt.getAccessInfoList().get(0).getAccessTime();
+            if(CollectionUtils.isNotEmpty(accessList)){
+                lastAccessTime = accessList.get(0).getTime();
             }
             return System.currentTimeMillis() - lastAccessTime >= targetLimit.getMinInterval();
         }

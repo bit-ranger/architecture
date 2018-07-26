@@ -1,28 +1,28 @@
 package com.rainyalley.architecture.filter.limit;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public class CallerLimit {
 
     /**
      * 调用者
      */
-    private String caller;
+    private String caller = StringUtils.EMPTY;
+
+    /**
+     * 目标
+     */
+    private String target = StringUtils.EMPTY;
 
     /**
      * 最大并发量
      */
-    private int maxConcurrency;
+    private int maxConcurrency = 0;
 
     /**
      * 最小调用间隔
      */
-    private long minInterval;
-
-    /**
-     * 授权列表
-     */
-    private List<String> authorizedList;
+    private long minInterval = 0;
 
 
     public String getCaller() {
@@ -49,12 +49,13 @@ public class CallerLimit {
         this.minInterval = minInterval;
     }
 
-    public List<String> getAuthorizedList() {
-        return authorizedList;
+
+    public String getTarget() {
+        return target;
     }
 
-    public void setAuthorizedList(List<String> authorizedList) {
-        this.authorizedList = authorizedList;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     @Override
@@ -65,12 +66,12 @@ public class CallerLimit {
         sb.append("\"@super\":\"").append(super.toString()).append("\"");
         sb.append("\"caller\":\"")
                 .append(caller).append('\"');
+        sb.append(",\"target\":\"")
+                .append(target).append('\"');
         sb.append(",\"maxConcurrency\":")
                 .append(maxConcurrency);
         sb.append(",\"minInterval\":")
                 .append(minInterval);
-        sb.append(",\"authorizedList\":")
-                .append(authorizedList);
         sb.append('}');
         return sb.toString();
     }
