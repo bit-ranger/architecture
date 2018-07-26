@@ -2,7 +2,7 @@ package com.rainyalley.architecture.filter.limit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import redis.clients.jedis.JedisCommands;
+import redis.clients.jedis.JedisCluster;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class ConsoleRedisImpl implements Console {
     private static final String callerConcLeaseKeyFmt = "limit:rt:conculease:caller:${caller}:${target}";
 
     /**
-     * list caller并发监控列表
+     * zset caller并发监控列表
      * 格式: caller|target
      */
     private static final String callerConcWatchingKey = "limit:watching:concu:caller";
@@ -76,16 +76,14 @@ public class ConsoleRedisImpl implements Console {
     private static final String targetConcLeaseKeyFmt = "limit:rt:conculease:target:${target}";
 
     /**
-     * list target并发监控列表
+     * zset target并发监控列表
      * 格式: target
      */
     private static final String targetConcWatchingKey = "limit:watching:concu:target";
 
+    private JedisCluster jedis;
 
-
-    private JedisCommands jedis;
-
-    public ConsoleRedisImpl(JedisCommands jedisCommands) {
+    public ConsoleRedisImpl(JedisCluster jedisCommands) {
         this.jedis = jedisCommands;
     }
 
@@ -200,12 +198,32 @@ public class ConsoleRedisImpl implements Console {
 
     @Override
     public boolean acquireConcurrency(String caller, String target) {
-        return false;
+        jedis.zadd(targetConcWatchingKey, System.currentTimeMillis(), target);
+        String tConcId = jedis.rpoplpush(targetKey(targetConcPoolKeyFmt, target), targetKey(targetConcLeaseKeyFmt, target));
+        if(StringUtils.isBlank(tConcId)){
+            return false;
+        }
+        jedis.hset(targetRtKey, concat(target, tConcId), String.valueOf(System.currentTimeMillis()));
+
+        jedis.zadd(callerConcWatchingKey, System.currentTimeMillis(), concat(caller, target));
+        String cConcId = jedis.rpoplpush(callerTargetKey(callerConcPoolKeyFmt, caller, target), callerTargetKey(callerConcLeaseKeyFmt, caller, target));
+        if(StringUtils.isBlank(cConcId)){
+            //归还一个target并发资源
+            jedis.rpoplpush(targetKey(targetConcLeaseKeyFmt, target), targetKey(targetConcPoolKeyFmt, target));
+            return false;
+        }
+        jedis.hset(callerKey(callerRtKeyFmt, caller), concat(target, tConcId), String.valueOf(System.currentTimeMillis()));
+
+        return true;
     }
 
     @Override
     public boolean releaseConcurrency(String caller, String target) {
-        return false;
+        //归还一个target并发资源
+        jedis.rpoplpush(targetKey(targetConcLeaseKeyFmt, target), targetKey(targetConcPoolKeyFmt, target));
+        //归还一个caller并发资源
+        jedis.rpoplpush(callerTargetKey(callerConcLeaseKeyFmt, caller, target), callerTargetKey(callerConcPoolKeyFmt, caller, target));
+        return true;
     }
 
     @Override
