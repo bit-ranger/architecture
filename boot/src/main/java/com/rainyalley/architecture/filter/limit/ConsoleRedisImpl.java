@@ -4,60 +4,80 @@ import redis.clients.jedis.JedisCommands;
 
 public class ConsoleRedisImpl implements Console {
 
-    /**
-     * hash
-     */
-    private static final String callerLimitKeyPrefix = "limit:static:caller:";
 
     /**
-     * hash
+     * hash caller静态配置
+     * keys: global, target, authorizedList
+     * value: maxConcurrency|minInterval, maxConcurrency|minInterval, auth1|auth2|...
      */
-    private static final String targetLimitKeyPrefix = "limit:static:target:";
+    private static final String callerLmtKeyFmt = "limit:static:caller:${caller}";
 
     /**
-     * hash
+     * hash caller运行时
+     * keys: target|并发资源id
+     * value: 最近使用时间
      */
-    private static final String callerRuntimeKeyPrefix = "limit:rt:core:caller:";
+    private static final String callerRtKeyFmt = "limit:rt:core:caller:${caller}";
 
     /**
-     * hash
+     * hash caller访问记录
+     * 格式: target|time
      */
-    private static final String callerRuntimeAccessInfoKeyPrefix = "limit:rt:accinfo:caller:";
+    private static final String callerRtAccKeyFmt = "limit:rt:acc:caller:${caller}";
 
     /**
-     * hash
+     * list caller并发资源池
+     * 格式: int
      */
-    private static final String targetRuntimeKeyPrefix = "limit:rt:core:target:";
+    private static final String callerConcurrencyPoolKey = "limit:rt:concupool:caller:${caller}:${target}";
 
     /**
-     * list
+     * list caller并发租借池
+     * 格式: int
      */
-    private static final String callerConcurrencyPoolKeyPrefix = "limit:rt:concupool:caller:";
+    private static final String callerConcurrencyLeaseKey = "limit:rt:conculease:caller:${caller}:${target}";
 
     /**
-     * list
-     */
-    private static final String callerConcurrencyLeaseKeyPrefix = "limit:rt:conculease:caller:";
-
-    /**
-     * list
+     * list caller并发监控列表
+     * 格式: caller|target
      */
     private static final String callerConcurrencyWatchingKey = "limit:watching:concu:caller";
 
     /**
-     * list
+     * hash target静态配置
+     * keys: target
+     * value: maxConcurrency|minInterval
      */
-    private static final String targetConcurrencyPoolKeyPrefix = "limit:rt:concupool:target:";
+    private static final String targetLimitKey = "limit:static:target";
 
     /**
-     * list
+     * hash target运行时
+     * keys: target|accessTimes, target|lastAccessTime, target|并发资源id
+     * value: 访问次数, 最近访问时间, 最近使用时间
      */
-    private static final String targetConcurrencyLeaseKeyPrefix = "limit:rt:conculease:target:";
+    private static final String targetRuntimeKey = "limit:rt:core:target";
 
     /**
-     * list
+     * list target并发资源池
+     * 格式: int
+     */
+    private static final String targetConcurrencyPoolKey = "limit:rt:concupool:target:${target}";
+
+    /**
+     * list target并发租借池
+     * 格式: int
+     */
+    private static final String targetConcurrencyLeaseKey = "limit:rt:conculease:target:${target}";
+
+    /**
+     * list target并发监控列表
+     * 格式: target
      */
     private static final String targetConcurrencyWatchingKey = "limit:watching:concu:target";
+
+
+
+
 
 
     private JedisCommands jedis;
@@ -98,26 +118,39 @@ public class ConsoleRedisImpl implements Console {
 
     @Override
     public boolean hasAuth(String caller, String target) {
-        String authorizedList =  jedis.hget(key(callerLimitKeyPrefix, caller), "authorizedList");
+        String defaultCallerLimitKey = callerKey(callerLmtKeyFmt, "default");
+        String callerLimitKey  = callerKey(callerLimitKey, caller);
+        String authorizedList =  jedis.hget(defaultCallerLimit, "authorizedList");
         return authorizedList.contains(target);
     }
 
     @Override
     public boolean access(String caller, String target) {
-        String targetRtKey = key(targetRuntimeKeyPrefix, target);
-        jedis.hincrBy(targetRtKey, "accessTimes", 1);
-        jedis.hset(targetRtKey, "lastAccessTime", String.valueOf(System.currentTimeMillis()));
+        String targetRtKey = targetRuntimeKey;
+        jedis.hincrBy(targetRtKey, concat(target, "accessTimes"), 1);
+        jedis.hset(targetRtKey, concat(target, "lastAccessTime"), String.valueOf(System.currentTimeMillis()));
 
-        String callerRtAccessKey = key(callerRuntimeAccessInfoKeyPrefix, caller);
-        jedis.lpush(callerRtAccessKey, target + "@" + System.currentTimeMillis());
+        String callerRtAccessKey = callerKey(callerRtAccKeyFmt, caller);
+        jedis.lpush(callerRtAccessKey, concat(target, String.valueOf(System.currentTimeMillis())));
         return false;
     }
 
 
-    private String key(String prefix, String suffix){
-        return prefix + ":" + suffix;
+    private String callerKey(String format, String caller){
+        return format.replace("${caller}", caller);
     }
 
+    private String targetKey(String format, String target){
+        return format.replace("${target}", target);
+    }
+
+    private String callerTargetKey(String format, String caller, String target){
+        return  format.replace("${caller}", caller).replace("${target}", target);
+    }
+
+    private String concat(String str1, String str2){
+        return str1 + "|" + str2;
+    }
 
 
 
