@@ -7,10 +7,10 @@ public class ConsoleRedisImpl implements Console {
 
     /**
      * hash caller静态配置
-     * keys: global, target, authorizedList
+     * keys: global, target, auth
      * value: maxConcurrency|minInterval, maxConcurrency|minInterval, auth1|auth2|...
      */
-    private static final String callerLmtKeyFmt = "limit:static:caller:${caller}";
+    private static final String callerLimitKeyFmt = "limit:static:caller:${caller}";
 
     /**
      * hash caller运行时
@@ -23,25 +23,25 @@ public class ConsoleRedisImpl implements Console {
      * hash caller访问记录
      * 格式: target|time
      */
-    private static final String callerRtAccKeyFmt = "limit:rt:acc:caller:${caller}";
+    private static final String callerRtAccessKeyFmt = "limit:rt:acc:caller:${caller}";
 
     /**
      * list caller并发资源池
      * 格式: int
      */
-    private static final String callerConcurrencyPoolKey = "limit:rt:concupool:caller:${caller}:${target}";
+    private static final String callerConcPoolKeyFmt = "limit:rt:concupool:caller:${caller}:${target}";
 
     /**
      * list caller并发租借池
      * 格式: int
      */
-    private static final String callerConcurrencyLeaseKey = "limit:rt:conculease:caller:${caller}:${target}";
+    private static final String callerConcLeaseKeyFmt = "limit:rt:conculease:caller:${caller}:${target}";
 
     /**
      * list caller并发监控列表
      * 格式: caller|target
      */
-    private static final String callerConcurrencyWatchingKey = "limit:watching:concu:caller";
+    private static final String callerConcWatchingKey = "limit:watching:concu:caller";
 
     /**
      * hash target静态配置
@@ -55,25 +55,25 @@ public class ConsoleRedisImpl implements Console {
      * keys: target|accessTimes, target|lastAccessTime, target|并发资源id
      * value: 访问次数, 最近访问时间, 最近使用时间
      */
-    private static final String targetRuntimeKey = "limit:rt:core:target";
+    private static final String targetRtKey = "limit:rt:core:target";
 
     /**
      * list target并发资源池
      * 格式: int
      */
-    private static final String targetConcurrencyPoolKey = "limit:rt:concupool:target:${target}";
+    private static final String targetConcPoolKeyFmt = "limit:rt:concupool:target:${target}";
 
     /**
      * list target并发租借池
      * 格式: int
      */
-    private static final String targetConcurrencyLeaseKey = "limit:rt:conculease:target:${target}";
+    private static final String targetConcLeaseKeyFmt = "limit:rt:conculease:target:${target}";
 
     /**
      * list target并发监控列表
      * 格式: target
      */
-    private static final String targetConcurrencyWatchingKey = "limit:watching:concu:target";
+    private static final String targetConcWatchingKey = "limit:watching:concu:target";
 
 
 
@@ -118,19 +118,22 @@ public class ConsoleRedisImpl implements Console {
 
     @Override
     public boolean hasAuth(String caller, String target) {
-        String defaultCallerLimitKey = callerKey(callerLmtKeyFmt, "default");
-        String callerLimitKey  = callerKey(callerLimitKey, caller);
-        String authorizedList =  jedis.hget(defaultCallerLimit, "authorizedList");
-        return authorizedList.contains(target);
+        String auth =  jedis.hget(callerKey(callerLimitKeyFmt, caller), "auth");
+
+        if (auth == null){
+            auth = jedis.hget(callerKey(callerLimitKeyFmt, "default"), "auth");
+        }
+
+        return auth.contains(target);
     }
 
     @Override
     public boolean access(String caller, String target) {
-        String targetRtKey = targetRuntimeKey;
+        String targetRtKey = ConsoleRedisImpl.targetRtKey;
         jedis.hincrBy(targetRtKey, concat(target, "accessTimes"), 1);
         jedis.hset(targetRtKey, concat(target, "lastAccessTime"), String.valueOf(System.currentTimeMillis()));
 
-        String callerRtAccessKey = callerKey(callerRtAccKeyFmt, caller);
+        String callerRtAccessKey = callerKey(callerRtAccessKeyFmt, caller);
         jedis.lpush(callerRtAccessKey, concat(target, String.valueOf(System.currentTimeMillis())));
         return false;
     }
