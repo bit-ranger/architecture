@@ -94,7 +94,9 @@ public class JedisReentrantLock implements Lock {
                 LockVal lv = new LockVal(System.currentTimeMillis(), lockMs, currentAsker(), 1);
                 String lvTxt = om.writeValueAsString(lv);
                 String result = jedis.set(lockKey, lvTxt, "nx", "px", lockMs);
-                logger.debug("tryLock acquire   >>> {} -> {} -> {}", lockKey, result, lvTxt);
+                if(logger.isDebugEnabled()){
+                    logger.debug("tryLock acquire   >>> {} -> {} -> {}", lockKey, result, lvTxt);
+                }
                 return resolve(result);
             }
 
@@ -105,7 +107,9 @@ public class JedisReentrantLock implements Lock {
                 lockVal.setCount(lockVal.getCount() + 1);
                 String lvTxt = om.writeValueAsString(lockVal);
                 String result = jedis.set(lockKey, lvTxt, "xx", "px", lockMs);
-                logger.debug("tryLock reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                if(logger.isDebugEnabled()){
+                    logger.debug("tryLock reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                }
                 return resolve(result);
             } else {
                 //当前线程不拥有锁
@@ -149,7 +153,9 @@ public class JedisReentrantLock implements Lock {
         try {
             String lockValTxt = jedis.get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
-                logger.debug("unLock  miss      >>> {} -> {}", lockKey, currentAsker());
+                if(logger.isDebugEnabled()){
+                    logger.debug("unLock  miss      >>> {} -> {}", lockKey, currentAsker());
+                }
                 return false;
             }
 
@@ -161,11 +167,15 @@ public class JedisReentrantLock implements Lock {
                     lockVal.setCount(lockVal.getCount() - 1);
                     String lvTxt = om.writeValueAsString(lockVal);
                     String result = jedis.set(lockKey, lvTxt, "xx", "ex", lockVal.expireMs);
-                    logger.debug("unLock  reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                    if(logger.isDebugEnabled()){
+                        logger.debug("unLock  reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                    }
                     return resolve(result);
                 } else {
                     Long num = jedis.del(lockKey);
-                    logger.debug("unLock  delete    >>> {} -> {}", lockKey, num, lockValTxt);
+                    if(logger.isDebugEnabled()){
+                        logger.debug("unLock  delete    >>> {} -> {}", lockKey, num, lockValTxt);
+                    }
                     return Long.valueOf(1).equals(num);
                 }
             } else {
@@ -229,11 +239,18 @@ public class JedisReentrantLock implements Lock {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("LockVal{");
-            sb.append("acquireMs=").append(acquireMs);
-            sb.append(", expireMs=").append(expireMs);
-            sb.append(", lockOwner='").append(lockOwner).append('\'');
-            sb.append(", count=").append(count);
+            final StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append("\"@class\":\"com.rainyalley.architecture.util.jedis.JedisReentrantLock.LockVal\"");
+            sb.append("\"@super\":\"").append(super.toString()).append("\"");
+            sb.append("\"acquireMs\":")
+                    .append(acquireMs);
+            sb.append(",\"expireMs\":")
+                    .append(expireMs);
+            sb.append(",\"lockOwner\":\"")
+                    .append(lockOwner).append('\"');
+            sb.append(",\"count\":")
+                    .append(count);
             sb.append('}');
             return sb.toString();
         }
