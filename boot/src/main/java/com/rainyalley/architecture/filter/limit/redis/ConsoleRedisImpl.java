@@ -16,6 +16,8 @@ public class ConsoleRedisImpl implements Console {
 
     public ConsoleRedisImpl(JedisCluster jedisCommands) {
         this.jedisCluster = jedisCommands;
+        new Keep(jedisCluster).keep();
+        new Patrol(jedisCluster).patrol();
     }
 
 
