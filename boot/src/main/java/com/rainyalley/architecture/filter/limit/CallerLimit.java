@@ -15,12 +15,12 @@ public class CallerLimit {
     private String target = StringUtils.EMPTY;
 
     /**
-     * 最大并发量
+     * 最大并发, 数量
      */
     private int maxConcurrency = 0;
 
     /**
-     * 最小调用间隔
+     * 最小调用间隔时间, 毫秒
      */
     private long minInterval = 0;
 

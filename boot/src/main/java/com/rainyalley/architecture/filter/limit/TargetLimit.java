@@ -1,18 +1,25 @@
 package com.rainyalley.architecture.filter.limit;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class TargetLimit {
 
-    private String target;
+    private String target = StringUtils.EMPTY;
 
     /**
-     * 最大并发量
+     * 最大并发, 数量
      */
-    private int maxConcurrency;
+    private int maxConcurrency = 0;
 
     /**
-     * 最小调用间隔
+     * 最小调用间隔时间, 毫秒
      */
-    private long minInterval;
+    private long minInterval = 0;
+
+    /**
+     * 最大花费时间, 毫秒
+     */
+    private long maxExpend = 0;
 
     public String getTarget() {
         return target;
@@ -38,6 +45,14 @@ public class TargetLimit {
         this.minInterval = minInterval;
     }
 
+    public long getMaxExpend() {
+        return maxExpend;
+    }
+
+    public void setMaxExpend(long maxExpend) {
+        this.maxExpend = maxExpend;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -50,6 +65,8 @@ public class TargetLimit {
                 .append(maxConcurrency);
         sb.append(",\"minInterval\":")
                 .append(minInterval);
+        sb.append(",\"maxExpend\":")
+                .append(maxExpend);
         sb.append('}');
         return sb.toString();
     }

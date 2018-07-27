@@ -22,21 +22,21 @@ class Constant {
      * list caller并发资源池
      * 格式: int
      */
-    static final String CALLER_CONC_POOL_KEY_FMT = "limit:rt:concupool:caller:${caller}:${target}";
+    static final String CALLER_TARGET_CONC_POOL_KEY_FMT = "limit:rt:concupool:caller:${caller}:${target}";
     /**
      * list caller并发租借池
      * 格式: int
      */
-    static final String CALLER_CONC_LEASE_KEY_FMT = "limit:rt:conculease:caller:${caller}:${target}";
+    static final String CALLER_TARGET_CONC_LEASE_KEY_FMT = "limit:rt:conculease:caller:${caller}:${target}";
     /**
-     * zset caller并发监控列表
+     * zset caller并发监控集
      * 格式: caller|target
      */
     static final String CALLER_CONC_WATCHING_KEY = "limit:watching:concu:caller";
     /**
      * hash target静态配置
      * keys: target
-     * value: maxConcurrency|minInterval
+     * value: maxConcurrency|minInterval|maxExpend
      */
     static final String TARGET_LIMIT_KEY = "limit:static:target";
     /**
@@ -56,7 +56,7 @@ class Constant {
      */
     static final String TARGET_CONC_LEASE_KEY_FMT = "limit:rt:conculease:target:${target}";
     /**
-     * zset target并发监控列表
+     * zset target并发监控集
      * 格式: target
      */
     static final String TARGET_CONC_WATCHING_KEY = "limit:watching:concu:target";
@@ -67,5 +67,5 @@ class Constant {
     /**
      * 资源协调锁的key
      */
-    static final String coordinateKey = "limit:watching:coordinate";
+    static final String COORDINATE_KEY = "limit:watching:coordinate";
 }

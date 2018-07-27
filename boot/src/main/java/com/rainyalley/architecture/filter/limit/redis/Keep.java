@@ -11,17 +11,17 @@ class Keep implements Runnable{
 
     private static final String ID = UUID.randomUUID().toString();
 
-    private JedisCluster jedisCluster;
-
-    public Keep(JedisCluster jedisCluster) {
-        this.jedisCluster = jedisCluster;
-    }
-
     /**
      * 线程池
      */
     private static final ScheduledThreadPoolExecutor SCHEDULED_THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(
             1, new CustomizableThreadFactory("limit-redis-keep-"));
+
+    private JedisCluster jedisCluster;
+
+    public Keep(JedisCluster jedisCluster) {
+        this.jedisCluster = jedisCluster;
+    }
 
     @Override
     public void run() {
