@@ -22,9 +22,12 @@ spring:
             filters: stat
             connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
     redis:
-        host: localhost
-        port: 6379
-        database: 0
+        cluster:
+            nodes:
+                - 127.0.0.1:6377
+                - 127.0.0.1:6378
+                - 127.0.0.1:6379
+            maxRedirects: 3
 
 mybatis:
     type-aliases-package: com.rainyalley.architecture.entity
