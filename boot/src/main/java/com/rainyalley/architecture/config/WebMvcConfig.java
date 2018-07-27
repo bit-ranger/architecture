@@ -3,6 +3,7 @@ package com.rainyalley.architecture.config;
 import com.rainyalley.architecture.exception.BadRequestException;
 import com.rainyalley.architecture.exception.PreconditionException;
 import com.rainyalley.architecture.exception.ServiceException;
+import com.rainyalley.architecture.filter.limit.SimpleLimitFilter;
 import com.rainyalley.architecture.filter.xss.XssFilter;
 import com.rainyalley.architecture.interceptor.xss.XssInterceptor;
 import com.rainyalley.architecture.vo.ErrorVo;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.WebContentInterceptor;
+import redis.clients.jedis.JedisCluster;
 
 import java.util.concurrent.TimeUnit;
 
@@ -55,12 +57,24 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<XssFilter> xssFilterFilterRegistrationBean(){
+    public FilterRegistrationBean<XssFilter> xssFilterRegistrationBean(){
         FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<XssFilter>();
         XssFilter filter = new XssFilter();
         registration.setOrder(0);
         registration.setFilter(filter);
         registration.setName("xssFilter");
+        registration.addUrlPatterns("/*");
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean<SimpleLimitFilter> simpleLimitFilterRegistrationBean(JedisCluster jedisCluster){
+        FilterRegistrationBean<SimpleLimitFilter> registration = new FilterRegistrationBean<SimpleLimitFilter>();
+        SimpleLimitFilter filter = new SimpleLimitFilter();
+        filter.setJedisCluster(jedisCluster);
+        registration.setOrder(0);
+        registration.setFilter(filter);
+        registration.setName("simpleLimitFilter");
         registration.addUrlPatterns("/*");
         return registration;
     }
