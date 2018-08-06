@@ -3,8 +3,8 @@ package com.rainyalley.architecture.filter.limit.redis;
 class Constant {
     /**
      * hash caller静态配置
-     * keys: target, auth
-     * value: maxConcurrency|minInterval, auth1|auth2|...
+     * keys: target
+     * value: maxConcurrency|minInterval
      */
     static final String CALLER_LIMIT_KEY_FMT = "limit:static:caller:${caller}";
     /**

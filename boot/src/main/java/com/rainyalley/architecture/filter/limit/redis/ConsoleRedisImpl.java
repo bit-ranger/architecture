@@ -1,8 +1,5 @@
 package com.rainyalley.architecture.filter.limit.redis;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.rainyalley.architecture.filter.limit.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,47 +9,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class ConsoleRedisImpl implements Console {
 
     private JedisCluster jedisCluster;
 
-    private CacheLoader<String,List<String>> cacheLoader = new CacheLoader<String, List<String>>() {
-
-        @Override
-        public List<String> load(String caller) throws Exception {
-            String auth =  jedisCluster.hget(Util.callerKey(Constant.CALLER_LIMIT_KEY_FMT, caller), "auth");
-
-            if (auth == null){
-                auth = jedisCluster.hget(Util.callerKey(Constant.CALLER_LIMIT_KEY_FMT, "default"), "auth");
-            }
-
-            return List.of(Util.split(auth));
-        }
-    };
-
-    private LoadingCache<String , List<String>> loadingCache = CacheBuilder.newBuilder()
-            .maximumSize(10000)
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .build(cacheLoader);
-
-
     public ConsoleRedisImpl(JedisCluster jedisCommands) {
         this.jedisCluster = jedisCommands;
         new Keep(jedisCluster).keep();
         new Patrol(jedisCluster).patrol();
-    }
-
-
-    @Override
-    public List<String> getCallerAuth(String caller) {
-        try {
-            return loadingCache.get(caller);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -190,11 +155,6 @@ public class ConsoleRedisImpl implements Console {
                 Util.callerTargetKey(Constant.CALLER_TARGET_CONC_POOL_KEY_FMT, caller, target)
         );
         return true;
-    }
-
-    @Override
-    public boolean hasAuth(String caller, String target) {
-        return this.getCallerAuth(caller).contains(target);
     }
 
     @Override

@@ -7,10 +7,6 @@ import java.util.List;
  */
 public interface Console {
 
-    List<String> getCallerAuth(String caller);
-
-    boolean hasAuth(String caller, String target);
-
     long getCallerAccessCount(String caller);
 
     List<Access> getCallerAccessList(String caller, long start, long end);

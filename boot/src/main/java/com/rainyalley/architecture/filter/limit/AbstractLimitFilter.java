@@ -24,11 +24,6 @@ public abstract class AbstractLimitFilter extends OncePerRequestFilter {
 
         console.access(caller, target);
 
-        boolean hasAuth = console.hasAuth(caller, target);
-        if(!hasAuth){
-            reject(NO_AUTH, request, response);
-        }
-
         boolean notFrequency = this.notFrequency(caller, target);
         if(!notFrequency){
             reject(TOO_FREQUENCY, request, response);
