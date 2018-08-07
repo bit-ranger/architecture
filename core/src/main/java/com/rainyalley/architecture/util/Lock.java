@@ -12,18 +12,16 @@ public interface Lock {
 
     /**
      * 尝试获取锁
-     * @param lockMs 锁被占有的时长，毫秒
      * @return
      */
-    boolean tryLock(long lockMs);
+    boolean tryLock();
 
     /**
      * 阻塞获取锁
-     * @param lockMs 锁被占有的时长，毫秒
      * @param waitMS 等待获取锁的时长，毫秒
      * @return
      */
-    boolean lock(long lockMs, long waitMS);
+    boolean tryLock(long waitMS);
 
     /**
      * 解锁

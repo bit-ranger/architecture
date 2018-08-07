@@ -29,6 +29,11 @@ public class JedisReentrantLock implements Lock {
     private String lockKey;
 
     /**
+     *  锁定时长
+     */
+    private long lockMs = 20000;
+
+    /**
      * redis客户端，需要自行保证线程安全
      */
     private JedisCommands jedis;
@@ -86,7 +91,7 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean tryLock(long lockMs) {
+    public boolean tryLock() {
 
         try {
             String lockValTxt = jedis.get(lockKey);
@@ -127,10 +132,10 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean lock(long lockMs, long waitMS) {
+    public boolean tryLock(long waitMS) {
         long lockBeginMs = System.currentTimeMillis();
         for (;;) {
-            boolean trySuccess = tryLock(lockMs);
+            boolean trySuccess = tryLock();
             if(trySuccess){
                 return true;
             }
@@ -254,5 +259,13 @@ public class JedisReentrantLock implements Lock {
             sb.append('}');
             return sb.toString();
         }
+    }
+
+    public long getLockMs() {
+        return lockMs;
+    }
+
+    public void setLockMs(long lockMs) {
+        this.lockMs = lockMs;
     }
 }

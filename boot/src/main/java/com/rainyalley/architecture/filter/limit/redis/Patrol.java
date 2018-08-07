@@ -43,7 +43,7 @@ class Patrol implements Runnable {
         }
 
         //独占
-        boolean locked = coordinateLock.tryLock(10000);
+        boolean locked = coordinateLock.tryLock();
         if(!locked){
             return;
         }

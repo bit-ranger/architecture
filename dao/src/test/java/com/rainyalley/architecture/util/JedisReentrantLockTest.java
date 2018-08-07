@@ -23,6 +23,10 @@ public class JedisReentrantLockTest {
 
     private JedisReentrantLock jrl = new JedisReentrantLock(lockKey, jedis);
 
+    {
+        jrl.setLockMs(5000);
+    }
+
     private final static ThreadPoolExecutor es = new ThreadPoolExecutor(4, 4, 10L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(4));
 
 
@@ -53,7 +57,7 @@ public class JedisReentrantLockTest {
     public void tryLock() throws Exception {
         jedis.del(lockKey);
         Assert.assertFalse(jrl.hasLock());
-        Assert.assertTrue(jrl.tryLock(5000));
+        Assert.assertTrue(jrl.tryLock());
         Assert.assertTrue(jrl.hasLock());
         Thread.sleep(5000);
         Assert.assertFalse(jrl.hasLock());
@@ -77,7 +81,7 @@ public class JedisReentrantLockTest {
             es.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if(jrl.lock(3000, 5000)){
+                    if(jrl.tryLock()){
                         lockNum.incrementAndGet();
                     }
 
@@ -87,16 +91,16 @@ public class JedisReentrantLockTest {
         }
 
         latch.await();
-        Assert.assertEquals(2, lockNum.get());
+        Assert.assertEquals(1, lockNum.get());
     }
 
     @Test
     public void unLock() throws Exception {
         jedis.del(lockKey);
         Assert.assertFalse(jrl.hasLock());
-        Assert.assertTrue(jrl.tryLock(5000));
+        Assert.assertTrue(jrl.tryLock());
         Assert.assertTrue(jrl.hasLock());
-        Assert.assertTrue(jrl.tryLock(5000));
+        Assert.assertTrue(jrl.tryLock());
         Assert.assertTrue(jrl.unLock());
         Assert.assertTrue(jrl.hasLock());
         Assert.assertTrue(jrl.unLock());

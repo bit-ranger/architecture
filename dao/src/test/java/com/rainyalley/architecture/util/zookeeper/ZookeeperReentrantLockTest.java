@@ -3,10 +3,19 @@ package com.rainyalley.architecture.util.zookeeper;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ZookeeperReentrantLockTest {
+
+    private final static ThreadPoolExecutor es = new ThreadPoolExecutor(4, 4, 10L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(4));
 
     private ZookeeperReentrantLock lock;
 
@@ -29,8 +38,26 @@ public class ZookeeperReentrantLockTest {
     }
 
     @Test
-    public void lock() {
-        lock.lock(50000, -1);
-        lock.unLock();
+    public void tryLock() throws Exception{
+
+        AtomicInteger lockNum = new AtomicInteger(0);
+        int threadNum = 4;
+        CountDownLatch latch = new CountDownLatch(threadNum);
+
+        for (int i = 0; i < threadNum; i++) {
+            es.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if(lock.tryLock()){
+                        lockNum.incrementAndGet();
+                    }
+
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        Assert.assertEquals(1, lockNum.get());
     }
 }

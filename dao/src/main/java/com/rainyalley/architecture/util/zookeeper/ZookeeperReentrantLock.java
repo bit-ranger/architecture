@@ -36,16 +36,20 @@ public class ZookeeperReentrantLock implements Lock {
 
     @Override
     public boolean hasLock() {
-        return false;
+        return lockData != null;
     }
 
     @Override
-    public boolean tryLock(long lockMs) {
-        return false;
+    public boolean tryLock() {
+        return tryLockInternal(false, -1);
     }
 
     @Override
-    public boolean lock(long lockMs, long waitMS) {
+    public boolean tryLock(long waitMs) {
+        return tryLockInternal(true, waitMs);
+    }
+
+    private boolean tryLockInternal(boolean wait, long waitMs){
         try {
         /*
          实现同一个线程可重入性，如果当前线程已经获得锁，
@@ -59,7 +63,7 @@ public class ZookeeperReentrantLock implements Lock {
                 return true;
             }
             //尝试连接zookeeper获取锁
-            String lockedNodeName = this.attemptLock(waitMS, new LockData(Thread.currentThread(), lockNodeName).toString().getBytes(Charset.forName("UTF-8")));
+            String lockedNodeName = this.attemptLock(wait, waitMs, new LockData(Thread.currentThread(), lockNodeName).toString().getBytes(Charset.forName("UTF-8")));
             if (lockedNodeName != null) {
                 //创建可重入锁数据，用于记录当前线程重入次数
                 lockData = new LockData(Thread.currentThread(), lockedNodeName);
@@ -86,7 +90,7 @@ public class ZookeeperReentrantLock implements Lock {
     }
 
 
-    private String attemptLock(long waitTimeMs, byte[] lockNodeBytes) throws Exception {
+    private String attemptLock(boolean wait, long waitTimeMs, byte[] lockNodeBytes) throws Exception {
         //获取当前时间戳
         final long startMillis = System.currentTimeMillis();
         //如果unit不为空(非阻塞锁)，把当前传入time转为毫秒
@@ -104,8 +108,14 @@ public class ZookeeperReentrantLock implements Lock {
                 String currentPath = zk.create(basePath + "/" + lockNodeName, lockNodeBytes, Arrays.asList(new ACL(ZooDefs.Perms.ALL, new Id("world", "anyone"))), CreateMode.EPHEMERAL_SEQUENTIAL);
                 String[] pathArr = currentPath.split("/");
                 currentNode = pathArr[pathArr.length-1];
-                //如果当前子节点序号最小，获得锁则直接返回，否则阻塞等待前一个子节点删除通知(release释放锁)
-                hasTheLock = internalLockLoop(startMillis, waitTimeMs, currentNode);
+
+                if(wait){
+                    //如果当前子节点序号最小，获得锁则直接返回，否则阻塞等待前一个子节点删除通知(release释放锁)
+                    hasTheLock = internalLockLoop(startMillis, waitTimeMs, currentNode);
+                } else{
+                    String previous = getPreviousSequenceNode(currentNode);
+                    hasTheLock = previous == null;
+                }
             } catch (KeeperException.NoNodeException e) {
                 isDone = false;
                 //异常处理，如果找不到节点，这可能发生在session过期等时，因此，如果重试允许，只需重试一次即可
