@@ -154,6 +154,22 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
+    public boolean lock() {
+        for (;;) {
+            boolean trySuccess = tryLock();
+            if(trySuccess){
+                return true;
+            }
+            //100毫秒~150毫秒之间随机睡眠，错开并发
+            try {
+                Thread.sleep(random.nextInt(50) + 100);
+            } catch (InterruptedException e) {
+                //
+            }
+        }
+    }
+
+    @Override
     public boolean unLock() {
         try {
             String lockValTxt = jedis.get(lockKey);

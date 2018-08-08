@@ -86,7 +86,17 @@ public class ZookeeperReentrantLock implements Lock {
 
     @Override
     public boolean tryLock(long waitMs) {
-        return tryLockInternal(true, waitMs);
+        if(waitMs > 0){
+            return tryLockInternal(true, waitMs);
+        } else {
+            return tryLockInternal(false, -1);
+        }
+
+    }
+
+    @Override
+    public boolean lock() {
+        return tryLockInternal(true, -1);
     }
 
     private boolean tryLockInternal(boolean ifWait, long waitMs){

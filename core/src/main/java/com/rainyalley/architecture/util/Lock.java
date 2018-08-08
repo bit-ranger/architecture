@@ -24,6 +24,12 @@ public interface Lock {
     boolean tryLock(long waitMS);
 
     /**
+     * 阻塞获取锁 永久等待
+     * @return
+     */
+    boolean lock();
+
+    /**
      * 解锁
      * @return true 解锁成功， false 锁不存在
      * @throws IllegalMonitorStateException 当前线程不拥有锁
