@@ -118,6 +118,6 @@ public class ZookeeperReentrantLockTest {
         }
 
         latch.await();
-        Assert.assertEquals(4, lockNum.get());
+        Assert.assertEquals(1, lockNum.get());
     }
 }
