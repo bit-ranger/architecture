@@ -19,9 +19,9 @@ public class JedisReentrantLock implements Lock {
     /**
      * 全局唯一ID，用于与其他机器区分开来
      */
-    private static final UUID uuid = UUID.randomUUID();
+    private static final UUID MACHINE_ID = UUID.randomUUID();
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static Logger logger = LoggerFactory.getLogger(JedisReentrantLock.class);
 
     /**
      * redis锁的key
@@ -55,10 +55,10 @@ public class JedisReentrantLock implements Lock {
 
 
     private String currentAsker(){
-        return uuid + ":" + String.valueOf(Thread.currentThread().getId());
+        return MACHINE_ID + ":" + String.valueOf(Thread.currentThread().getId());
     }
 
-    private boolean hasLock(LockVal lv){
+    private boolean hasLock(LockData lv){
         if (currentAsker().equals(lv.lockOwner)) {
             return true;
         }
@@ -81,7 +81,7 @@ public class JedisReentrantLock implements Lock {
             if(StringUtils.isBlank(lockValTxt)){
                 return false;
             }
-            LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
+            LockData lockVal = om.readValue(lockValTxt, LockData.class);
 
             return hasLock(lockVal);
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class JedisReentrantLock implements Lock {
         try {
             String lockValTxt = jedis.get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
-                LockVal lv = new LockVal(System.currentTimeMillis(), lockMs, currentAsker(), 1);
+                LockData lv = new LockData(System.currentTimeMillis(), lockMs, currentAsker(), 1);
                 String lvTxt = om.writeValueAsString(lv);
                 String result = jedis.set(lockKey, lvTxt, "nx", "px", lockMs);
                 if(logger.isDebugEnabled()){
@@ -105,7 +105,7 @@ public class JedisReentrantLock implements Lock {
                 return resolve(result);
             }
 
-            LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
+            LockData lockVal = om.readValue(lockValTxt, LockData.class);
             //拥有锁
             if(hasLock(lockVal)){
                 lockVal.setAcquireMs(System.currentTimeMillis());
@@ -164,7 +164,7 @@ public class JedisReentrantLock implements Lock {
                 return false;
             }
 
-            LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
+            LockData lockVal = om.readValue(lockValTxt, LockData.class);
             //拥有锁
             if(hasLock(lockVal)){
                 if(lockVal.getCount() > 1){
@@ -194,16 +194,16 @@ public class JedisReentrantLock implements Lock {
 
 
 
-    private static class LockVal {
+    private static class LockData {
         private long acquireMs;
         private long expireMs;
         private String lockOwner;
         private int count;
 
-        public LockVal() {
+        public LockData() {
         }
 
-        public LockVal(long acquireMs, long expireMs, String lockOwner, int count) {
+        public LockData(long acquireMs, long expireMs, String lockOwner, int count) {
             this.acquireMs = acquireMs;
             this.expireMs = expireMs;
             this.lockOwner = lockOwner;
