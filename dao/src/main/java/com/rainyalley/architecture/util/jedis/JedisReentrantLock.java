@@ -246,17 +246,21 @@ public class JedisReentrantLock implements Lock {
         public String toString() {
             final StringBuilder sb = new StringBuilder();
             sb.append("{");
-            sb.append("\"@class\":\"com.rainyalley.architecture.util.jedis.JedisReentrantLock.LockVal\"");
-            sb.append("\"@super\":\"").append(super.toString()).append("\"");
-            sb.append("\"acquireMs\":")
-                    .append(acquireMs);
-            sb.append(",\"expireMs\":")
-                    .append(expireMs);
+            sb.append("\"@class\":\"com.rainyalley.architecture.util.jedis.JedisReentrantLock.LockData\",");
+            sb.append("\"@super\":\"").append(super.toString()).append("\",");
+            sb.append("\"acquireMs\":\"")
+                    .append(acquireMs)
+                    .append("\"");
+            sb.append(",\"expireMs\":\"")
+                    .append(expireMs)
+                    .append("\"");
             sb.append(",\"lockOwner\":\"")
-                    .append(lockOwner).append('\"');
-            sb.append(",\"count\":")
-                    .append(count);
-            sb.append('}');
+                    .append(lockOwner)
+                    .append("\"");
+            sb.append(",\"count\":\"")
+                    .append(count)
+                    .append("\"");
+            sb.append("}");
             return sb.toString();
         }
     }
