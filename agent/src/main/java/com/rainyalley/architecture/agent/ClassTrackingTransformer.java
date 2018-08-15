@@ -25,7 +25,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
     private  ClassPool pool = ClassPool.getDefault();
 
     private List<String> classPathList = new ArrayList<>();
-    private List<String> agentPackageList = new ArrayList<>();
+    private List<String> trackingPackageList = new ArrayList<>();
 
 
     {
@@ -52,9 +52,9 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
                         classPathList.addAll(Arrays.asList(classpath.toString().split(delimiter)));
 
                     }
-                    Object agentPackage = properties.get("agent-package");
+                    Object agentPackage = properties.get("tracking-package");
                     if(agentPackage != null && agentPackage.toString().length() > 0){
-                        agentPackageList.addAll(Arrays.asList(agentPackage.toString().split(delimiter)));
+                        trackingPackageList.addAll(Arrays.asList(agentPackage.toString().split(delimiter)));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -62,7 +62,21 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
             }
 
             for (String classpath : classPathList) {
-                pool.appendClassPath(classpath);
+                if(classpath.endsWith(".war")){
+                    WarExploder we = new WarExploder(classpath);
+                    we.explod();
+                    File dir = we.getExplodedFile();
+                    File clses = locateFile(dir, "WEB-INF", "classes");
+                    pool.appendClassPath(clses.getAbsolutePath());
+                    File lib = locateFile(dir, "WEB-INF", "lib");
+                    File[] jarList = lib.listFiles();
+                    for (File jar : jarList) {
+                        pool.appendClassPath(jar.getAbsolutePath());
+                    }
+                    we.deleteExploded();
+                } else {
+                    pool.appendClassPath(classpath);
+                }
             }
             pool.importPackage("com.rainyalley.architecture.agent.runtime");
         } catch (NotFoundException e) {
@@ -79,7 +93,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
 
         className = className.replace("/", ".");
         boolean inPackageList = false;
-        for (String agentPackage : agentPackageList) {
+        for (String agentPackage : trackingPackageList) {
             if(className.startsWith(agentPackage)){
                 inPackageList = true;
                 break;
@@ -131,7 +145,7 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
             sb.append(methodNameImpl).append("($$);\n");
 
             sb.append("long endTime = System.nanoTime();\n");
-            sb.append(String.format("RainyalleyArchitectureTimeTracking.track(\"%s\", startTime, endTime);", generatedMethod.getLongName()));
+            sb.append(String.format("com.rainyalley.architecture.agent.runtime.TimeTracking.track(\"%s\", startTime, endTime);", generatedMethod.getLongName()));
 
             if (!"void".equals(returnType)) {
                 sb.append("return result ; \n");
@@ -173,5 +187,20 @@ public class ClassTrackingTransformer implements ClassFileTransformer {
 //                constructor.insertAfter("\nlong endTime = System.nanoTime();\n" + outputStr);
 //            }
         return ctclass;
+    }
+
+    private static File locateFile(File dir, String... paths) {
+        File cur = dir;
+        outter: for (String p : paths) {
+            File[] all = cur.listFiles();
+            for (File f : all) {
+                if (p.equals(f.getName())) {
+                    cur = f;
+                    continue outter;
+                }
+            }
+            throw new RuntimeException("No path named '" + p + "' found in file: " + cur.getAbsolutePath());
+        }
+        return cur;
     }
 }
