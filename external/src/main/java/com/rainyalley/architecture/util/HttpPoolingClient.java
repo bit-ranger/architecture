@@ -26,12 +26,15 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author bin.zhang
@@ -46,6 +49,10 @@ import java.util.*;
  */
 @NotThreadSafe
 public class HttpPoolingClient extends CloseableHttpClient implements StringHttpClient {
+
+    private final static ScheduledThreadPoolExecutor SCHEDULED = new ScheduledThreadPoolExecutor(
+            1,
+            new CustomizableThreadFactory("http-pooling-client-scheduled"));
 
     /**
      * 将请求标记为可重试
@@ -73,8 +80,11 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
 
     private int maxTotal = 1000;
 
-
     private int maxPerRoute = 200;
+
+    private int maxIdleTimeout = 60000;
+
+    private int cleanExpireInterval = 60000;
 
 
     private Map<String, Integer> routeMax = Collections.emptyMap();
@@ -114,6 +124,23 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(retryHandler)
                 .build();
+
+        cleanConnections(connectionManager);
+    }
+
+    private void cleanConnections(final PoolingHttpClientConnectionManager cm) {
+        SCHEDULED.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                if (cm != null) {
+                    cm.closeExpiredConnections();
+                    cm.closeIdleConnections(maxIdleTimeout, TimeUnit.MILLISECONDS);
+                    if(logger.isDebugEnabled()){
+                        logger.debug(String.format("cleanConnections, current: %s", cm.getTotalStats()));
+                    }
+                }
+            }
+        }, cleanExpireInterval, cleanExpireInterval, TimeUnit.MILLISECONDS);
     }
 
 
@@ -479,5 +506,21 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
 
     public Charset getCharset() {
         return charset;
+    }
+
+    /**
+     * 最大空闲时间
+     * @param maxIdleTimeout
+     */
+    public void setMaxIdleTimeout(int maxIdleTimeout) {
+        this.maxIdleTimeout = maxIdleTimeout;
+    }
+
+    /**
+     * 清除过期连接的间隔
+     * @param cleanExpireInterval
+     */
+    public void setCleanExpireInterval(int cleanExpireInterval) {
+        this.cleanExpireInterval = cleanExpireInterval;
     }
 }
