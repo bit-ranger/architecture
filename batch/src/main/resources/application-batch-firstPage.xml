@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/batch"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans   
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+
+	<bean id="firstPageCircleItemReader" class="com.rainyalley.architecture.batch.JdbcFirstPageCircleItemReader" scope="step">
+		<property name="name" value="ctx"/>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="pageSize" value="5"/>
+		<property name="queryProvider">
+			<bean class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="dataSource" ref="dataSource" />
+				<property name="selectClause" value="select id, stat, crt_time" />
+				<property name="fromClause" value="from example_data" />
+				<property name="whereClause" value="where stat=?"/>
+				<property name="sortKey" value="crt_time" />
+			</bean>
+		</property>
+		<property name="preparedStatementSetter">
+			<bean class="com.rainyalley.architecture.batch.BatchDataSqlSetter"/>
+		</property>
+		<property name="sqlValues" value="0"/>
+		<property name="rowMapper">
+			<bean class="com.rainyalley.architecture.batch.BatchDataRowMapper"/>
+		</property>
+
+	</bean>
+
+
+	<bean:job id="firstPageCircleJob" job-repository="jobRepository">
+		<bean:step id="firstPageCircleStep1">
+			<tasklet>
+				<chunk reader="firstPageCircleItemReader"
+					   processor="passThroughItemProcessor"
+					   writer="nopItemWriter"
+					   processor-transactional="false"
+					   commit-interval="1" skip-limit="1000000000"
+					   retry-limit="3"  >
+					<!-- 跳过异常 -->
+					<skippable-exception-classes>
+						<include class="org.springframework.batch.item.file.FlatFileParseException"/>
+					</skippable-exception-classes>
+					<!-- 重试异常 -->
+					<retryable-exception-classes>
+						<include class="java.io.IOException" />
+					</retryable-exception-classes>
+				</chunk>
+				<no-rollback-exception-classes>
+					<include class="java.lang.Exception"/>
+				</no-rollback-exception-classes>
+			</tasklet>
+		</bean:step>
+	</bean:job>
+
+	<bean id="jdbcFirstPageRunner" class="com.rainyalley.architecture.batch.JdbcFirstPageRunner"/>
+</beans>

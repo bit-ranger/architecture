@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/batch"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans   
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<bean:job-repository id="jobRepository" data-source="dataSource"
+					transaction-manager="transactionManager" isolation-level-for-create="SERIALIZABLE"
+					table-prefix="BATCH_" max-varchar-length="1000" />
+
+
+	 <!--作业调度器 异步调用 -->
+	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher" primary="true">
+		<property name="jobRepository" ref="jobRepository" />
+		<property name="taskExecutor" ref="jobTaskExecutor" /> <!-- 使用线程池处理 -->
+	</bean>
+
+	<bean id="jobTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" primary="true">
+		<property name="corePoolSize" value="20" /> <!-- 线程池维护线程的最少数量 -->
+		<property name="keepAliveSeconds" value="300" /> <!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="maxPoolSize" value="100" /> <!-- 线程池维护线程的最大数量 -->
+		<property name="queueCapacity" value="100" /> <!-- 线程池所使用的缓冲队列 -->
+	</bean>
+
+	<bean class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor"  primary="true">
+		<property name="jobRegistry" ref="jobRegistry" />
+	</bean>
+
+	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry"  primary="true"/>
+
+	 <!--作业查询 -->
+	<bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean"  primary="true">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	 <!--作业执行器 -->
+	<bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator"  primary="true">
+		<property name="jobLauncher" ref="jobLauncher" />
+		<property name="jobExplorer" ref="jobExplorer" />
+		<property name="jobRepository" ref="jobRepository" />
+		<property name="jobRegistry" ref="jobRegistry" />
+	</bean>
+
+    <bean id="passThroughRowMapper" class="com.rainyalley.architecture.batch.PassThroughRowMapper"/>
+	<bean id="columnMapRowMapper" class="org.springframework.jdbc.core.ColumnMapRowMapper"/>
+	<bean id="passThroughItemProcessor" class="org.springframework.batch.item.support.PassThroughItemProcessor"/>
+	<bean id="csvItemProcessor" class="com.rainyalley.architecture.batch.ColumnDelimiterItemProcessor">
+		<property name="delimiter" value=","/>
+	</bean>
+    <bean id="passThroughLineAggregator" class="org.springframework.batch.item.file.transform.PassThroughLineAggregator"/>
+	<bean id="nopItemWriter" class="com.rainyalley.architecture.batch.NopItemWriter"/>
+
+
+	<bean id="jobRunner" class="com.rainyalley.architecture.batch.JobRunner"/>
+</beans>

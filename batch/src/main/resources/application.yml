@@ -6,6 +6,7 @@ spring:
         password:
         driver-class-name: com.mysql.jdbc.Driver
         druid:
+            name: primary
             default-transaction-isolation: 2
             maxActive: 20
             initialSize: 10
@@ -20,11 +21,14 @@ spring:
             poolPreparedStatements: false
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
     redis:
-        host: localhost
-        port: 6379
-        database: 0
+        cluster:
+            nodes:
+            - 127.0.0.1:6377
+            - 127.0.0.1:6378
+            - 127.0.0.1:6379
+            maxRedirects: 3
     cache:
         type: redis
 
@@ -40,7 +44,6 @@ mybatis:
     check-config-location: false
     executor-type: SIMPLE
 
-
 extend:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
@@ -49,6 +52,7 @@ extend:
         password:
         driver-class-name: com.mysql.jdbc.Driver
         druid:
+            name: secondary
             default-transaction-isolation: 1
             maxActive: 20
             initialSize: 10
@@ -63,10 +67,24 @@ extend:
             poolPreparedStatements: false
             maxPoolPreparedStatementPerConnectionSize: 20
             filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=1
+            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
+
+
+management:
+    endpoints:
+        enabled-by-default: true
+    server:
+        port: 8080
+    endpoint:
+        health:
+            show-details: when_authorized
+        sessions:
+            enabled: true
+
+
 
 
 logging:
     level:
         com.rainyalley.architecture: DEBUG
-        org.springframework.cache.interceptor.CacheInterceptor: trace
+
