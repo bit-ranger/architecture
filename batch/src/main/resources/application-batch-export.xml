@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/batch"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <util:map id="nameMappingDataSource" scope="singleton">
-        <entry key="primaryDataSource" value-ref="primaryDataSource"/>
-        <entry key="secondaryDataSource" value-ref="secondaryDataSource"/>
-    </util:map>
-
-    <bean id="dataSourceFactoryBean" class="com.rainyalley.architecture.batch.export.DataSourceFactoryBean" scope="step">
-        <property name="nameMappingDataSource" ref="nameMappingDataSource"/>
-        <property name="targetName" value="#{jobParameters['dataSourceName']}"/>
-    </bean>
 
     <bean id="exportSqlReader" class="org.springframework.batch.item.database.JdbcPagingItemReader" scope="step">
-        <property name="dataSource" ref="dataSourceFactoryBean">
-        </property>
+        <property name="dataSource" ref="#{jobParameters['dataSourceName']}"/>
         <property name="queryProvider">
             <bean class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean" >
-                <property name="dataSource" ref="dataSourceFactoryBean"/>
+                <property name="dataSource" ref="#{jobParameters['dataSourceName']}"/>
                 <property name="selectClause" value="#{jobParameters['selectClause']}" />
                 <property name="fromClause" value="#{jobParameters['fromClause']}" />
                 <property name="whereClause" value="#{jobParameters['whereClause']}"/>
@@ -29,6 +18,13 @@
         </property>
         <property name="pageSize" value="2" />
         <property name="rowMapper" ref="columnMapRowMapper"/>
+    </bean>
+
+    <bean id="csvItemProcessor" class="com.rainyalley.architecture.batch.MapToStringFunction">
+        <property name="delimiter" value=","/>
+    </bean>
+    <bean id="functionItemProcessor" class="org.springframework.batch.item.function.FunctionItemProcessor" scope="step">
+        <constructor-arg index="0" ref="#{jobParameters['itemProcessor']}"/>
     </bean>
 
     <bean id="exportSqlItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">
@@ -45,7 +41,7 @@
         <bean:step id="export">
             <bean:tasklet>
                 <bean:chunk reader="exportSqlReader"
-                       processor="csvItemProcessor"
+                       processor="functionItemProcessor"
                        writer="exportSqlItemWriter"
                        processor-transactional="false"
                        commit-interval="1000"

@@ -5,7 +5,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import java.util.Map;
 
-public class ColumnDelimiterItemProcessor implements ItemProcessor<Map<String,Object>, String> {
+public class MapToStringFunction implements ItemProcessor<Map<String,Object>, String> {
 
     private String delimiter;
 

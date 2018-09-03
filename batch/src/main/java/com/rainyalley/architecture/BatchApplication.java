@@ -17,20 +17,21 @@ import org.springframework.context.annotation.ImportResource;
 				"com.rainyalley.architecture.aop",
 				"com.rainyalley.architecture.impl"},
 		exclude = {DataSourceAutoConfiguration.class})
-@ImportResource(locations = {"application-batch-import.xml"})
+@ImportResource(locations = {"application-batch-all-in-one.xml"})
 public class BatchApplication {
 
 	public static void main(String[] args) throws Exception{
 		ConfigurableApplicationContext ctx = SpringApplication.run(BatchApplication.class, args);
 		JobRunner jobRunner = ctx.getBean("jobRunner", JobRunner.class);
 		JobParametersBuilder builder = new JobParametersBuilder();
-		builder.addLong("version", System.currentTimeMillis());
 		builder.addString("dataSourceName", "secondaryDataSource");
 		builder.addString("selectClause", "select id, stat, crt_time");
 		builder.addString("fromClause", "from example_data");
 		builder.addString("whereClause", "");
 		builder.addString("sortKey", "id");
 		builder.addString("fileHeader", "编号,状态,创建时间");
+		builder.addString("itemProcessor", "csvItemProcessor");
+		jobRunner.abandon("exportSqlJob", builder.toJobParameters());
 		jobRunner.run("exportSqlJob", builder.toJobParameters());
 	}
 }

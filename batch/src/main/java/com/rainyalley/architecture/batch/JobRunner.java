@@ -59,4 +59,16 @@ public class JobRunner {
         }
     }
 
+    public boolean abandon(String jobName, JobParameters jobParameters) throws Exception{
+        JobExecution lastJobExecution = jobRepository.getLastJobExecution(jobName, jobParameters);
+        if(lastJobExecution == null){
+            return false;
+        } else{
+            lastJobExecution.upgradeStatus(BatchStatus.ABANDONED);
+            lastJobExecution.setEndTime(new Date());
+            jobRepository.update(lastJobExecution);
+            return true;
+        }
+    }
+
 }

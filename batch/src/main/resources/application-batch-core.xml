@@ -44,9 +44,6 @@
     <bean id="passThroughRowMapper" class="com.rainyalley.architecture.batch.PassThroughRowMapper"/>
 	<bean id="columnMapRowMapper" class="org.springframework.jdbc.core.ColumnMapRowMapper"/>
 	<bean id="passThroughItemProcessor" class="org.springframework.batch.item.support.PassThroughItemProcessor"/>
-	<bean id="csvItemProcessor" class="com.rainyalley.architecture.batch.ColumnDelimiterItemProcessor">
-		<property name="delimiter" value=","/>
-	</bean>
     <bean id="passThroughLineAggregator" class="org.springframework.batch.item.file.transform.PassThroughLineAggregator"/>
 	<bean id="nopItemWriter" class="com.rainyalley.architecture.batch.NopItemWriter"/>
 
