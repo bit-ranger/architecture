@@ -30,7 +30,7 @@ public class BatchApplication {
 		builder.addString("whereClause", "");
 		builder.addString("sortKey", "id");
 		builder.addString("fileHeader", "编号,状态,创建时间");
-		builder.addString("itemProcessor", "csvItemProcessor");
+		builder.addString("itemProcessor", "csvItemFunction");
 		jobRunner.abandon("exportSqlJob", builder.toJobParameters());
 		jobRunner.run("exportSqlJob", builder.toJobParameters());
 	}

@@ -18,9 +18,10 @@
         </property>
         <property name="pageSize" value="2" />
         <property name="rowMapper" ref="columnMapRowMapper"/>
+        <property name="saveState" value="false"/>
     </bean>
 
-    <bean id="csvItemProcessor" class="com.rainyalley.architecture.batch.MapToStringFunction">
+    <bean id="csvItemFunction" class="com.rainyalley.architecture.batch.MapToStringFunction">
         <property name="delimiter" value=","/>
     </bean>
     <bean id="functionItemProcessor" class="org.springframework.batch.item.function.FunctionItemProcessor" scope="step">
@@ -33,12 +34,15 @@
                 <property name="header" value="#{jobParameters['fileHeader']}"/>
             </bean>
         </property>
-        <property name="resource" value="file:/var/export/#{stepExecution.jobExecution.jobId}/file.csv"/>
+        <property name="resource" value="file:/var/export/#{jobExecutionContext['jobExecutionId']}/file.csv"/>
         <property name="lineAggregator" ref="passThroughLineAggregator"/>
+        <property name="saveState" value="false"/>
+        <property name="appendAllowed" value="false"/>
+        <property name="shouldDeleteIfExists" value="true"/>
     </bean>
 
     <bean:job id="exportSqlJob" job-repository="jobRepository" restartable="true">
-        <bean:step id="export">
+        <bean:step id="exportSqlReadWrite">
             <bean:tasklet>
                 <bean:chunk reader="exportSqlReader"
                        processor="functionItemProcessor"
@@ -58,6 +62,24 @@
                 <bean:no-rollback-exception-classes>
                     <bean:include class="java.lang.Exception"/>
                 </bean:no-rollback-exception-classes>
+            </bean:tasklet>
+            <bean:next on="COMPLETED" to="exportSqlCleanAfter" />
+            <bean:listeners>
+                <bean:listener>
+                    <bean class="com.rainyalley.architecture.batch.ContextStepExecutionListener" scope="step"/>
+                </bean:listener>
+                <bean:listener>
+                    <bean class="com.rainyalley.architecture.batch.CreateFileStepExecutionListener" scope="step">
+                        <property name="filePath" value="/var/export/#{jobExecutionContext['jobExecutionId']}/file.csv"/>
+                    </bean>
+                </bean:listener>
+            </bean:listeners>
+        </bean:step>
+        <bean:step id="exportSqlCleanAfter" allow-start-if-complete="true">
+            <bean:tasklet allow-start-if-complete="true">
+                <bean class="com.rainyalley.architecture.batch.DeleteDirTasklet" scope="step">
+                    <property name="dirPath" value="/var/export/#{jobExecutionContext['jobExecutionId']}"/>
+                </bean>
             </bean:tasklet>
         </bean:step>
     </bean:job>
