@@ -26,7 +26,7 @@ public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemSt
 
     private DataSource dataSource;
 
-    private RowMapper rowMapper;
+    private RowMapper<T> rowMapper;
 
     private PagingQueryProvider queryProvider;
 
@@ -92,12 +92,12 @@ public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemSt
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.isTrue(pageSize > 0);
-        Assert.notNull(rowMapper);
-        Assert.notNull(dataSource);
+        Assert.isTrue(pageSize > 0, "pageSize > 0 must be true");
+        Assert.notNull(rowMapper, "rowMapper can not be null");
+        Assert.notNull(dataSource, "dataSource can not be null");
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.setMaxRows(getPageSize());
-        Assert.notNull(queryProvider);
+        Assert.notNull(queryProvider, "queryProvider can not be null");
         queryProvider.init(dataSource);
         this.firstPageSql = queryProvider.generateFirstPageQuery(getPageSize());
     }
@@ -111,11 +111,11 @@ public class JdbcFirstPageCircleItemReader<T> extends AbstractItemCountingItemSt
         this.dataSource = dataSource;
     }
 
-    public RowMapper getRowMapper() {
+    public RowMapper<T> getRowMapper() {
         return rowMapper;
     }
 
-    public void setRowMapper(RowMapper rowMapper) {
+    public void setRowMapper(RowMapper<T> rowMapper) {
         this.rowMapper = rowMapper;
     }
 

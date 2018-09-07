@@ -30,8 +30,9 @@ public class Compressor {
      * @param charset 字符集
      * @param perFileSize 每个分卷的大小
      */
+    @SuppressWarnings("unchecked")
     public  List<String> zip(String src, String dst, String password, long perFileSize, Charset charset) {
-        ArrayList<String> zipList = null;
+        ArrayList zipList = null;
 
         // 压缩参数设置
         ZipParameters parameters = new ZipParameters();
@@ -61,7 +62,7 @@ public class Compressor {
             LOGGER.error(String.format("zip error, args %s", Arrays.asList(src, dst, password, perFileSize, charset)), e);
         }
 
-        return zipList;
+        return (List<String>) zipList;
     }
 
 
