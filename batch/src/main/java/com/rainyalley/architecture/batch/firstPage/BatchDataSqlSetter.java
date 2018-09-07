@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.batch;
+package com.rainyalley.architecture.batch.firstPage;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.PreparedStatementSetter;

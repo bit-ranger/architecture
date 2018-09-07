@@ -5,7 +5,7 @@
       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
 
-	<bean id="firstPageCircleItemReader" class="com.rainyalley.architecture.batch.JdbcFirstPageCircleItemReader" scope="step">
+	<bean id="firstPageCircleItemReader" class="com.rainyalley.architecture.batch.firstPage.JdbcFirstPageCircleItemReader" scope="step">
 		<property name="name" value="ctx"/>
 		<property name="dataSource" ref="dataSource"/>
 		<property name="pageSize" value="5"/>
@@ -19,11 +19,11 @@
 			</bean>
 		</property>
 		<property name="preparedStatementSetter">
-			<bean class="com.rainyalley.architecture.batch.BatchDataSqlSetter"/>
+			<bean class="com.rainyalley.architecture.batch.firstPage.BatchDataSqlSetter"/>
 		</property>
 		<property name="sqlValues" value="0"/>
 		<property name="rowMapper">
-			<bean class="com.rainyalley.architecture.batch.BatchDataRowMapper"/>
+			<bean class="com.rainyalley.architecture.batch.firstPage.BatchDataRowMapper"/>
 		</property>
 
 	</bean>
@@ -54,5 +54,5 @@
 		</bean:step>
 	</bean:job>
 
-	<bean id="jdbcFirstPageRunner" class="com.rainyalley.architecture.batch.JdbcFirstPageRunner"/>
+	<bean id="jdbcFirstPageRunner" class="com.rainyalley.architecture.batch.firstPage.JdbcFirstPageRunner"/>
 </beans>

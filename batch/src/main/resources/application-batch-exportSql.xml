@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/batch"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:bean="http://www.springframework.org/schema/batch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+      http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
+    <bean id="exportSqlLauncher" class="com.rainyalley.architecture.batch.exportSql.ExportSqlLauncher">
+        <property name="jobRunner" ref="jobRunner"/>
+    </bean>
 
     <bean id="exportSqlReader" class="org.springframework.batch.item.database.JdbcPagingItemReader" scope="step">
         <property name="dataSource" ref="#{jobParameters['dataSourceName']}"/>
@@ -25,12 +30,12 @@
         <property name="delimiter" value=","/>
     </bean>
     <bean id="functionItemProcessor" class="org.springframework.batch.item.function.FunctionItemProcessor" scope="step">
-        <constructor-arg index="0" ref="#{jobParameters['itemProcessor']}"/>
+        <constructor-arg index="0" ref="#{jobParameters['itemFunction']}"/>
     </bean>
 
     <bean id="exportSqlItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">
         <property name="headerCallback">
-            <bean class="com.rainyalley.architecture.batch.export.StringHeaderCallback">
+            <bean class="com.rainyalley.architecture.batch.StringHeaderCallback">
                 <property name="header" value="#{jobParameters['fileHeader']}"/>
             </bean>
         </property>

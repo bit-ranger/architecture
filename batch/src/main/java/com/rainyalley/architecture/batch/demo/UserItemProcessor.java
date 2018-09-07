@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.batch;
+package com.rainyalley.architecture.batch.demo;
 
 import org.springframework.batch.item.ItemProcessor;
 

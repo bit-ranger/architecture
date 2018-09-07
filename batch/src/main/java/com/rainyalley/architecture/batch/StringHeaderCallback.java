@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.batch.export;
+package com.rainyalley.architecture.batch;
 
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 
