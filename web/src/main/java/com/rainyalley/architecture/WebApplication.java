@@ -14,10 +14,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 		"com.rainyalley.architecture.aop",
 		"com.rainyalley.architecture.impl"},
 	exclude = {DataSourceAutoConfiguration.class})
-public class BootApplication {
+public class WebApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BootApplication.class, args);
+		SpringApplication.run(WebApplication.class, args);
 	}
 }
 

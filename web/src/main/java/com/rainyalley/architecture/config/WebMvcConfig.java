@@ -53,7 +53,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         XssInterceptor xssInterceptor = new XssInterceptor();
         registry.addInterceptor(xssInterceptor).addPathPatterns("/**/*");
-        registry.addInterceptor(webContent).addPathPatterns("/user/**");
+        registry.addInterceptor(webContent).addPathPatterns("/api/v1/user/**");
     }
 
     @Bean
@@ -75,7 +75,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registration.setOrder(0);
         registration.setFilter(filter);
         registration.setName("simpleLimitFilter");
-        registration.addUrlPatterns("/*");
+        registration.addUrlPatterns("/limit/*");
         return registration;
     }
 

@@ -1,7 +1,8 @@
 package com.rainyalley.architecture.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.BootApplication;
+import com.rainyalley.architecture.WebApplication;
+import com.rainyalley.architecture.controller.apiV1.UserController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ import java.util.Map;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {BootApplication.class})
+@SpringBootTest(classes = {WebApplication.class})
 @AutoConfigureMockMvc
 public class UserControllerTest {
 

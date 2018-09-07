@@ -10,11 +10,11 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>boot</artifactId>
+	<artifactId>web</artifactId>
 	<packaging>jar</packaging>
 
-	<name>boot</name>
-	<description>Demo project for Spring Boot</description>
+	<name>web</name>
+	<description>Web project for Rainyalley</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

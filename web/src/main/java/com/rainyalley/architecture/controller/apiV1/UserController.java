@@ -1,4 +1,4 @@
-package com.rainyalley.architecture.controller;
+package com.rainyalley.architecture.controller.apiV1;
 
 import com.rainyalley.architecture.model.User;
 import com.rainyalley.architecture.po.UserPo;
@@ -18,9 +18,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Api(value = "user", description = "用户信息管理")
+@Api(value = "api/v1/user", description = "用户信息管理")
 @RestController
-@RequestMapping(value = "/user", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/api/v1/user", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserController{
 
     @Resource

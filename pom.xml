@@ -30,7 +30,7 @@
         <module>dao</module>
         <module>external</module>
         <module>service</module>
-        <module>boot</module>
+        <module>web</module>
         <module>batch</module>
     </modules>
 
