@@ -1,21 +1,15 @@
 package com.rainyalley.architecture.client;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.annotation.Resource;
+@FeignClient(value = "web")
+public interface UserClient {
 
-@Service
-public class UserClient {
+    @RequestMapping(value = "/api/v1/user/{id}",method = RequestMethod.GET)
+    String get(@PathVariable("id") String id);
 
-    private RestTemplate restTemplate;
 
-    public String get(String id) {
-        return restTemplate.getForObject("http://WEB/api/v1/user/" + id, String.class);
-    }
-
-    @Resource
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 }
