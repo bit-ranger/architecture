@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -16,10 +17,14 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @MapperScan(basePackages="com.rainyalley.architecture.mapper")
@@ -97,5 +102,13 @@ public class DaoConfig {
         template.setValueSerializer(jsonSerializer);
         template.setHashValueSerializer(jsonSerializer);
         return template;
+    }
+
+    @Bean("jedisCluster")
+    @ConfigurationProperties(prefix = "spring.redis.cluster.nodes")
+    public JedisCluster jedisCluster(RedisProperties redisProperties) {
+        Set<HostAndPort> hostAndPorts = redisProperties.getCluster().getNodes()
+                .stream().map((HostAndPort::parseString)).collect(Collectors.toSet());
+        return new JedisCluster(hostAndPorts, 0, redisProperties.getCluster().getMaxRedirects());
     }
 }

@@ -19,14 +19,19 @@ public class JedisReentrantLock implements Lock {
     /**
      * 全局唯一ID，用于与其他机器区分开来
      */
-    private static final UUID uuid = UUID.randomUUID();
+    private static final UUID MACHINE_ID = UUID.randomUUID();
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static Logger logger = LoggerFactory.getLogger(JedisReentrantLock.class);
 
     /**
      * redis锁的key
      */
     private String lockKey;
+
+    /**
+     *  锁定时长
+     */
+    private long lockMs = 20000;
 
     /**
      * redis客户端，需要自行保证线程安全
@@ -50,10 +55,10 @@ public class JedisReentrantLock implements Lock {
 
 
     private String currentAsker(){
-        return uuid + ":" + String.valueOf(Thread.currentThread().getId());
+        return MACHINE_ID + ":" + String.valueOf(Thread.currentThread().getId());
     }
 
-    private boolean hasLock(LockVal lv){
+    private boolean hasLock(LockData lv){
         if (currentAsker().equals(lv.lockOwner)) {
             return true;
         }
@@ -76,7 +81,7 @@ public class JedisReentrantLock implements Lock {
             if(StringUtils.isBlank(lockValTxt)){
                 return false;
             }
-            LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
+            LockData lockVal = om.readValue(lockValTxt, LockData.class);
 
             return hasLock(lockVal);
         } catch (Exception e) {
@@ -86,26 +91,30 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean tryLock(long lockMs) {
+    public boolean tryLock() {
 
         try {
             String lockValTxt = jedis.get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
-                LockVal lv = new LockVal(System.currentTimeMillis(), lockMs, currentAsker(), 1);
+                LockData lv = new LockData(System.currentTimeMillis(), lockMs, currentAsker(), 1);
                 String lvTxt = om.writeValueAsString(lv);
                 String result = jedis.set(lockKey, lvTxt, "nx", "px", lockMs);
-                logger.debug("tryLock acquire   >>> {} -> {} -> {}", lockKey, result, lvTxt);
+                if(logger.isDebugEnabled()){
+                    logger.debug("tryLock acquire   >>> {} -> {} -> {}", lockKey, result, lvTxt);
+                }
                 return resolve(result);
             }
 
-            LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
+            LockData lockVal = om.readValue(lockValTxt, LockData.class);
             //拥有锁
             if(hasLock(lockVal)){
                 lockVal.setAcquireMs(System.currentTimeMillis());
                 lockVal.setCount(lockVal.getCount() + 1);
                 String lvTxt = om.writeValueAsString(lockVal);
                 String result = jedis.set(lockKey, lvTxt, "xx", "px", lockMs);
-                logger.debug("tryLock reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                if(logger.isDebugEnabled()){
+                    logger.debug("tryLock reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                }
                 return resolve(result);
             } else {
                 //当前线程不拥有锁
@@ -123,10 +132,10 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean lock(long lockMs, long waitMS) {
+    public boolean tryLock(long waitMS) {
         long lockBeginMs = System.currentTimeMillis();
         for (;;) {
-            boolean trySuccess = tryLock(lockMs);
+            boolean trySuccess = tryLock();
             if(trySuccess){
                 return true;
             }
@@ -145,15 +154,33 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
+    public boolean lock() {
+        for (;;) {
+            boolean trySuccess = tryLock();
+            if(trySuccess){
+                return true;
+            }
+            //100毫秒~150毫秒之间随机睡眠，错开并发
+            try {
+                Thread.sleep(random.nextInt(50) + 100);
+            } catch (InterruptedException e) {
+                //
+            }
+        }
+    }
+
+    @Override
     public boolean unLock() {
         try {
             String lockValTxt = jedis.get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
-                logger.debug("unLock  miss      >>> {} -> {}", lockKey, currentAsker());
+                if(logger.isDebugEnabled()){
+                    logger.debug("unLock  miss      >>> {} -> {}", lockKey, currentAsker());
+                }
                 return false;
             }
 
-            LockVal lockVal = om.readValue(lockValTxt, LockVal.class);
+            LockData lockVal = om.readValue(lockValTxt, LockData.class);
             //拥有锁
             if(hasLock(lockVal)){
                 if(lockVal.getCount() > 1){
@@ -161,11 +188,15 @@ public class JedisReentrantLock implements Lock {
                     lockVal.setCount(lockVal.getCount() - 1);
                     String lvTxt = om.writeValueAsString(lockVal);
                     String result = jedis.set(lockKey, lvTxt, "xx", "ex", lockVal.expireMs);
-                    logger.debug("unLock  reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                    if(logger.isDebugEnabled()){
+                        logger.debug("unLock  reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
+                    }
                     return resolve(result);
                 } else {
                     Long num = jedis.del(lockKey);
-                    logger.debug("unLock  delete    >>> {} -> {}", lockKey, num, lockValTxt);
+                    if(logger.isDebugEnabled()){
+                        logger.debug("unLock  delete    >>> {} -> {}", lockKey, num, lockValTxt);
+                    }
                     return Long.valueOf(1).equals(num);
                 }
             } else {
@@ -179,16 +210,16 @@ public class JedisReentrantLock implements Lock {
 
 
 
-    private static class LockVal {
+    private static class LockData {
         private long acquireMs;
         private long expireMs;
         private String lockOwner;
         private int count;
 
-        public LockVal() {
+        public LockData() {
         }
 
-        public LockVal(long acquireMs, long expireMs, String lockOwner, int count) {
+        public LockData(long acquireMs, long expireMs, String lockOwner, int count) {
             this.acquireMs = acquireMs;
             this.expireMs = expireMs;
             this.lockOwner = lockOwner;
@@ -229,13 +260,32 @@ public class JedisReentrantLock implements Lock {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("LockVal{");
-            sb.append("acquireMs=").append(acquireMs);
-            sb.append(", expireMs=").append(expireMs);
-            sb.append(", lockOwner='").append(lockOwner).append('\'');
-            sb.append(", count=").append(count);
-            sb.append('}');
+            final StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            sb.append("\"@class\":\"com.rainyalley.architecture.util.jedis.JedisReentrantLock.LockData\",");
+            sb.append("\"@super\":\"").append(super.toString()).append("\",");
+            sb.append("\"acquireMs\":\"")
+                    .append(acquireMs)
+                    .append("\"");
+            sb.append(",\"expireMs\":\"")
+                    .append(expireMs)
+                    .append("\"");
+            sb.append(",\"lockOwner\":\"")
+                    .append(lockOwner)
+                    .append("\"");
+            sb.append(",\"count\":\"")
+                    .append(count)
+                    .append("\"");
+            sb.append("}");
             return sb.toString();
         }
+    }
+
+    public long getLockMs() {
+        return lockMs;
+    }
+
+    public void setLockMs(long lockMs) {
+        this.lockMs = lockMs;
     }
 }

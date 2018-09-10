@@ -1,6 +1,7 @@
 package com.rainyalley.architecture.batch;
 
 import com.rainyalley.architecture.BatchApplication;
+import com.rainyalley.architecture.batch.firstPage.JdbcFirstPageRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class BatchTest {
     private JobExplorer jobExplorer;
 
     @Resource
-    private  JdbcFirstPageRunner jdbcFirstPageRunner;
+    private JdbcFirstPageRunner jdbcFirstPageRunner;
 
     @Test
     public void testDemoJob() throws Exception {

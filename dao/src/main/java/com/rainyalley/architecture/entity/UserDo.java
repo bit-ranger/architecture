@@ -2,7 +2,7 @@ package com.rainyalley.architecture.entity;
 
 import com.rainyalley.architecture.AbstractJsonObject;
 import com.rainyalley.architecture.Identical;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 

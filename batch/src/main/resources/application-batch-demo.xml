@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/batch"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans   
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<bean id="demoFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="resource" value="architecture_user.csv"/>
+		<property name="lineMapper">
+			<bean class="com.rainyalley.architecture.batch.demo.UserLineMapper"/>
+		</property>
+	</bean>
+
+	<bean id="demoItemProcessor" class="com.rainyalley.architecture.batch.demo.UserItemProcessor"/>
+
+	<bean id="demoItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+		<property name="resource" value="file:/var/architecture_user.new.csv"/>
+		<property name="lineAggregator">
+			<bean class="com.rainyalley.architecture.batch.demo.UserAggregator"/>
+		</property>
+	</bean>
+
+	<bean:job id="demoJob" job-repository="jobRepository">
+		<bean:step id="firstStep">
+			<tasklet>
+				<chunk reader="demoFileItemReader"
+					   processor="demoItemProcessor"
+					   writer="demoItemWriter"
+					   processor-transactional="false"
+					   commit-interval="1" skip-limit="1000000000"
+					   retry-limit="3"  >
+					<!-- 跳过异常 -->
+					<skippable-exception-classes>
+						<include class="org.springframework.batch.item.file.FlatFileParseException"/>
+					</skippable-exception-classes>
+					<!-- 重试异常 -->
+					<retryable-exception-classes>
+						<include class="java.io.IOException" />
+					</retryable-exception-classes>
+				</chunk>
+				<no-rollback-exception-classes>
+					<include class="java.lang.Exception"/>
+				</no-rollback-exception-classes>
+			</tasklet>
+		</bean:step>
+	</bean:job>
+</beans>
