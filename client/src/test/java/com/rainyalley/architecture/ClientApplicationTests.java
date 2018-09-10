@@ -17,7 +17,7 @@ public class ClientApplicationTests {
 
     @Test
     public void contextLoads() {
-        String actuator =   userClient.actuator();
+        String actuator =   userClient.get("1");
         System.out.println(actuator);
     }
 

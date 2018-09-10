@@ -10,8 +10,8 @@ public class UserClient {
 
     private RestTemplate restTemplate;
 
-    public String actuator() {
-        return restTemplate.getForObject("http://WEB//actuator", String.class);
+    public String get(String id) {
+        return restTemplate.getForObject("http://WEB/api/v1/user/" + id, String.class);
     }
 
     @Resource
