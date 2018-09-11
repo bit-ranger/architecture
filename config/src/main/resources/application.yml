@@ -9,8 +9,8 @@ spring:
             label: master
             server:
                 git:
-                    uri: https://github.com/forezp/SpringcloudConfig/
-                    searchPaths: respo
+                    uri: https://github.com/WakelessDragon/config
+                    searchPaths: architecure
                     username:
                     password:
 
