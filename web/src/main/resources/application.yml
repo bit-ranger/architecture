@@ -79,6 +79,8 @@ extend:
             filters: stat
             connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
 
+server:
+    port: 8080
 
 management:
     endpoints:
@@ -91,13 +93,11 @@ management:
         sessions:
             enabled: true
 
-
 eureka:
     client:
         serviceUrl:
             defaultZone: http://localhost:8761/eureka/
-            
-            
+
 logging:
     level:
         com.rainyalley.architecture: DEBUG
