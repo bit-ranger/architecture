@@ -1,46 +1,98 @@
 package com.rainyalley.architecture.util.jedis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
+ * 延迟队列
  * @author bin.zhang
  */
 public class RedisDelayQueue implements Queue<Job> {
+
+    private Logger logger = LoggerFactory.getLogger(RedisDelayQueue.class);
 
     private RedisOperations<String,String> redisTemplate;
 
     /**
      * job池
      */
-    private String jobPoolKey = "";
+    private String jobPoolKey;
 
     /**
      * 延迟桶,  zset
      */
-    private String delayBucketKey = "";
+    private String delayBucketKey;
 
     /**
      * 预备执行队列, zset
      */
-    private String readyQueueKey = "";
+    private String readyQueueKey;
 
     /**
      * jobId生成器
      */
-    private String jobIdGenKey = "";
+    private String jobIdGenKey;
 
     /**
-     * 锁
+     * 分布式锁
      */
-    private String lockKey = "";
-
     private Lock lock;
+
+    /**
+     * 异步任务
+     */
+    private ScheduleTask task;
+
+
+    /**
+     * @param redisTemplate redisTemplate
+     * @param keyPrefix key前缀
+     * @param initialDelay 初始化延迟
+     * @param delay 执行间隔
+     * @param unit 时间单位
+     */
+    public RedisDelayQueue(RedisOperations<String,String> redisTemplate,
+                           String keyPrefix,
+                           long initialDelay,
+                           long delay,
+                           TimeUnit unit) {
+        this.jobPoolKey = keyPrefix + "pool";
+        this.delayBucketKey = keyPrefix + "delay";
+        this.readyQueueKey = keyPrefix + "ready";
+        this.jobIdGenKey = keyPrefix + "id";
+        String lockKey = keyPrefix + "lock";
+        this.redisTemplate = redisTemplate;
+        this.lock = new JedisReentrantLock(lockKey, redisTemplate);
+        this.task = new ScheduleTask();
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
+                1,
+                new CustomizableThreadFactory("redis-delay-"));
+        executor.scheduleWithFixedDelay(this.task, initialDelay, delay, unit);
+    }
+
+    public void destroy(){
+        redisTemplate.delete(Arrays.asList(jobPoolKey, delayBucketKey, readyQueueKey, jobIdGenKey));
+    }
+
+    public void runTask(){
+        task.run();
+    }
+
 
     @Override
     public int size() {
@@ -135,7 +187,11 @@ public class RedisDelayQueue implements Queue<Job> {
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
+        Set<Object> keys = redisTemplate.opsForHash().keys(jobPoolKey);
+        if(CollectionUtils.isEmpty(keys)){
+            return;
+        }
+        redisTemplate.opsForHash().delete(jobPoolKey, keys.toArray());
     }
 
     @Override
@@ -144,12 +200,18 @@ public class RedisDelayQueue implements Queue<Job> {
         job.setJobId(String.valueOf(jobId));
 
         redisTemplate.opsForZSet().add(delayBucketKey, String.valueOf(jobId), job.getCreate() + job.getDelay());
-        redisTemplate.opsForHash().put(jobPoolKey, String.valueOf(jobId), job);
+        redisTemplate.opsForHash().put(jobPoolKey, String.valueOf(jobId), toString(job));
         return true;
     }
 
+
+    /**
+     * 弹出一个已到达延迟时间的元素
+     * 没有则抛出异常
+     * @throws NoSuchElementException
+     */
     @Override
-    public Job remove() {
+    public Job remove() throws NoSuchElementException{
         Job job = poll();
         if(job == null){
             throw new NoSuchElementException();
@@ -158,6 +220,9 @@ public class RedisDelayQueue implements Queue<Job> {
         }
     }
 
+    /**
+     * 弹出一个已到达延迟时间的元素
+     */
     @Override
     public Job poll() {
         boolean loked =  lock.tryLock();
@@ -178,8 +243,13 @@ public class RedisDelayQueue implements Queue<Job> {
         }
     }
 
+    /**
+     * 查看一个已到达延迟时间的元素
+     * @return 没有则抛出异常
+     * @throws NoSuchElementException
+     */
     @Override
-    public Job element() {
+    public Job element() throws NoSuchElementException{
         Job job = peek();
         if(job == null){
             throw new NoSuchElementException();
@@ -188,6 +258,10 @@ public class RedisDelayQueue implements Queue<Job> {
         }
     }
 
+    /**
+     * 查看一个已到达延迟时间的元素
+     * @return 没有则返回null
+     */
     @Override
     public Job peek(){
         Set<String> readySet = redisTemplate.opsForZSet().range(readyQueueKey, 0, 0);
@@ -205,14 +279,54 @@ public class RedisDelayQueue implements Queue<Job> {
     }
 
 
+    private class ScheduleTask implements Runnable{
+
+        @Override
+        public void run()  {
+            boolean locked = lock.tryLock();
+            if(!locked){
+                return;
+            }
+            try {
+                double max = System.currentTimeMillis();
+                Set<String> jobIds = redisTemplate.opsForZSet().rangeByScore(delayBucketKey,0, max,0, 100);
+                if(CollectionUtils.isEmpty(jobIds)){
+                    return;
+                }
+                Object[] idArr = jobIds.toArray(new Object[0]);
+                Set<ZSetOperations.TypedTuple<String>> typedTuples = jobIds.stream().map(id -> new DefaultTypedTuple<String>(id, Double.valueOf("0"))).collect(Collectors.toSet());
+                redisTemplate.opsForZSet().add(readyQueueKey, typedTuples);
+                redisTemplate.opsForZSet().remove(delayBucketKey, (Object[])idArr);
+                if(logger.isDebugEnabled()){
+                    logger.debug("ScheduleTask jobId size: " + jobIds.size());
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+
     private Job toJob(String txt){
-        return new Job();
+        try {
+            return new ObjectMapper().readValue(txt, Job.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private String toString(Job job){
+        try {
+            return new ObjectMapper().writeValueAsString(job);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
 
     private List<Job> jobList(){
         List<Object> values = redisTemplate.opsForHash().values(jobPoolKey);
-        List<Job> jobs = values.stream().map(val -> toJob(String.valueOf(val))).collect(Collectors.toList());
-        return jobs;
+        return values.stream().map(val -> toJob(String.valueOf(val))).collect(Collectors.toList());
     }
+
 }

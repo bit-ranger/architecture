@@ -5,44 +5,31 @@ package com.rainyalley.architecture.util.jedis;
  */
 public class Job {
 
+    private String jobId;
+
     private String topic;
 
-    private String jobId;
 
     /**
      * 创建时间
      */
-    private long create;
+    private long create = System.currentTimeMillis();
 
     /**
      * 延迟时间
      */
     private long delay;
 
-    /**
-     * 预期job执行时间
-     */
-    private long ttr;
 
-    public Job(String topic, long create, long delay, long ttr, String body) {
+    public Job(String topic, long delay, String body) {
         this.topic = topic;
-        this.create = create;
         this.delay = delay;
-        this.ttr = ttr;
         this.body = body;
     }
 
     private String body;
 
     public Job() {
-    }
-
-    public long getTtr() {
-        return ttr;
-    }
-
-    public void setTtr(long ttr) {
-        this.ttr = ttr;
     }
 
     public String getBody() {
@@ -83,5 +70,46 @@ public class Job {
 
     public void setDelay(long delay) {
         this.delay = delay;
+    }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"@class\":\"com.rainyalley.architecture.util.jedis.Job\",");
+        sb.append("\"@super\":\"").append(super.toString()).append("\",");
+        sb.append("\"jobId\":\"")
+                .append(jobId)
+                .append("\"");
+        sb.append(",\"topic\":\"")
+                .append(topic)
+                .append("\"");
+        sb.append(",\"create\":\"")
+                .append(create)
+                .append("\"");
+        sb.append(",\"delay\":\"")
+                .append(delay)
+                .append("\"");
+        sb.append(",\"body\":\"")
+                .append(body)
+                .append("\"");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Job)) return false;
+
+        Job job = (Job) o;
+
+        return getJobId() != null ? getJobId().equals(job.getJobId()) : job.getJobId() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return getJobId() != null ? getJobId().hashCode() : 0;
     }
 }
