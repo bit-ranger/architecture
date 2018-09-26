@@ -1,5 +1,8 @@
 package com.rainyalley.architecture.util.jedis;
 
+/**
+ * @author bin.zhang
+ */
 public class Job {
 
     private String topic;
@@ -16,15 +19,37 @@ public class Job {
      */
     private long delay;
 
+    /**
+     * 预期job执行时间
+     */
+    private long ttr;
+
+    public Job(String topic, long create, long delay, long ttr, String body) {
+        this.topic = topic;
+        this.create = create;
+        this.delay = delay;
+        this.ttr = ttr;
+        this.body = body;
+    }
+
     private String body;
 
     public Job() {
     }
 
-    public Job(String topic, long create, long delay, String body) {
-        this.topic = topic;
-        this.create = create;
-        this.delay = delay;
+    public long getTtr() {
+        return ttr;
+    }
+
+    public void setTtr(long ttr) {
+        this.ttr = ttr;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
         this.body = body;
     }
 
