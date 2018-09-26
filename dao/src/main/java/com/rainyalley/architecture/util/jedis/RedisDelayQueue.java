@@ -1,12 +1,12 @@
 package com.rainyalley.architecture.util.jedis;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisOperations;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 /**
  * @author bin.zhang
@@ -31,46 +31,55 @@ public class RedisDelayQueue implements Queue<Job> {
     private String readyQueueKey = "";
 
     /**
-     * 执行中队列, zset
-     */
-    private String runningQueueKey = "";
-
-    /**
      * jobId生成器
      */
-    private String jobIdKey = "";
+    private String jobIdGenKey = "";
+
+    /**
+     * 锁
+     */
+    private String lockKey = "";
+
+    private Lock lock;
 
     @Override
     public int size() {
-        return 0;
+        return redisTemplate.opsForHash().size(jobPoolKey).intValue();
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size() == 0;
     }
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        if(Objects.isNull(o)){
+            return false;
+        }
+        if(!(o instanceof Job)){
+            return false;
+        }
+        Job job = (Job) o;
+        return  redisTemplate.opsForHash().hasKey(jobPoolKey, job.getJobId());
     }
 
     @NotNull
     @Override
     public Iterator<Job> iterator() {
-        return null;
+        return jobList().iterator();
     }
 
     @NotNull
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        return jobList().toArray();
     }
 
     @NotNull
     @Override
     public <T> T[] toArray(@NotNull T[] a) {
-        return null;
+        return jobList().toArray(a);
     }
 
     @Override
@@ -80,22 +89,43 @@ public class RedisDelayQueue implements Queue<Job> {
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        if (Objects.isNull(o)){
+            return false;
+        }
+        if(!(o instanceof Job)){
+            return false;
+        }
+
+        Job job = (Job)o;
+        Long deleted = redisTemplate.opsForHash().delete(jobPoolKey, job.getJobId());
+        return deleted > 0;
     }
 
     @Override
     public boolean containsAll(@NotNull Collection<?> c) {
-        return false;
+        boolean containsAll = true;
+        for (Object o : c) {
+            containsAll &= contains(o);
+        }
+        return containsAll;
     }
 
     @Override
     public boolean addAll(@NotNull Collection<? extends Job> c) {
-        return false;
+        boolean added = true;
+        for (Job job : c) {
+            added &= add(job);
+        }
+        return added;
     }
 
     @Override
     public boolean removeAll(@NotNull Collection<?> c) {
-        return false;
+        boolean removed = true;
+        for (Object o : c) {
+            removed &= remove(o);
+        }
+        return removed;
     }
 
     @Override
@@ -105,53 +135,84 @@ public class RedisDelayQueue implements Queue<Job> {
 
     @Override
     public void clear() {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean offer(Job job) {
-        Long jobId = redisTemplate.opsForValue().increment(jobIdKey, 1);
+        Long jobId = redisTemplate.opsForValue().increment(jobIdGenKey, 1);
         job.setJobId(String.valueOf(jobId));
+
+        redisTemplate.opsForZSet().add(delayBucketKey, String.valueOf(jobId), job.getCreate() + job.getDelay());
         redisTemplate.opsForHash().put(jobPoolKey, String.valueOf(jobId), job);
-        return redisTemplate.opsForZSet().add(delayBucketKey, String.valueOf(jobId), job.getCreate() + job.getDelay());
+        return true;
     }
 
     @Override
     public Job remove() {
-        return null;
+        Job job = poll();
+        if(job == null){
+            throw new NoSuchElementException();
+        } else {
+            return job;
+        }
     }
 
     @Override
     public Job poll() {
-        return null;
+        boolean loked =  lock.tryLock();
+        if(!loked){
+            return null;
+        }
+        try {
+            Job job = peek();
+            if(job == null){
+                return null;
+            } else {
+                redisTemplate.opsForHash().delete(jobPoolKey, job.getJobId());
+                redisTemplate.opsForZSet().remove(readyQueueKey, job.getJobId());
+                return job;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public Job element() {
-        return null;
+        Job job = peek();
+        if(job == null){
+            throw new NoSuchElementException();
+        } else {
+            return job;
+        }
     }
 
     @Override
     public Job peek(){
-        Set<String> readySet  = peekWithLock();
-        if(readySet.size() != 0){
-            String  ready = readySet.iterator().next();
-            return toJob(ready);
+        Set<String> readySet = redisTemplate.opsForZSet().range(readyQueueKey, 0, 0);
+        if(CollectionUtils.isEmpty(readySet)){
+            return null;
         } else {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) { }
+            String jobId = readySet.iterator().next();
+            Object objVal = redisTemplate.opsForHash().get(jobPoolKey, jobId);
+            if(Objects.isNull(objVal)){
+                return null;
+            } else {
+                return toJob(String.valueOf(objVal));
+            }
         }
-        return null;
-    }
-
-
-    private Set<String> peekWithLock(){
-        return  redisTemplate.opsForZSet().range(readyQueueKey, 0, 0);
     }
 
 
     private Job toJob(String txt){
         return new Job();
+    }
+
+
+    private List<Job> jobList(){
+        List<Object> values = redisTemplate.opsForHash().values(jobPoolKey);
+        List<Job> jobs = values.stream().map(val -> toJob(String.valueOf(val))).collect(Collectors.toList());
+        return jobs;
     }
 }
