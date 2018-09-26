@@ -53,11 +53,11 @@ public class JedisReentrantLockTest implements InitializingBean {
         Assert.assertTrue(jrl.hasLock());
         Thread.sleep(5000);
         Assert.assertFalse(jrl.hasLock());
-        Assert.assertTrue(jrl.tryLock(10000));
-        Assert.assertTrue(jrl.tryLock(10000));
-        Assert.assertTrue(jrl.unLock());
+        Assert.assertTrue(jrl.tryLock(10000, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(jrl.tryLock(10000, TimeUnit.MILLISECONDS));
+        jrl.unlock();
         Assert.assertTrue(jrl.hasLock());
-        Assert.assertTrue(jrl.unLock());
+        jrl.unlock();
         Assert.assertFalse(jrl.hasLock());
 
     }
@@ -93,9 +93,9 @@ public class JedisReentrantLockTest implements InitializingBean {
         Assert.assertTrue(jrl.tryLock());
         Assert.assertTrue(jrl.hasLock());
         Assert.assertTrue(jrl.tryLock());
-        Assert.assertTrue(jrl.unLock());
+        jrl.unlock();
         Assert.assertTrue(jrl.hasLock());
-        Assert.assertTrue(jrl.unLock());
+        jrl.unlock();
         Assert.assertFalse(jrl.hasLock());
 
 
