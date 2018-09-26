@@ -86,7 +86,15 @@ public class RedisDelayQueue implements Queue<Job> {
     }
 
     public void destroy(){
-        redisTemplate.delete(Arrays.asList(jobPoolKey, delayBucketKey, readyQueueKey, jobIdGenKey));
+        boolean loked =  lock.tryLock();
+        if(!loked){
+            return;
+        }
+        try {
+            redisTemplate.delete(Arrays.asList(jobPoolKey, delayBucketKey, readyQueueKey, jobIdGenKey));
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void runTask(){
@@ -148,9 +156,19 @@ public class RedisDelayQueue implements Queue<Job> {
             return false;
         }
 
-        Job job = (Job)o;
-        Long deleted = redisTemplate.opsForHash().delete(jobPoolKey, job.getJobId());
-        return deleted > 0;
+        boolean loked =  lock.tryLock();
+        if(!loked){
+            return false;
+        }
+        try {
+            Job job = (Job)o;
+            Long deleted = redisTemplate.opsForHash().delete(jobPoolKey, job.getJobId());
+            redisTemplate.opsForZSet().remove(delayBucketKey, job.getJobId());
+            redisTemplate.opsForZSet().remove(readyQueueKey, job.getJobId());
+            return deleted > 0;
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
@@ -187,11 +205,17 @@ public class RedisDelayQueue implements Queue<Job> {
 
     @Override
     public void clear() {
-        Set<Object> keys = redisTemplate.opsForHash().keys(jobPoolKey);
-        if(CollectionUtils.isEmpty(keys)){
+        boolean loked =  lock.tryLock();
+        if(!loked){
             return;
         }
-        redisTemplate.opsForHash().delete(jobPoolKey, keys.toArray());
+        try {
+            redisTemplate.delete(jobPoolKey);
+            redisTemplate.delete(delayBucketKey);
+            redisTemplate.delete(readyQueueKey);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
@@ -264,17 +288,28 @@ public class RedisDelayQueue implements Queue<Job> {
      */
     @Override
     public Job peek(){
-        Set<String> readySet = redisTemplate.opsForZSet().range(readyQueueKey, 0, 0);
-        if(CollectionUtils.isEmpty(readySet)){
+        boolean loked =  lock.tryLock();
+        if(!loked){
             return null;
-        } else {
-            String jobId = readySet.iterator().next();
-            Object objVal = redisTemplate.opsForHash().get(jobPoolKey, jobId);
-            if(Objects.isNull(objVal)){
-                return null;
-            } else {
-                return toJob(String.valueOf(objVal));
+        }
+        try {
+            while (true){
+                Set<String> readySet = redisTemplate.opsForZSet().range(readyQueueKey, 0, 0);
+                if(CollectionUtils.isEmpty(readySet)){
+                    return null;
+                } else {
+                    String jobId = readySet.iterator().next();
+                    Object objVal = redisTemplate.opsForHash().get(jobPoolKey, jobId);
+                    if(Objects.isNull(objVal)){
+                        redisTemplate.opsForZSet().remove(readyQueueKey, jobId);
+                        continue;
+                    } else {
+                        return toJob(String.valueOf(objVal));
+                    }
+                }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -290,9 +325,11 @@ public class RedisDelayQueue implements Queue<Job> {
             try {
                 double max = System.currentTimeMillis();
                 Set<String> jobIds = redisTemplate.opsForZSet().rangeByScore(delayBucketKey,0, max,0, 100);
+                jobIds = removeDeleted(jobIds);
                 if(CollectionUtils.isEmpty(jobIds)){
                     return;
                 }
+
                 Object[] idArr = jobIds.toArray(new Object[0]);
                 Set<ZSetOperations.TypedTuple<String>> typedTuples = jobIds.stream().map(id -> new DefaultTypedTuple<String>(id, Double.valueOf("0"))).collect(Collectors.toSet());
                 redisTemplate.opsForZSet().add(readyQueueKey, typedTuples);
@@ -303,6 +340,28 @@ public class RedisDelayQueue implements Queue<Job> {
             } finally {
                 lock.unlock();
             }
+        }
+
+        private Set<String> removeDeleted(Set<String> jobIds){
+            if(CollectionUtils.isEmpty(jobIds)){
+                return jobIds;
+            }
+            List<Object> jobIdList = new ArrayList<>(jobIds);
+            List<Object> hashValues = (List<Object>) redisTemplate.opsForHash().multiGet(jobPoolKey, jobIdList);
+            List<String> deletedJobIds = new ArrayList<>();
+            HashSet<String> persistJobIds = new HashSet<>();
+            for (int i = 0; i < hashValues.size(); i++) {
+                Object obj = hashValues.get(i);
+                if(obj == null){
+                    deletedJobIds.add(String.valueOf(jobIdList.get(i)));
+                } else {
+                    persistJobIds.add(String.valueOf(jobIdList.get(i)));
+                }
+            }
+            if(CollectionUtils.isNotEmpty(deletedJobIds)){
+                redisTemplate.opsForZSet().remove(delayBucketKey, deletedJobIds);
+            }
+            return persistJobIds;
         }
     }
 
