@@ -69,7 +69,7 @@ public class HttpPoolingClientTest{
         Map<String,String> map = new HashMap<String,String>();
         map.put("aaa", "bbbb");
         //Header header  = new BasicHeader(HttpHeaders.CONTENT_TYPE, "132");
-        client.post("http://baidu.com", objectMapper.writeValueAsString(map), true);
+        client.post("https://b2buat.liby.com.cn/libyb2bocc/v2/liby/checkToken?access_token=916e9c73-bf16-4d25-93e0-abc720cff866", "", false);
     }
 
     @Test
