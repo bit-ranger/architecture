@@ -82,12 +82,43 @@ management:
     endpoints:
         enabled-by-default: true
     server:
-        port: 8080
+        port: 8090
     endpoint:
         health:
             show-details: when_authorized
-        sessions:
             enabled: true
+        sessions:
+            enabled: false
+        shutdown:
+            enabled: true
+        beans:
+            enabled: true
+        autoconfig:
+            enabled: true
+            sensitive: false
+        configprops:
+            enabled: true
+            sensitive: false
+        env:
+            enabled: true
+            sensitive: false
+        mappings:
+            enabled: true
+            sensitive: false
+        info:
+            enabled: true
+            sensitive: false
+        metrics:
+            enabled: true
+            sensitive: false
+        dump:
+            enabled: true
+            sensitive: false
+        trace:
+            enabled: true
+            sensitive: false
+
+
 
 
             
