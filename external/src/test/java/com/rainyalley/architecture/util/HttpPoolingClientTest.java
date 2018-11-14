@@ -62,6 +62,8 @@ public class HttpPoolingClientTest{
         }
 
         cl.await();
+
+        System.out.println(client.getCookieStore().getCookies());
     }
 
     @Test

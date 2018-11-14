@@ -3,6 +3,7 @@ package com.rainyalley.architecture.util;
 import com.rainyalley.architecture.exception.ConversionException;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.http.*;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,6 +21,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
@@ -101,6 +103,8 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
 
     private Map<String, Integer> routeMax = Collections.emptyMap();
 
+    private CookieStore cookieStore = new BasicCookieStore();
+
     private int retryTimes = 3;
 
     private Charset charset = Charset.forName("UTF-8");
@@ -144,6 +148,7 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(retryHandler)
+                .setDefaultCookieStore(cookieStore)
                 .build();
 
         cleanConnections(connectionManager);
@@ -469,6 +474,9 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
         }
     }
 
+    public CookieStore getCookieStore() {
+        return cookieStore;
+    }
 
     /**
      * 从连接池中获取连接的时间
