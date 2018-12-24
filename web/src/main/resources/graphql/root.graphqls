@@ -7,10 +7,4 @@ type Query {
     countBooks: Long!
 }
 type Mutation {
-    newAuthor(firstName: String!, lastName: String!) : Author!
-
-    newBook(title: String!, isbn: String!, pageCount: Int, authorId: Long!) : Book!
-    saveBook(input: BookInput!): Book!
-    deleteBook(id: ID!) : Boolean
-    updateBookPageCount(pageCount: Int!, id: Long!) : Book!
 }

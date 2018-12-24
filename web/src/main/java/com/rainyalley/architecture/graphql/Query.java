@@ -3,14 +3,12 @@ package com.rainyalley.architecture.graphql;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.rainyalley.architecture.model.Author;
 import com.rainyalley.architecture.model.Book;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Component
-@AllArgsConstructor
 public class Query implements GraphQLQueryResolver {
 
     public Author findOneAuthor(Long id) {

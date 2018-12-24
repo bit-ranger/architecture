@@ -32,6 +32,7 @@ spring:
     cache:
         type: redis
 
+
 mybatis:
     type-aliases-package: com.rainyalley.architecture.entity
     mapper-locations: classpath*:mapper/*Mapper.xml
@@ -126,4 +127,5 @@ management:
 logging:
     level:
         com.rainyalley.architecture: DEBUG
+debug: true
 
