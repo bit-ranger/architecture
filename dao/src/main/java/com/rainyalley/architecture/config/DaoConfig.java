@@ -1,6 +1,7 @@
 package com.rainyalley.architecture.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.github.pagehelper.PageInterceptor;
 import com.rainyalley.architecture.util.RoutingDataSource;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +24,7 @@ import redis.clients.jedis.JedisCluster;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,6 +88,16 @@ public class DaoConfig {
             rds.setDefaultTargetDataSource(writeDataSource);
             return rds;
         }
+    }
+
+    @Bean(value = "masterPageInterceptor")
+    public PageInterceptor[] pageHelper() {
+        PageInterceptor pageInterceptor = new PageInterceptor();
+        Properties props = new Properties();
+        props.setProperty("helperDialect", "mysql");
+        props.setProperty("supportMethodsArguments", "true");
+        pageInterceptor.setProperties(props);
+        return new PageInterceptor[]{pageInterceptor};
     }
 
 
