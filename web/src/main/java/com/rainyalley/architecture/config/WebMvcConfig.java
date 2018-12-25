@@ -107,5 +107,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
         info.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(info);
     }
-
 }

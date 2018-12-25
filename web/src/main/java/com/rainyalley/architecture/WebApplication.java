@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  */
 @SpringBootApplication(
 	scanBasePackages = {
+		"com.rainyalley.architecture.graphql",
 		"com.rainyalley.architecture.config",
 		"com.rainyalley.architecture.controller",
 		"com.rainyalley.architecture.aop",

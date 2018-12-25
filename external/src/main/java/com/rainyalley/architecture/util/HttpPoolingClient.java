@@ -9,10 +9,15 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -28,10 +33,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -93,20 +105,24 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
 
     private Charset charset = Charset.forName("UTF-8");
 
-    public ContentType applicationJson = ContentType.create("application/json", charset);
+    public ContentType applicationJson;
 
 
     private  CloseableHttpClient client;
 
-    public void init(){
+    public void init() throws GeneralSecurityException {
         applicationJson = ContentType.create("application/json", charset);
 
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(socketTimeout)
-                .setConnectTimeout(connectTimeout)
-                .setConnectionRequestTimeout(connectionRequestTimeout).build();
+        //采用绕过验证的方式处理https请求
+        SSLContext sslcontext = createIgnoreVerifySSL();
 
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        // 设置协议http和https对应的处理socket链接工厂的对象
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER))
+                .build();
+
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
         connectionManager.setMaxTotal(maxTotal);
         connectionManager.setDefaultMaxPerRoute(maxPerRoute);
 
@@ -119,6 +135,11 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
 
         org.apache.http.client.HttpRequestRetryHandler retryHandler = new SpecificHttpRequestRetryHandler(retryTimes, false);
 
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(socketTimeout)
+                .setConnectTimeout(connectTimeout)
+                .setConnectionRequestTimeout(connectionRequestTimeout).build();
+
         client = HttpClients.custom()
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig)
@@ -126,6 +147,39 @@ public class HttpPoolingClient extends CloseableHttpClient implements StringHttp
                 .build();
 
         cleanConnections(connectionManager);
+    }
+
+    /**
+     * 绕过验证
+     *
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
+    private static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("SSLv3");
+
+        // 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+
+            @Override
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+        sc.init(null, new TrustManager[] { trustManager }, null);
+        return sc;
     }
 
     private void cleanConnections(final PoolingHttpClientConnectionManager cm) {

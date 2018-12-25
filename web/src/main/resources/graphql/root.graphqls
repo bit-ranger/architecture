@@ -1,0 +1,10 @@
+type Query {
+    findAllAuthors: [Author]!
+    countAuthors: Long!
+    findOneAuthor(id: Long!): Author
+
+    findAllBooks: [Book]!
+    countBooks: Long!
+}
+type Mutation {
+}
