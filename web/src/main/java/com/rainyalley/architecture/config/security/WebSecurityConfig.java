@@ -28,6 +28,7 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
                     .permitAll();
 
         http.headers().cacheControl().disable();
+        http.csrf().disable();
     }
 
     @Autowired

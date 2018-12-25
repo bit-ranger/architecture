@@ -3,12 +3,10 @@ package com.rainyalley.architecture.config;
 import com.rainyalley.architecture.exception.BadRequestException;
 import com.rainyalley.architecture.exception.PreconditionException;
 import com.rainyalley.architecture.exception.ServiceException;
-import com.rainyalley.architecture.filter.ServletFilter;
 import com.rainyalley.architecture.filter.limit.SimpleLimitFilter;
 import com.rainyalley.architecture.filter.xss.XssFilter;
 import com.rainyalley.architecture.interceptor.xss.XssInterceptor;
 import com.rainyalley.architecture.vo.ErrorVo;
-import graphql.servlet.SimpleGraphQLHttpServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -108,16 +106,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         info.setMessage(e.getMessage());
         info.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(info);
-    }
-
-    @Bean
-    public FilterRegistrationBean<ServletFilter> simpleGraphQLHttpServlet(SimpleGraphQLHttpServlet servlet){
-        FilterRegistrationBean<ServletFilter> registration = new FilterRegistrationBean<ServletFilter>();
-        ServletFilter filter = new ServletFilter(servlet);
-        registration.setOrder(0);
-        registration.setFilter(filter);
-        registration.setName("simpleGraphQLHttpServlet");
-        registration.addUrlPatterns("/graphql/*");
-        return registration;
     }
 }
