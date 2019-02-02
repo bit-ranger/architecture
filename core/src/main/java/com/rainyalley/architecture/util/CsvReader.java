@@ -1,8 +1,8 @@
 package com.rainyalley.architecture.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
+import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;

@@ -3,7 +3,6 @@ package com.rainyalley.architecture.util.jedis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.DefaultTypedTuple;
@@ -11,6 +10,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;

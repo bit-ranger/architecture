@@ -28,7 +28,7 @@ public class UserController{
 
     @ApiOperation(value="获取用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id:[0-9]{1,9}}")
     public ResponseEntity<UserVo> get(@PathVariable("id") String id){
         User user = userService.get(id);
         if(user != null){
@@ -45,21 +45,21 @@ public class UserController{
     }
 
     @ApiOperation(value="获取用户列表")
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public ResponseEntity<List<UserVo>> list(){
         return ResponseEntity.ok(Collections.emptyList());
     }
 
 
     @ApiOperation(value="提交用户信息")
-    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping
     public ResponseEntity<UserVo> post(@RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }
 
     @ApiOperation(value="删除用户")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{id:[0-9]{1,9}}")
     public ResponseEntity<UserVo> delete(@PathVariable("id") String id){
         return ResponseEntity.ok(new UserVo());
     }
@@ -67,13 +67,13 @@ public class UserController{
 
     @ApiOperation(value="修改用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @RequestMapping(value = "/{id:[0-9]{1,9}}", method = RequestMethod.PUT, consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = "/{id:[0-9]{1,9}}")
     public ResponseEntity<UserVo> put(@PathVariable("id") String id, @RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }
 
     @ApiOperation(value="提交用户信息")
-    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<List<UserVo>> postMulti(@RequestParam(value = "user") String[] userPos, @RequestParam(value = "file") List<MultipartFile> file){
         return ResponseEntity.ok(Arrays.asList(new UserVo(), new UserVo()));
     }

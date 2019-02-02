@@ -2,7 +2,6 @@ package com.rainyalley.architecture.util.jedis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.RedisStringCommands;
@@ -11,6 +10,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
+import javax.validation.constraints.NotNull;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

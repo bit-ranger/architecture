@@ -1,12 +1,12 @@
 package com.rainyalley.architecture.entity;
 
-import com.rainyalley.architecture.AbstractJsonObject;
+import com.rainyalley.architecture.JsonEntity;
 import com.rainyalley.architecture.Identical;
 import javax.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 
-public class UserDo extends AbstractJsonObject implements Serializable,Identical {
+public class UserDo extends JsonEntity implements Serializable,Identical {
 
     private static final long serialVersionUID = 2894257361469960272L;
 

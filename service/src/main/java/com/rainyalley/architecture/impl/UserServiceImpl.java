@@ -5,7 +5,6 @@ import com.rainyalley.architecture.service.UserService;
 import com.rainyalley.architecture.BaseMapper;
 import com.rainyalley.architecture.entity.UserDo;
 import com.rainyalley.architecture.mapper.UserMapper;
-import com.rainyalley.architecture.aop.Secondary;
 import com.rainyalley.architecture.model.User;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
@@ -54,7 +53,6 @@ public class UserServiceImpl extends ServiceBasicSupport<User,UserDo> implements
         return user;
     }
 
-    @Secondary
     @Transactional(readOnly = true)
     @Cacheable(key = "#id")
     @Override
