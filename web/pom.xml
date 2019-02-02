@@ -38,6 +38,11 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.rainyalley.architecture</groupId>
 			<artifactId>service</artifactId>
 		</dependency>

@@ -1,13 +1,12 @@
 package com.rainyalley.architecture.controller.apiV1;
 
+import com.rainyalley.architecture.impl.UserServiceImpl;
 import com.rainyalley.architecture.model.User;
 import com.rainyalley.architecture.po.UserPo;
-import com.rainyalley.architecture.service.UserService;
 import com.rainyalley.architecture.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Api(value = "api/v1/user", description = "用户信息管理")
 @RestController
@@ -24,24 +24,13 @@ import java.util.List;
 public class UserController{
 
     @Resource
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @ApiOperation(value="获取用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
     @GetMapping(value = "/{id:[0-9]{1,9}}")
-    public ResponseEntity<UserVo> get(@PathVariable("id") String id){
-        User user = userService.get(id);
-        if(user != null){
-            UserVo userVo = new UserVo();
-            try {
-                PropertyUtils.copyProperties(userVo, user);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return ResponseEntity.ok().body(userVo);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public Optional<User> get(@PathVariable("id") Long id){
+        return userService.get(id);
     }
 
     @ApiOperation(value="获取用户列表")

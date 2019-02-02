@@ -104,6 +104,8 @@
                         <arg>java.xml.ws.annotation</arg>
                         <arg>--add-modules</arg>
                         <arg>jdk.unsupported</arg>
+                        <arg>--add-opens</arg>
+                        <arg>java.base=ALL-UNNAMED</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
@@ -198,11 +200,6 @@
                 <groupId>com.github.jsqlparser</groupId>
                 <artifactId>jsqlparser</artifactId>
                 <version>1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>1.1.1</version>
             </dependency>
 
             <dependency>

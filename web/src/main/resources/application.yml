@@ -1,5 +1,7 @@
 server:
     port: 8080
+    error:
+        include-stacktrace: on_trace_param
 
 spring:
     main:
@@ -24,6 +26,13 @@ spring:
             read-only: false
             idle-timeout: 300000
             register-mbeans: false
+    jpa:
+        database: mysql
+        properties:
+            eclipselink.target-database: mysql
+            javax.persistence.schema-generation.database.action: none
+            javax.persistence.schema-generation.create-database-schemas: true
+            eclipselink.jdbc.batch-writing: JDBC
 
     redis:
         cluster:

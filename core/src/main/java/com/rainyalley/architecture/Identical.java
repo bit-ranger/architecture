@@ -7,5 +7,5 @@ package com.rainyalley.architecture;
  */
 public interface Identical {
 
-    String getId();
+    Long getId();
 }

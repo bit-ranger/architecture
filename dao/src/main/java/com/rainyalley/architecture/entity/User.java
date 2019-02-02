@@ -1,22 +1,24 @@
-package com.rainyalley.architecture.model;
+package com.rainyalley.architecture.entity;
 
 import com.rainyalley.architecture.Identical;
-import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author bin.zhang
  */
-@Builder
 @Data
+@Entity
+@Table(name="USER")
+@NamedQuery(name="User.findAll", query="SELECT u FROM User u")
 public class User implements Identical {
 
-    private static final long serialVersionUID = -1327607787471771423L;
-
-    @NotNull
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(updatable=false)
+    @NotBlank
     private Long id;
 
     @NotBlank
@@ -24,4 +26,5 @@ public class User implements Identical {
 
     @NotBlank
     private String password;
+
 }
