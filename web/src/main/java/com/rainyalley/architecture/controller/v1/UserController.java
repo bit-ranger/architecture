@@ -19,6 +19,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,9 +39,9 @@ public class UserController{
     }
 
     @ApiOperation(value="获取用户列表")
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<User> list(Page page){
-        return userService.list(Mono.just(page));
+        return userService.list(Mono.just(page)).delayElements(Duration.ofSeconds(1));
     }
 
 
