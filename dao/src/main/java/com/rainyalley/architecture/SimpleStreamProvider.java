@@ -27,6 +27,11 @@ public class SimpleStreamProvider implements StreamProvider, Closeable {
     }
 
     @Override
+    public <E> void persist(E entity) {
+        entityManager.persist(entity);
+    }
+
+    @Override
     public void close() {
         entityManager.close();
     }

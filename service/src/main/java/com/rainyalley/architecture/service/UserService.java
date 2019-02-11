@@ -1,11 +1,17 @@
 package com.rainyalley.architecture.service;
 
 
+import com.rainyalley.architecture.Page;
 import com.rainyalley.architecture.model.User;
-
-import java.util.Optional;
+import com.rainyalley.architecture.po.UserAdd;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface UserService {
 
-    Optional<User> get(Long id);
+    Mono<User> get(Mono<Long> id);
+
+    Flux<User> list(Mono<Page> page);
+
+    Mono<User> add(Mono<UserAdd> userAdd);
 }

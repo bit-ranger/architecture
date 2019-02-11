@@ -2,7 +2,7 @@ package com.rainyalley.architecture.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rainyalley.architecture.WebApplication;
-import com.rainyalley.architecture.controller.apiV1.UserController;
+import com.rainyalley.architecture.controller.v1.UserController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

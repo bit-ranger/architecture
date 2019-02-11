@@ -1,7 +1,11 @@
-package com.rainyalley.architecture.controller.apiV1;
+package com.rainyalley.architecture.controller.v1;
 
+import com.rainyalley.architecture.Page;
+import com.rainyalley.architecture.enums.ResourceEnum;
+import com.rainyalley.architecture.exception.NotFoundException;
 import com.rainyalley.architecture.impl.UserServiceImpl;
 import com.rainyalley.architecture.model.User;
+import com.rainyalley.architecture.po.UserAdd;
 import com.rainyalley.architecture.po.UserPo;
 import com.rainyalley.architecture.vo.UserVo;
 import io.swagger.annotations.Api;
@@ -11,16 +15,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-@Api(value = "api/v1/user", description = "用户信息管理")
+@Api(value = "v1/user", description = "用户信息管理")
 @RestController
-@RequestMapping(value = "/api/v1/user", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "v1/user", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserController{
 
     @Resource
@@ -29,21 +33,21 @@ public class UserController{
     @ApiOperation(value="获取用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
     @GetMapping(value = "/{id:[0-9]{1,9}}")
-    public Optional<User> get(@PathVariable("id") Long id){
-        return userService.get(id);
+    public Mono<User> get(@PathVariable("id") Long id){
+        return userService.get(Mono.just(id)).switchIfEmpty(Mono.error(new NotFoundException(ResourceEnum.USER)));
     }
 
     @ApiOperation(value="获取用户列表")
     @GetMapping
-    public ResponseEntity<List<UserVo>> list(){
-        return ResponseEntity.ok(Collections.emptyList());
+    public Flux<User> list(Page page){
+        return userService.list(Mono.just(page));
     }
 
 
     @ApiOperation(value="提交用户信息")
     @PostMapping
-    public ResponseEntity<UserVo> post(@RequestBody UserPo userPo){
-        return ResponseEntity.ok(new UserVo());
+    public Mono<User> post(@RequestBody UserAdd userAdd){
+        return userService.add(Mono.just(userAdd));
     }
 
     @ApiOperation(value="删除用户")

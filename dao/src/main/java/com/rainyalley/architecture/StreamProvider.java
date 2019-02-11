@@ -9,4 +9,6 @@ public interface StreamProvider {
 
     <U> JPAJinqStream<U> stream(Class<U> clazz);
 
+    <E> void persist(E entity);
+
 }
