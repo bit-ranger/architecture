@@ -62,7 +62,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> add(Mono<UserAdd> userAdd) {
-        return userAdd.flatMap(a -> Mono.just(map(map(a))));
+        return userAdd.flatMap(a -> {
+            com.rainyalley.architecture.entity.User e = map(a);
+            streamProvider.persist(e);
+            return Mono.just(map(e));
+        });
     }
 
     private User map(com.rainyalley.architecture.entity.User user){

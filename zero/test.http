@@ -17,3 +17,10 @@ GET http://localhost:8090/actuator/loggers
 GET http://localhost:8080/v1/user
 
 ###
+
+POST http://localhost:8080/v1/user
+Content-Type: application/json
+
+{"name": "QQQ", "password": "fgggg"}
+
+###
