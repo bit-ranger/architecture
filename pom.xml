@@ -17,10 +17,10 @@
     <description>architecture</description>
 
     <properties>
-        <java.version>9</java.version>
-        <maven.compiler.release>9</maven.compiler.release>
-        <maven.compiler.source>9</maven.compiler.source>
-        <maven.compiler.target>9</maven.compiler.target>
+        <java.version>11</java.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
@@ -100,8 +100,6 @@
                     <showDeprecation>true</showDeprecation>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
-                        <arg>--add-modules</arg>
-                        <arg>java.xml.ws.annotation</arg>
                         <arg>--add-modules</arg>
                         <arg>jdk.unsupported</arg>
                         <arg>--add-opens</arg>
