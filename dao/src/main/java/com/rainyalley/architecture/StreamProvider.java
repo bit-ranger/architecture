@@ -11,4 +11,5 @@ public interface StreamProvider {
 
     <E> void persist(E entity);
 
+    <E> void remove(E entity);
 }

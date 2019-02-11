@@ -24,3 +24,7 @@ Content-Type: application/json
 {"name": "QQQ", "password": "fgggg"}
 
 ###
+
+DELETE http://localhost:8080/v1/user/6
+
+###

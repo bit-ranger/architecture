@@ -14,4 +14,6 @@ public interface UserService {
     Flux<User> list(Mono<Page> page);
 
     Mono<User> add(Mono<UserAdd> userAdd);
+
+    Mono<User> remove(Mono<Long> id);
 }

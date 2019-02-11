@@ -37,6 +37,12 @@ public class SimpleStreamProvider implements StreamProvider, Closeable {
         entityManager.persist(entity);
     }
 
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public <E> void remove(E entity) {
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+    }
+
     @Override
     public void close() {
         entityManager.close();

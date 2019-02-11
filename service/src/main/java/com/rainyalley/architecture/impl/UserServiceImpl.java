@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
-    private Optional<User> get(Long id){
+    private Optional<User> get(Long id) {
         JPAJinqStream<com.rainyalley.architecture.entity.User> stream =
                 streamProvider.stream(com.rainyalley.architecture.entity.User.class);
         return stream.where(c -> c.getId().equals(id)).map(this::map).findFirst();
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         return page.map(this::list).flatMapMany(Flux::fromStream);
     }
 
-    private Stream<User> list(Page page){
+    private Stream<User> list(Page page) {
         JPAJinqStream<com.rainyalley.architecture.entity.User> stream =
                 streamProvider.stream(com.rainyalley.architecture.entity.User.class);
         return stream
@@ -69,7 +69,18 @@ public class UserServiceImpl implements UserService {
         });
     }
 
-    private User map(com.rainyalley.architecture.entity.User user){
+    @Override
+    public Mono<User> remove(Mono<Long> id) {
+        return id
+                .flatMap(i ->
+                        Mono.justOrEmpty(streamProvider.stream(com.rainyalley.architecture.entity.User.class)
+                        .where(c -> c.getId().equals(i))
+                        .findFirst()))
+                .doOnNext(u -> streamProvider.remove(u))
+                .map(this::map);
+    }
+
+    private User map(com.rainyalley.architecture.entity.User user) {
         return User.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -77,7 +88,8 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    private com.rainyalley.architecture.entity.User map(UserAdd userAdd){
+
+    private com.rainyalley.architecture.entity.User map(UserAdd userAdd) {
         com.rainyalley.architecture.entity.User e = new com.rainyalley.architecture.entity.User();
         e.setName(userAdd.getName());
         e.setPassword(userAdd.getPassword());

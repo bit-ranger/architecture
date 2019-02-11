@@ -53,8 +53,8 @@ public class UserController{
     @ApiOperation(value="删除用户")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
     @DeleteMapping(value = "/{id:[0-9]{1,9}}")
-    public ResponseEntity<UserVo> delete(@PathVariable("id") String id){
-        return ResponseEntity.ok(new UserVo());
+    public Mono<User> delete(@PathVariable("id") Long id){
+        return userService.remove(Mono.just(id)).switchIfEmpty(Mono.error(new NotFoundException(ResourceEnum.USER)));
     }
 
 
