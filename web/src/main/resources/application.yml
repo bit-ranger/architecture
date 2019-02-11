@@ -12,28 +12,6 @@ spring:
         type: redis
         redis:
             key-prefix: architecture:cache
-    datasource:
-        url: jdbc:mysql://localhost:3306/architecture?serverTimezone=Asia/Shanghai&characterEncoding=utf8
-        username: root
-        password:
-        hikari:
-            pool-name: architecture
-            minimum-idle: 1
-            maximum-pool-size: 4
-            connection-test-query: select 1 from dual
-            max-lifetime: 600000
-            connection-timeout: 300000
-            read-only: false
-            idle-timeout: 300000
-            register-mbeans: false
-    jpa:
-        database: mysql
-        properties:
-            eclipselink.target-database: mysql
-            javax.persistence.schema-generation.database.action: none
-            javax.persistence.schema-generation.create-database-schemas: true
-            eclipselink.jdbc.batch-writing: JDBC
-
     redis:
         cluster:
             nodes:
@@ -58,6 +36,9 @@ spring:
         user:
             password: 123
             name: arch
+    data:
+        mongodb:
+            uri: mongodb+srv://learning:WNniz6Mi49Zd8eXx@cluster0-h2zit.mongodb.net/test?retryWrites=true
 
 
 management:

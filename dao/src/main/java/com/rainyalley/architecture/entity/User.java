@@ -2,25 +2,24 @@ package com.rainyalley.architecture.entity;
 
 import com.rainyalley.architecture.Identical;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 /**
  * @author bin.zhang
  */
+@Document
 @Data
-@Entity
-@Table(name="USER")
-@NamedQuery(name="User.findAll", query="SELECT u FROM User u")
 public class User implements Identical {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(updatable=false)
     @NotBlank
     private Long id;
 
+    @Indexed(unique = true)
     @NotBlank
     private String name;
 

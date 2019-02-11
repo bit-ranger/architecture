@@ -2,21 +2,17 @@ package com.rainyalley.architecture.impl;
 
 
 import com.rainyalley.architecture.Page;
-import com.rainyalley.architecture.StreamProvider;
 import com.rainyalley.architecture.model.User;
 import com.rainyalley.architecture.po.UserAdd;
+import com.rainyalley.architecture.repository.UserRepository;
 import com.rainyalley.architecture.service.UserService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.jinq.jpa.JPAJinqStream;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import javax.annotation.Resource;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * @author bin.zhang
@@ -26,57 +22,38 @@ import java.util.stream.Stream;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Resource(name = "simpleStreamProvider")
-    private StreamProvider streamProvider;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Transactional(readOnly = true, rollbackFor = Throwable.class)
     @Override
     public Mono<User> get(Mono<Long> id) {
-        return id
-                .flatMap(i -> Mono.justOrEmpty(get(i)))
-                .onErrorResume(e -> {
-                    log.error("get failure", e);
-                    return Mono.empty();
-                });
+        return userRepository.findById(id).map(this::map);
     }
 
-    private Optional<User> get(Long id) {
-        JPAJinqStream<com.rainyalley.architecture.entity.User> stream =
-                streamProvider.stream(com.rainyalley.architecture.entity.User.class);
-        return stream.where(c -> c.getId().equals(id)).map(this::map).findFirst();
-    }
 
     @Override
     public Flux<User> list(Mono<Page> page) {
-        return page.map(this::list).flatMapMany(Flux::fromStream);
+        return page
+                .flatMapMany(p -> userRepository.findAll()
+                .map(this::map));
     }
 
-    private Stream<User> list(Page page) {
-        JPAJinqStream<com.rainyalley.architecture.entity.User> stream =
-                streamProvider.stream(com.rainyalley.architecture.entity.User.class);
-        return stream
-                .skip((page.getPageNum() - 1) * page.getPageSize())
-                .limit(page.getPageSize())
-                .map(this::map);
-    }
 
     @Override
     public Mono<User> add(Mono<UserAdd> userAdd) {
-        return userAdd.flatMap(a -> {
-            com.rainyalley.architecture.entity.User e = map(a);
-            streamProvider.persist(e);
-            return Mono.just(map(e));
-        });
+        return userAdd
+                .flatMap(a -> userRepository.save(map(a)))
+                .map(this::map);
     }
 
     @Override
     public Mono<User> remove(Mono<Long> id) {
         return id
-                .flatMap(i ->
-                        Mono.justOrEmpty(streamProvider.stream(com.rainyalley.architecture.entity.User.class)
-                        .where(c -> c.getId().equals(i))
-                        .findFirst()))
-                .doOnNext(u -> streamProvider.remove(u))
+                .flatMap(i -> userRepository.findById(id))
+                .doOnNext(e -> userRepository.deleteById(e.getId()).subscribe())
                 .map(this::map);
     }
 
@@ -91,6 +68,7 @@ public class UserServiceImpl implements UserService {
 
     private com.rainyalley.architecture.entity.User map(UserAdd userAdd) {
         com.rainyalley.architecture.entity.User e = new com.rainyalley.architecture.entity.User();
+        e.setId(System.currentTimeMillis());
         e.setName(userAdd.getName());
         e.setPassword(userAdd.getPassword());
         return e;

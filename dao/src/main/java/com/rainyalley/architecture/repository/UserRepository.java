@@ -1,10 +1,13 @@
 package com.rainyalley.architecture.repository;
 
 import com.rainyalley.architecture.entity.User;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends Repository<User, Long> {
-
-
+/**
+ * @author bin.zhang
+ */
+@Repository
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
 }

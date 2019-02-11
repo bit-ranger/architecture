@@ -18,13 +18,17 @@ GET http://localhost:8080/v1/user
 
 ###
 
-POST http://localhost:8080/v1/user
-Content-Type: application/json
-
-{"name": "QQQ", "password": "fgggg"}
+GET http://localhost:8080/v1/user/1549887331039
 
 ###
 
-DELETE http://localhost:8080/v1/user/6
+POST http://localhost:8080/v1/user
+Content-Type: application/json
+
+{"name": "dddd", "password": "rrrrr"}
+
+###
+
+DELETE http://localhost:8080/v1/user/1549887331039
 
 ###

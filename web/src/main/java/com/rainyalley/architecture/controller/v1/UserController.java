@@ -33,7 +33,7 @@ public class UserController{
 
     @ApiOperation(value="获取用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @GetMapping(value = "/{id:[0-9]{1,9}}")
+    @GetMapping(value = "/{id:[0-9]{1,13}}")
     public Mono<User> get(@PathVariable("id") Long id){
         return userService.get(Mono.just(id)).switchIfEmpty(Mono.error(new NotFoundException(ResourceEnum.USER)));
     }
@@ -53,7 +53,7 @@ public class UserController{
 
     @ApiOperation(value="删除用户")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @DeleteMapping(value = "/{id:[0-9]{1,9}}")
+    @DeleteMapping(value = "/{id:[0-9]{1,13}}")
     public Mono<User> delete(@PathVariable("id") Long id){
         return userService.remove(Mono.just(id)).switchIfEmpty(Mono.error(new NotFoundException(ResourceEnum.USER)));
     }
@@ -61,7 +61,7 @@ public class UserController{
 
     @ApiOperation(value="修改用户信息")
     @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long")
-    @PutMapping(value = "/{id:[0-9]{1,9}}")
+    @PutMapping(value = "/{id:[0-9]{1,13}}")
     public ResponseEntity<UserVo> put(@PathVariable("id") String id, @RequestBody UserPo userPo){
         return ResponseEntity.ok(new UserVo());
     }

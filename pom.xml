@@ -102,8 +102,6 @@
                     <compilerArgs>
                         <arg>--add-modules</arg>
                         <arg>jdk.unsupported</arg>
-                        <arg>--add-opens</arg>
-                        <arg>java.base=ALL-UNNAMED</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
