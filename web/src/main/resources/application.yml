@@ -13,12 +13,10 @@ spring:
         redis:
             key-prefix: architecture:cache
     redis:
-        cluster:
-            nodes:
-                - 127.0.0.1:6377
-                - 127.0.0.1:6378
-                - 127.0.0.1:6379
-            maxRedirects: 3
+        host: redis-17315.c60.us-west-1-2.ec2.cloud.redislabs.com
+        port: 17315
+        password: F4GtbZ8h5GtpZ6LqUCZndW2IzkjA3WWn
+
     session:
         store-type: redis
         redis:

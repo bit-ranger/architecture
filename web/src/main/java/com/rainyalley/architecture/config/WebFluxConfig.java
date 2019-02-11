@@ -1,17 +1,16 @@
 package com.rainyalley.architecture.config;
 
-import com.rainyalley.architecture.exception.BaseException;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.result.method.annotation.ResponseBodyResultHandler;
-import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Mono;
+import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.WebSessionIdResolver;
 
 @RestControllerAdvice
 @Configuration
@@ -26,6 +25,13 @@ public class WebFluxConfig {
         return httpSecurity.build();
     }
 
+    @Bean
+    WebSessionIdResolver cookieWebSessionIdResolver(){
+        CookieWebSessionIdResolver cookieWebSessionIdResolver = new CookieWebSessionIdResolver();
+        cookieWebSessionIdResolver.setCookieName("ARCHITECTURE_SESSION_ID");
+        return cookieWebSessionIdResolver;
+    }
+
 
     @Bean
     OptionalResultHandler optionalResultHandler(ErrorWebExceptionHandler webExceptionHandler,
@@ -34,11 +40,9 @@ public class WebFluxConfig {
     }
 
 
-    @ExceptionHandler(BaseException.class)
-    public <R> Mono<R> baseExceptionHandler(BaseException baseEx) {
-        return Mono.defer(() -> {
-            Exception ex = new ResponseStatusException(HttpStatus.valueOf(baseEx.getTaskStatus().value()), baseEx.getMessage());
-            return Mono.error(ex);
-        });
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Bean
+    TranslationExceptionHandler customExceptionHandler(){
+        return new TranslationExceptionHandler();
     }
 }

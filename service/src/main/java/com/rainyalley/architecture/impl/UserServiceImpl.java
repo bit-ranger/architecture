@@ -9,6 +9,8 @@ import com.rainyalley.architecture.service.UserService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -17,6 +19,7 @@ import reactor.core.publisher.Mono;
 /**
  * @author bin.zhang
  */
+@CacheConfig(cacheNames = "user")
 @Slf4j
 @Setter
 @Service
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
 
+    @Cacheable(key = "#id")
     @Transactional(readOnly = true, rollbackFor = Throwable.class)
     @Override
     public Mono<User> get(Mono<Long> id) {
