@@ -15,8 +15,7 @@ public class TranslationExceptionHandler implements WebExceptionHandler {
             return baseExceptionHandler((BaseException)ex);
         }
 
-        return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
-
+        return Mono.defer(() -> Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())));
     }
 
 

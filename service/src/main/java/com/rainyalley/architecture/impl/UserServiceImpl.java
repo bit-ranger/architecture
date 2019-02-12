@@ -2,15 +2,15 @@ package com.rainyalley.architecture.impl;
 
 
 import com.rainyalley.architecture.Page;
+import com.rainyalley.architecture.enums.ResourceEnum;
 import com.rainyalley.architecture.model.User;
 import com.rainyalley.architecture.po.UserAdd;
 import com.rainyalley.architecture.repository.UserRepository;
 import com.rainyalley.architecture.service.UserService;
+import com.rainyalley.architecture.util.ExceptionTranslator;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 /**
  * @author bin.zhang
  */
-@CacheConfig(cacheNames = "user")
 @Slf4j
 @Setter
 @Service
@@ -29,8 +28,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private ExceptionTranslator translator = new ExceptionTranslator(ResourceEnum.USER);
 
-    @Cacheable(key = "#id")
     @Transactional(readOnly = true, rollbackFor = Throwable.class)
     @Override
     public Mono<User> get(Mono<Long> id) {
@@ -50,7 +49,9 @@ public class UserServiceImpl implements UserService {
     public Mono<User> add(Mono<UserAdd> userAdd) {
         return userAdd
                 .flatMap(a -> userRepository.save(map(a)))
-                .map(this::map);
+                .map(this::map)
+                .doOnError(e -> log.error("add error", e))
+                .onErrorMap(e -> translator.translate(e));
     }
 
     @Override
@@ -58,7 +59,9 @@ public class UserServiceImpl implements UserService {
         return id
                 .flatMap(i -> userRepository.findById(id))
                 .doOnNext(e -> userRepository.deleteById(e.getId()).subscribe())
-                .map(this::map);
+                .map(this::map)
+                .doOnError(e -> log.error("remove error", e))
+                .onErrorMap(e -> translator.translate(e));
     }
 
     private User map(com.rainyalley.architecture.entity.User user) {
@@ -77,4 +80,5 @@ public class UserServiceImpl implements UserService {
         e.setPassword(userAdd.getPassword());
         return e;
     }
+
 }
