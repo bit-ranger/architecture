@@ -13,7 +13,11 @@ public interface UserService {
 
     Flux<User> list(Mono<Page> page);
 
+    Flux<User> tail(Mono<Page> page);
+
     Mono<User> add(Mono<UserAdd> userAdd);
+
+    Flux<User> add(Flux<UserAdd> userAdd);
 
     Mono<User> remove(Mono<Long> id);
 }

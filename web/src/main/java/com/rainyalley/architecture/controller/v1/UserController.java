@@ -33,14 +33,19 @@ public class UserController{
     }
 
     @ApiOperation(value="获取用户列表")
-    @GetMapping(produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Flux<User> list(Page page){
-        return userService.list(Mono.just(page)).delayElements(Duration.ofSeconds(1));
+        return userService.list(Mono.just(page));
     }
 
+    @ApiOperation(value="获取用户列表")
+    @GetMapping(params = "accept=stream", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Flux<User> tail(Page page){
+        return userService.tail(Mono.just(page)).delayElements(Duration.ofSeconds(1));
+    }
 
     @ApiOperation(value="提交用户信息")
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Mono<User> post(@RequestBody UserAdd userAdd){
         return userService.add(Mono.just(userAdd));
     }
@@ -52,4 +57,9 @@ public class UserController{
         return userService.remove(Mono.just(id)).switchIfEmpty(Mono.error(new NotFoundException(ResourceEnum.USER)));
     }
 
+    @ApiOperation(value="提交用户信息")
+    @PostMapping(consumes = MediaType.APPLICATION_STREAM_JSON_VALUE, produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Flux<User> postStream(@RequestBody Flux<UserAdd> userAdd){
+        return userService.add(userAdd);
+    }
 }

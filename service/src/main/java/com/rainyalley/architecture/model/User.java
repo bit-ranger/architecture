@@ -1,5 +1,7 @@
 package com.rainyalley.architecture.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.rainyalley.architecture.Identical;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +12,7 @@ import javax.validation.constraints.NotNull;
 /**
  * @author bin.zhang
  */
+@JsonDeserialize(builder = User.UserBuilder.class)
 @Builder
 @Data
 public class User implements Identical {
@@ -24,4 +27,7 @@ public class User implements Identical {
 
     @NotBlank
     private String password;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class UserBuilder {}
 }

@@ -1,66 +1,52 @@
 package com.rainyalley.architecture.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.WebApplication;
-import com.rainyalley.architecture.controller.v1.UserController;
-import org.junit.Before;
+import com.rainyalley.architecture.model.User;
+import com.rainyalley.architecture.po.UserAdd;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.time.Duration;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {WebApplication.class})
-@AutoConfigureMockMvc
+@Slf4j
 public class UserControllerTest {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private MockMvc mvc;
-
-    @Resource
-    private UserController userController;
-
-    @Before
-    public void setUp() throws Exception {
-        mvc = MockMvcBuilders.standaloneSetup(userController).build();
-    }
-
-
 
     @Test
-    public void get() throws Exception {
-        ResultActions ra = mvc.perform(MockMvcRequestBuilders.get("/user/X").accept(MediaType.APPLICATION_JSON));
-//        ra.andExpect(header().string("Content-Type", MediaType.APPLICATION_JSON.toString()));
-//        ra.andExpect(header().string("Transfer-Encoding", not("chunked")));
-//        MvcResult result = ra.andReturn();
-        ra.andExpect(status().isNotFound());
+    public void postStream() throws Exception{
+        Flux<UserAdd> userAddFlux =
+                Flux.interval(Duration.ofSeconds(1))
+                .map(l -> new UserAdd(String.valueOf(System.currentTimeMillis()), String.valueOf(System.currentTimeMillis())))
+                .take(5);
 
+        WebClient webClient = WebClient.create("http://localhost:8080");
+        webClient
+                .post().uri("/v1/user")
+                .contentType(MediaType.APPLICATION_STREAM_JSON) // 2
+                .body(userAddFlux, UserAdd.class) // 3
+                .retrieve()
+                .bodyToFlux(String.class)
+                .map(this::map)
+                .doOnNext(u -> log.debug(String.format("receive: %s", u)))
+                .blockLast();
     }
 
-    @Test
-    public void post() throws Exception {
-        Map<String,String> param = new HashMap<>();
-        param.put("age", "qwe");
-        ResultActions ra = mvc.perform(MockMvcRequestBuilders.post("/user")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(new ObjectMapper().writeValueAsString(param)));
-        ra.andExpect(status().isBadRequest());
+    private User map(String s){
+        ObjectMapper objectMapper  = new ObjectMapper();
+        try {
+            return objectMapper.readValue(s, User.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

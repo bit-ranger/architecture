@@ -41,7 +41,16 @@ public class UserServiceImpl implements UserService {
     public Flux<User> list(Mono<Page> page) {
         return page
                 .flatMapMany(p -> userRepository.findAll()
-                .map(this::map));
+                .map(this::map))
+                .onErrorMap(translator::translate);
+    }
+
+    @Override
+    public Flux<User> tail(Mono<Page> page) {
+        return page
+                .flatMapMany(p -> userRepository.findBy()
+                        .map(this::map))
+                .onErrorMap(translator::translate);
     }
 
 
@@ -51,7 +60,12 @@ public class UserServiceImpl implements UserService {
                 .flatMap(a -> userRepository.save(map(a)))
                 .map(this::map)
                 .doOnError(e -> log.error("add error", e))
-                .onErrorMap(e -> translator.translate(e));
+                .onErrorMap(translator::translate);
+    }
+
+    @Override
+    public Flux<User> add(Flux<UserAdd> userAdd) {
+        return userRepository.saveAll(userAdd.map(this::map)).map(this::map).onErrorMap(e -> translator.translate(e));
     }
 
     @Override
