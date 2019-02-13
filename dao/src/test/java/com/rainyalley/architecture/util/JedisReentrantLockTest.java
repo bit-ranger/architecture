@@ -1,78 +1,70 @@
 package com.rainyalley.architecture.util;
 
+import com.rainyalley.architecture.config.DaoConfig;
 import com.rainyalley.architecture.util.jedis.JedisReentrantLock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class JedisReentrantLockTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {DaoConfig.class})
+public class JedisReentrantLockTest implements InitializingBean {
 
-    private JedisCluster jedis = new JedisCluster(getHostAndPort());
+    @Autowired
+    private StringRedisTemplate redis;
+
 
     private String lockKey = "lock:test:01";
 
-    private JedisReentrantLock jrl = new JedisReentrantLock(lockKey, jedis);
+    private JedisReentrantLock jrl;
 
-    {
-        jrl.setLockMs(5000);
-    }
 
     private final static ThreadPoolExecutor es = new ThreadPoolExecutor(4, 4, 10L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(4));
 
 
-    private Set<HostAndPort> getHostAndPort(){
-        Set<HostAndPort> hosts = new HashSet<HostAndPort>();
-        String[] adds = "192.168.4.110:8340|192.168.4.112:8340|192.168.4.113:8340".split("\\|");
-        for (int i = 0; i < adds.length; i++) {
-            String[] params = adds[i].split("\\:");
-            HostAndPort host = new HostAndPort(params[0], Integer.valueOf(params[1]));
-            hosts.add(host);
-        }
-        return hosts;
-    }
-
-
     @After
     public void after(){
-        jedis.del(lockKey);
+        redis.delete(lockKey);
     }
 
     @Test
     public void hasLock() throws Exception {
-        jedis.del(lockKey);
+        redis.delete(lockKey);
         Assert.assertFalse(jrl.hasLock());
     }
 
     @Test
     public void tryLock() throws Exception {
-        jedis.del(lockKey);
+        redis.delete(lockKey);
         Assert.assertFalse(jrl.hasLock());
         Assert.assertTrue(jrl.tryLock());
         Assert.assertTrue(jrl.hasLock());
         Thread.sleep(5000);
         Assert.assertFalse(jrl.hasLock());
-        Assert.assertTrue(jrl.tryLock(10000));
-        Assert.assertTrue(jrl.tryLock(10000));
-        Assert.assertTrue(jrl.unLock());
+        Assert.assertTrue(jrl.tryLock(10000, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(jrl.tryLock(10000, TimeUnit.MILLISECONDS));
+        jrl.unlock();
         Assert.assertTrue(jrl.hasLock());
-        Assert.assertTrue(jrl.unLock());
+        jrl.unlock();
         Assert.assertFalse(jrl.hasLock());
 
     }
 
     @Test
     public void lock() throws Exception {
-        jedis.del(lockKey);
+        redis.delete(lockKey);
         AtomicInteger lockNum = new AtomicInteger(0);
         int threadNum = 4;
         CountDownLatch latch = new CountDownLatch(threadNum);
@@ -96,17 +88,23 @@ public class JedisReentrantLockTest {
 
     @Test
     public void unLock() throws Exception {
-        jedis.del(lockKey);
+        redis.delete(lockKey);
         Assert.assertFalse(jrl.hasLock());
         Assert.assertTrue(jrl.tryLock());
         Assert.assertTrue(jrl.hasLock());
         Assert.assertTrue(jrl.tryLock());
-        Assert.assertTrue(jrl.unLock());
+        jrl.unlock();
         Assert.assertTrue(jrl.hasLock());
-        Assert.assertTrue(jrl.unLock());
+        jrl.unlock();
         Assert.assertFalse(jrl.hasLock());
 
 
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+        jrl = new JedisReentrantLock(lockKey, redis);
+        jrl.setLockMs(5000);
+    }
 }

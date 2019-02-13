@@ -1,131 +1,69 @@
+server:
+    port: 8080
+    error:
+        include-stacktrace: on_trace_param
+
 spring:
-    datasource:
-        type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost:3306/architecture
-        username: root
-        password:
-        driver-class-name: com.mysql.jdbc.Driver
-        druid:
-            name: primary
-            default-transaction-isolation: 2
-            maxActive: 20
-            initialSize: 10
-            minIdle: 10
-            maxWait: 5
-            timeBetweenEvictionRunsMillis: 60000
-            minEvictableIdleTimeMillis: 300000
-            validationQuery: SELECT 'x'
-            testWhileIdle: true
-            testOnBorrow: false
-            testOnReturn: false
-            poolPreparedStatements: false
-            maxPoolPreparedStatementPerConnectionSize: 20
-            filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
-    redis:
-        cluster:
-            nodes:
-                - 127.0.0.1:6377
-                - 127.0.0.1:6378
-                - 127.0.0.1:6379
-            maxRedirects: 3
+    main:
+        web-application-type: reactive
+    application:
+        name: architecture
     cache:
         type: redis
+        redis:
+            key-prefix: architecture:cache
+    redis:
+        host: redis-17315.c60.us-west-1-2.ec2.cloud.redislabs.com
+        port: 17315
+        password: F4GtbZ8h5GtpZ6LqUCZndW2IzkjA3WWn
 
-
-mybatis:
-    type-aliases-package: com.rainyalley.architecture.entity
-    mapper-locations: classpath*:mapper/*Mapper.xml
-    check-config-location: false
-    executor-type: SIMPLE
-
-swagger:
-    title: spring-boot-starter-swagger
-    description: Starter for swagger 2.x
-    version: 1.3.0.RELEASE
-    license: Apache License, Version 2.0
-    licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
-    termsOfServiceUrl: https://github.com/WakelessDragon/architecture
-    contact.name: WakelessDragon
-    contact.url: https://github.com/WakelessDragon
-    contact.email: sincerebravefight@gmail.com
-    base-package: com.rainyalley.architecture.controller
-    base-path: /**
-    exclude-path: /error, /admin/**
-
-extend:
-    datasource:
-        type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost:3306/architecture
-        username: root
-        password:
-        driver-class-name: com.mysql.jdbc.Driver
-        druid:
-            name: secondary
-            default-transaction-isolation: 1
-            maxActive: 20
-            initialSize: 10
-            minIdle: 10
-            maxWait: 5
-            timeBetweenEvictionRunsMillis: 60000
-            minEvictableIdleTimeMillis: 300000
-            validationQuery: SELECT 'x'
-            testWhileIdle: true
-            testOnBorrow: false
-            testOnReturn: false
-            poolPreparedStatements: false
-            maxPoolPreparedStatementPerConnectionSize: 20
-            filters: stat
-            connectionProperties: druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=100
+    session:
+        store-type: redis
+        redis:
+            namespace: "{architecture:session}"
+            flush-mode: on_save
+    mvc:
+        log-resolved-exception: false
+        locale: zh_CN
+    freemarker:
+        prefer-file-system-access: false
+    jackson:
+        serialization:
+            write-dates-as-timestamps: true
+    security:
+        user:
+            password: 123
+            name: arch
+    data:
+        mongodb:
+            uri: mongodb+srv://learning:WNniz6Mi49Zd8eXx@cluster0-h2zit.mongodb.net/test?retryWrites=true
 
 
 management:
-    endpoints:
-        enabled-by-default: true
     server:
         port: 8090
-    endpoint:
-        health:
-            show-details: when_authorized
-            enabled: true
-        sessions:
+        ssl:
             enabled: false
+    endpoints:
+        enabled-by-default: true
+        web:
+            exposure:
+                include: "*"
+    endpoint:
         shutdown:
             enabled: true
-        beans:
+        health:
             enabled: true
-        autoconfig:
-            enabled: true
-            sensitive: false
-        configprops:
-            enabled: true
-            sensitive: false
-        env:
-            enabled: true
-            sensitive: false
-        mappings:
-            enabled: true
-            sensitive: false
+            show-details: always
         info:
             enabled: true
-            sensitive: false
+        heapdump:
+            enabled: true
         metrics:
             enabled: true
-            sensitive: false
-        dump:
+        mappings:
             enabled: true
-            sensitive: false
-        trace:
+        loggers:
             enabled: true
-            sensitive: false
 
-
-graphql:
-    servlet:
-        async-mode-enabled: true
-
-logging:
-    level:
-        com.rainyalley.architecture: DEBUG
 debug: true
-

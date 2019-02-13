@@ -1,13 +1,12 @@
 package com.rainyalley.architecture.arithmetic.sort;
 
+import com.rainyalley.architecture.util.Assert;
 import com.rainyalley.architecture.util.Chunk;
 import com.rainyalley.architecture.util.QueuedLineReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
-import org.springframework.util.Assert;
 
 import java.io.*;
 import java.util.*;
@@ -101,7 +100,6 @@ public class FileSorter {
         //并发归并线程池，队列容量为归并路数
         this.threadPoolExecutor = new ThreadPoolExecutor(8, 8, 10L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(8),
-                new CustomizableThreadFactory("fileSorterTPE-"),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 

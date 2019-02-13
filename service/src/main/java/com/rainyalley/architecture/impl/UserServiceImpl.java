@@ -1,64 +1,98 @@
 package com.rainyalley.architecture.impl;
 
 
-import com.rainyalley.architecture.service.UserService;
-import com.rainyalley.architecture.BaseMapper;
-import com.rainyalley.architecture.entity.UserDo;
-import com.rainyalley.architecture.mapper.UserMapper;
-import com.rainyalley.architecture.aop.Secondary;
+import com.rainyalley.architecture.Page;
+import com.rainyalley.architecture.enums.ResourceEnum;
 import com.rainyalley.architecture.model.User;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import com.rainyalley.architecture.po.UserAdd;
+import com.rainyalley.architecture.repository.UserRepository;
+import com.rainyalley.architecture.service.UserService;
+import com.rainyalley.architecture.util.ExceptionTranslator;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
-
-
-@CacheConfig(cacheNames = "user")
+/**
+ * @author bin.zhang
+ */
+@Slf4j
+@Setter
 @Service
-public class UserServiceImpl extends ServiceBasicSupport<User,UserDo> implements UserService {
-
-    @Resource
-    private UserMapper userMapper;
+public class UserServiceImpl implements UserService {
 
 
-    @CachePut(key = "#result.id",condition = "#result != null")
+    @Autowired
+    private UserRepository userRepository;
+
+    private ExceptionTranslator translator = new ExceptionTranslator(ResourceEnum.USER);
+
+    @Transactional(readOnly = true, rollbackFor = Throwable.class)
     @Override
-    @Transactional
-    public User save(User obj) {
-        return super.save(obj);
+    public Mono<User> get(Mono<Long> id) {
+        return userRepository.findById(id).map(this::map);
+    }
+
+
+    @Override
+    public Flux<User> list(Mono<Page> page) {
+        return page
+                .flatMapMany(p -> userRepository.findAll()
+                .map(this::map))
+                .onErrorMap(translator::translate);
     }
 
     @Override
-    protected BaseMapper<UserDo> getDao() {
-        return userMapper;
+    public Flux<User> tail(Mono<Page> page) {
+        return page
+                .flatMapMany(p -> userRepository.findBy()
+                        .map(this::map))
+                .onErrorMap(translator::translate);
+    }
+
+
+    @Override
+    public Mono<User> add(Mono<UserAdd> userAdd) {
+        return userAdd
+                .flatMap(a -> userRepository.save(map(a)))
+                .map(this::map)
+                .doOnError(e -> log.error("add error", e))
+                .onErrorMap(translator::translate);
     }
 
     @Override
-    protected UserDo toDo(User b) {
-        UserDo d  = new UserDo();
-        d.setId(b.getId());
-        d.setName(b.getName());
-        d.setPassword(b.getPassword());
-        return d;
+    public Flux<User> add(Flux<UserAdd> userAdd) {
+        return userRepository.saveAll(userAdd.map(this::map)).map(this::map).onErrorMap(e -> translator.translate(e));
     }
 
     @Override
-    protected User toBo(UserDo d) {
-        User user  = new User();
-        user.setId(d.getId());
-        user.setName(d.getName());
-        user.setPassword(d.getPassword());
-        return user;
+    public Mono<User> remove(Mono<Long> id) {
+        return id
+                .flatMap(i -> userRepository.findById(id))
+                .doOnNext(e -> userRepository.deleteById(e.getId()).subscribe())
+                .map(this::map)
+                .doOnError(e -> log.error("remove error", e))
+                .onErrorMap(e -> translator.translate(e));
     }
 
-    @Secondary
-    @Transactional(readOnly = true)
-    @Cacheable(key = "#id")
-    @Override
-    public User get(String id) {
-        return super.get(id);
+    private User map(com.rainyalley.architecture.entity.User user) {
+        return User.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .password(user.getPassword())
+                .build();
     }
+
+
+    private com.rainyalley.architecture.entity.User map(UserAdd userAdd) {
+        com.rainyalley.architecture.entity.User e = new com.rainyalley.architecture.entity.User();
+        e.setId(System.currentTimeMillis());
+        e.setName(userAdd.getName());
+        e.setPassword(userAdd.getPassword());
+        return e;
+    }
+
 }

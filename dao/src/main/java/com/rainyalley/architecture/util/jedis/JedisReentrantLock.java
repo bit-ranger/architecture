@@ -1,14 +1,21 @@
 package com.rainyalley.architecture.util.jedis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rainyalley.architecture.util.Lock;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.JedisCommands;
+import org.springframework.data.redis.connection.RedisStringCommands;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.types.Expiration;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
+import javax.validation.constraints.NotNull;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 
 /**
@@ -36,7 +43,8 @@ public class JedisReentrantLock implements Lock {
     /**
      * redis客户端，需要自行保证线程安全
      */
-    private JedisCommands jedis;
+    private RedisOperations<String,String> jedis;
+
 
     /**
      * 随机数生成器
@@ -48,7 +56,7 @@ public class JedisReentrantLock implements Lock {
      */
     private ObjectMapper om = new ObjectMapper();
 
-    public JedisReentrantLock(String lockKey, JedisCommands jedis) {
+    public JedisReentrantLock(String lockKey, RedisOperations<String,String> jedis) {
         this.lockKey = lockKey;
         this.jedis = jedis;
     }
@@ -62,22 +70,13 @@ public class JedisReentrantLock implements Lock {
         if (currentAsker().equals(lv.lockOwner)) {
             return true;
         }
-
         return false;
     }
 
-    private boolean resolve(String result){
-        if("OK".equals(result)){
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    @Override
     public boolean hasLock() {
         try {
-            String lockValTxt = jedis.get(lockKey);
+            String lockValTxt = jedis.opsForValue().get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
                 return false;
             }
@@ -94,15 +93,15 @@ public class JedisReentrantLock implements Lock {
     public boolean tryLock() {
 
         try {
-            String lockValTxt = jedis.get(lockKey);
+            String lockValTxt = jedis.opsForValue().get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
                 LockData lv = new LockData(System.currentTimeMillis(), lockMs, currentAsker(), 1);
                 String lvTxt = om.writeValueAsString(lv);
-                String result = jedis.set(lockKey, lvTxt, "nx", "px", lockMs);
+                Boolean result = setIfAbsent(lockKey, lvTxt, lockMs);
                 if(logger.isDebugEnabled()){
                     logger.debug("tryLock acquire   >>> {} -> {} -> {}", lockKey, result, lvTxt);
                 }
-                return resolve(result);
+                return result;
             }
 
             LockData lockVal = om.readValue(lockValTxt, LockData.class);
@@ -111,11 +110,11 @@ public class JedisReentrantLock implements Lock {
                 lockVal.setAcquireMs(System.currentTimeMillis());
                 lockVal.setCount(lockVal.getCount() + 1);
                 String lvTxt = om.writeValueAsString(lockVal);
-                String result = jedis.set(lockKey, lvTxt, "xx", "px", lockMs);
+                Boolean result = setIfPersist(lockKey, lvTxt, lockMs);
                 if(logger.isDebugEnabled()){
                     logger.debug("tryLock reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
                 }
-                return resolve(result);
+                return result;
             } else {
                 //当前线程不拥有锁
                 //且锁已被其他线程占有
@@ -132,7 +131,18 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean tryLock(long waitMS) {
+    public boolean tryLock(long time, @NotNull TimeUnit unit) throws InterruptedException {
+        return tryLock(unit.toMillis(time));
+    }
+
+
+    @NotNull
+    @Override
+    public Condition newCondition() {
+        throw new UnsupportedOperationException();
+    }
+
+    private boolean tryLock(long waitMS) {
         long lockBeginMs = System.currentTimeMillis();
         for (;;) {
             boolean trySuccess = tryLock();
@@ -154,11 +164,11 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean lock() {
+    public void lock() {
         for (;;) {
             boolean trySuccess = tryLock();
             if(trySuccess){
-                return true;
+                return;
             }
             //100毫秒~150毫秒之间随机睡眠，错开并发
             try {
@@ -170,14 +180,19 @@ public class JedisReentrantLock implements Lock {
     }
 
     @Override
-    public boolean unLock() {
+    public void lockInterruptibly() throws InterruptedException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void unlock() {
         try {
-            String lockValTxt = jedis.get(lockKey);
+            String lockValTxt = jedis.opsForValue().get(lockKey);
             if(StringUtils.isBlank(lockValTxt)){
                 if(logger.isDebugEnabled()){
                     logger.debug("unLock  miss      >>> {} -> {}", lockKey, currentAsker());
                 }
-                return false;
+                return;
             }
 
             LockData lockVal = om.readValue(lockValTxt, LockData.class);
@@ -187,25 +202,48 @@ public class JedisReentrantLock implements Lock {
                     lockVal.setAcquireMs(System.currentTimeMillis());
                     lockVal.setCount(lockVal.getCount() - 1);
                     String lvTxt = om.writeValueAsString(lockVal);
-                    String result = jedis.set(lockKey, lvTxt, "xx", "ex", lockVal.expireMs);
+                    Boolean result = setIfPersist(lockKey, lvTxt, lockVal.expireMs);
                     if(logger.isDebugEnabled()){
                         logger.debug("unLock  reentrant >>> {} -> {} -> {} -> {}", lockKey, result, lockValTxt, lvTxt);
                     }
-                    return resolve(result);
                 } else {
-                    Long num = jedis.del(lockKey);
+                    Boolean del = jedis.delete(lockKey);
                     if(logger.isDebugEnabled()){
-                        logger.debug("unLock  delete    >>> {} -> {}", lockKey, num, lockValTxt);
+                        logger.debug("unLock  delete    >>> {} -> {}", lockKey, del, lockValTxt);
                     }
-                    return Long.valueOf(1).equals(num);
                 }
             } else {
+                //当前线程不拥有锁
                 throw new IllegalMonitorStateException();
             }
         } catch (Exception e) {
             logger.error("unLock",e);
-            return false;
+            throw new IllegalStateException("failed to unlock");
         }
+    }
+
+
+    private Boolean setIfPersist(String key, String value, long expireMs){
+        return set(key, value, expireMs, RedisStringCommands.SetOption.SET_IF_PRESENT);
+    }
+
+    private Boolean setIfAbsent(String key, String value, long expireMs){
+        return set(key, value, expireMs, RedisStringCommands.SetOption.SET_IF_ABSENT);
+    }
+
+    private Boolean set(String key, String value, long expireMs, RedisStringCommands.SetOption option){
+        return jedis.execute(
+                (RedisCallback<Boolean>) connection -> {
+                    RedisSerializer<String> keySeria = (RedisSerializer<String>)jedis.getKeySerializer();
+                    RedisSerializer<String> valueSeria = (RedisSerializer<String>)jedis.getValueSerializer();
+                    return connection.set(
+                            keySeria.serialize(key),
+                            valueSeria.serialize(value),
+                            Expiration.milliseconds(expireMs),
+                            option
+                    );
+                }
+        );
     }
 
 

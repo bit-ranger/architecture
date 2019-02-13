@@ -1,10 +1,10 @@
 package com.rainyalley.architecture.arithmetic.sort;
 
+import com.rainyalley.architecture.util.Assert;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
