@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(
 	scanBasePackages = {
-		"com.rainyalley.architecture.graphql",
 		"com.rainyalley.architecture.config",
 		"com.rainyalley.architecture.controller",
 		"com.rainyalley.architecture.impl"})
