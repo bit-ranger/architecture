@@ -37,7 +37,7 @@ public class FileSorter {
     /**
      * io缓冲大小
      */
-    private int ioBufferSize = 1024 * 1024 * 2;
+    private int ioBufferSize;
 
     /**
      * 临时目录
@@ -52,12 +52,12 @@ public class FileSorter {
     /**
      * 归并路数，必须大于或等于2
      */
-    private int mergeWayNum = 8;
+    private int mergeWayNum;
 
     /**
-     * 每个块的行数
+     * 内存中排序的行数
      */
-    private int initialChunkSize = 1;
+    private int rowNumInMem;
 
     /**
      * 排序完成后是否删除临时文件
@@ -75,14 +75,14 @@ public class FileSorter {
      *
      * @param comparator 行比较器
      * @param mergeWayNum 归并路数
-     * @param initialChunkSize 初始块中的行数
+     * @param inMemRowNum 内存中排序的行数
      * @param ioBufferSize io缓冲区容量
      * @param tmpDir 临时目录
      * @param clean 排序完成后，是否清除临时文件
      */
-    public FileSorter(Comparator<String> comparator, int mergeWayNum, int initialChunkSize, int ioBufferSize, File tmpDir, boolean clean) {
+    public FileSorter(Comparator<String> comparator, int mergeWayNum, int inMemRowNum, int ioBufferSize, File tmpDir, boolean clean) {
         Assert.isTrue(mergeWayNum >=2, "mergeWayNum must greater than 2");
-        Assert.isTrue(initialChunkSize >=1, "initialChunkSize must greater than 1");
+        Assert.isTrue(inMemRowNum >=1, "rowNumInMem must greater than 1");
         Assert.isTrue(ioBufferSize >=1024, "ioBufferSize must greater than 1024");
         Assert.notNull(tmpDir, "tmpDir can not be null");
 
@@ -92,7 +92,7 @@ public class FileSorter {
         }
 
         this.mergeWayNum = mergeWayNum;
-        this.initialChunkSize = initialChunkSize;
+        this.rowNumInMem = inMemRowNum;
         this.ioBufferSize = ioBufferSize;
         this.tmpDir = tmpDir;
         this.clean = clean;
@@ -113,6 +113,7 @@ public class FileSorter {
     public void sort(File original, File dest) throws IOException {
         beforeSort(original, dest);
 
+        //切割
         List<Chunk> splitChunkList = split(original);
 
         //块队列，将从此队列中不断取出块，合并后放入此队列
@@ -209,7 +210,6 @@ public class FileSorter {
             }
         }
 
-
         if(LOGGER.isDebugEnabled()){
             LOGGER.debug("merge size {}, {}", chunks.size(), chunks);
         }
@@ -279,12 +279,12 @@ public class FileSorter {
      */
     private List<Chunk> split(File file) throws IOException{
 
-        List<Chunk> chunkList = Collections.emptyList();
+        List<Chunk> chunkList;
 
         try(BufferedReader br = new BufferedReader(new FileReader(file), ioBufferSize)){
             int rowNum = INITIAL_ROW_NUM;
-            String line = null;
-            List<String> chunkRows = new ArrayList<>(initialChunkSize);
+            String line;
+            List<String> chunkRows = new ArrayList<>(rowNumInMem);
 
             List<Future<Chunk>> splitFutureList = new ArrayList<>();
             while (true){
@@ -294,7 +294,7 @@ public class FileSorter {
                     chunkRows.add(line);
                 }
 
-                if(line == null || chunkRows.size() >= initialChunkSize){
+                if(line == null || chunkRows.size() >= rowNumInMem){
                     if(chunkRows.size() > 0){
                         final int rn = rowNum;
                         final List<String> cr = chunkRows;
@@ -304,7 +304,7 @@ public class FileSorter {
 
                         Future<Chunk> chunk = threadPoolExecutor.submit(() -> {
                             cr.sort(comparator);
-                            return initialChunk(rn, cr, file);
+                            return mkChunk(rn, cr, file);
                         });
 
                         splitFutureList.add(chunk);
@@ -315,6 +315,7 @@ public class FileSorter {
                     break;
                 }
             }
+
             chunkList = splitFutureList.stream().map(this::get).collect(Collectors.toList());
         }
         return chunkList;
@@ -328,7 +329,7 @@ public class FileSorter {
      * @return
      * @throws IOException
      */
-    private Chunk initialChunk(int rowNum, List<String> chunkRows, File originalFile) throws IOException{
+    private Chunk mkChunk(int rowNum, List<String> chunkRows, File originalFile) throws IOException{
         Chunk chunk = new Chunk(INITIAL_CHUNK_LEVEL, rowNum, chunkRows.size());
         File chunkFile = chunkFile(chunk, originalFile);
         if(chunkFile.exists()){
