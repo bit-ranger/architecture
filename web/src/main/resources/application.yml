@@ -1,5 +1,5 @@
 server:
-    port: 8080
+    port: 9080
     error:
         include-stacktrace: on_trace_param
 
@@ -41,7 +41,7 @@ spring:
 
 management:
     server:
-        port: 8090
+        port: 9090
         ssl:
             enabled: false
     endpoints:

@@ -1,0 +1,1 @@
+${status}${resourceCode}:${error}:${message}

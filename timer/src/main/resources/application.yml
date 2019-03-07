@@ -1,0 +1,76 @@
+server:
+    port: 9081
+    error:
+        include-stacktrace: on_trace_param
+
+spring:
+    main:
+        web-application-type: servlet
+    application:
+        name: architecture
+    mvc:
+        log-resolved-exception: false
+        locale: zh_CN
+    freemarker:
+        prefer-file-system-access: false
+    jackson:
+        serialization:
+            write-dates-as-timestamps: true
+    datasource:
+        url: jdbc:mysql://localhost:3306/architecture?serverTimezone=Asia/Shanghai&characterEncoding=utf8
+        username: root
+        password:
+        hikari:
+            pool-name: architecture
+            minimum-idle: 1
+            maximum-pool-size: 4
+            connection-test-query: select 1 from dual
+            max-lifetime: 600000
+            connection-timeout: 300000
+            read-only: false
+            idle-timeout: 300000
+            register-mbeans: false
+    jpa:
+        database: mysql
+        properties:
+            eclipselink.target-database: mysql
+            javax.persistence.schema-generation.database.action: none
+            javax.persistence.schema-generation.create-database-schemas: true
+            eclipselink.jdbc.batch-writing: JDBC
+        open-in-view: false
+
+    quartz:
+        auto-startup: true
+        job-store-type: jdbc
+        overwrite-existing-jobs: true
+        wait-for-jobs-to-complete-on-shutdown: false
+        jdbc:
+            initialize-schema: never
+        properties:
+            org.quartz.scheduler.instanceName: quartzScheduler
+            org.quartz.scheduler.instanceId: AUTO
+            org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            org.quartz.jobStore.tablePrefix: QRTZ_
+            org.quartz.jobStore.isClustered: true
+            org.quartz.jobStore.useProperties: false
+            org.quartz.jobStore.clusterCheckinInterval: 20000
+            org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
+            org.quartz.threadPool.threadCount: 10
+            org.quartz.threadPool.threadPriority: 5
+            org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread: true
+
+swagger:
+    title: timer
+    description: api doc
+    license: Apache License, Version 2.0
+    licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+    termsOfServiceUrl: http://172.31.13.131:8088/devops/owlserver
+    contact.name: WakelessDragon
+    contact.email: sincerebravefight@gmail.com
+    base-path: /**
+    exclude-path: /error
+    apply-default-response-messages : false
+    enabled: true
+
+debug: true

@@ -33,6 +33,7 @@
         <module>external</module>
         <module>service</module>
         <module>web</module>
+        <module>timer</module>
     </modules>
 
     <repositories>
