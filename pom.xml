@@ -36,6 +36,7 @@
         <module>timer</module>
         <module>eureka</module>
         <module>client</module>
+        <module>config</module>
     </modules>
 
     <repositories>
