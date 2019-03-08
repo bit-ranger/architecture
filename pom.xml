@@ -23,7 +23,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-cloud.version>Finchley.SR1</spring-cloud.version>
+        <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
         <architecture-version>0.0.1-SNAPSHOT</architecture-version>
     </properties>
 
@@ -34,6 +34,8 @@
         <module>service</module>
         <module>web</module>
         <module>timer</module>
+        <module>eureka</module>
+        <module>client</module>
     </modules>
 
     <repositories>

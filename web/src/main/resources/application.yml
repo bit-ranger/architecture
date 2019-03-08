@@ -7,7 +7,7 @@ spring:
     main:
         web-application-type: reactive
     application:
-        name: architecture
+        name: web
     cache:
         type: redis
         redis:
@@ -65,5 +65,11 @@ management:
             enabled: true
         loggers:
             enabled: true
+
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:9089/eureka/
 
 debug: true

@@ -7,7 +7,7 @@ spring:
     main:
         web-application-type: servlet
     application:
-        name: architecture
+        name: timer
     mvc:
         log-resolved-exception: false
         locale: zh_CN
@@ -30,6 +30,7 @@ spring:
             read-only: false
             idle-timeout: 300000
             register-mbeans: false
+        type: com.zaxxer.hikari.HikariDataSource
     jpa:
         database: mysql
         properties:
@@ -72,5 +73,11 @@ swagger:
     exclude-path: /error
     apply-default-response-messages : false
     enabled: true
+
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:9089/eureka/
 
 debug: true
