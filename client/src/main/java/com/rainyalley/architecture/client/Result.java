@@ -12,6 +12,9 @@ public class Result {
 
     private String text;
 
+    public Result() {
+    }
+
     public Result(org.springframework.http.HttpStatus status) {
         this.statusCode = status.value();
         this.text = status.getReasonPhrase();

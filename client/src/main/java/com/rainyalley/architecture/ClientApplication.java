@@ -18,7 +18,7 @@ public class ClientApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ClientApplication.class, args);
-        Result result = context.getBean(Timer.class).schedule(new Schedule());
+        Result result = context.getBean(Timer.class).schedule(new Schedule("test", "demo", "* 0/10 * * * ?"));
         log.info(result.toString());
     }
 }

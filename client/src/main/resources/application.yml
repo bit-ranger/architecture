@@ -1,0 +1,10 @@
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:9089/eureka/
+
+spring:
+    application:
+        name: client
+    main:
+        web-application-type: none

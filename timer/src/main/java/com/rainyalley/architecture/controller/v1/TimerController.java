@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.text.ParseException;
 
 @Api(value = "v1/timer", description = "定时器配置")
@@ -34,7 +35,7 @@ public class TimerController {
 
     @ApiOperation(value="schedule")
     @PostMapping("schedule")
-    public Result schedule(@RequestBody Schedule schedule){
+    public Result schedule(@RequestBody @Valid Schedule schedule){
         JobDetail jobDetail = JobBuilder
                 .newJob(JobEchoImpl.class)
                 .storeDurably()
