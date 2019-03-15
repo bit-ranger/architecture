@@ -1,0 +1,32 @@
+#时间戳
+scalar TimeStampScalar
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+#参数, 分页
+input PageQuery{
+    #页号,从1开始
+    pageNum: Int!
+    #每页数量
+    pageSize: Int!
+}
+
+#结果
+type Result{
+    statusCode: Int!
+    text: String!
+}
+
+#入口
+type Query {
+    pipelineConfig: PipelineConfigQueryGraph!
+    pipelineExecution: PipelineExecutionQueryGraph!
+    template: TemplateQueryGraph!
+}
+
+type Mutation{
+    pipelineConfig: PipelineConfigMutationGraph!
+}

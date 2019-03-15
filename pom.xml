@@ -37,6 +37,7 @@
         <module>eureka</module>
         <module>client</module>
         <module>config</module>
+        <module>platform</module>
     </modules>
 
     <repositories>
