@@ -3,7 +3,10 @@ package com.rainyalley.architecture.arithmetic.sort;
 import java.io.*;
 import java.util.*;
 
-public class Chunk{
+/**
+ * @author bin.zhang
+ */
+public class Chunk implements Closeable{
 
     private File chunkFile;
 
@@ -35,6 +38,7 @@ public class Chunk{
         this.idx = chunks.get(0).getIdx();
         this.size = chunks.stream().map(Chunk::getSize).reduce((p, n) -> p + n).get();
         this.comparator = comparator;
+        this.parts = chunks;
     }
 
     public Chunk store(File workDir, int bufferSize){
@@ -46,6 +50,7 @@ public class Chunk{
                         bw.write(chunkRow);
                         bw.newLine();
                     }
+                    rows = Collections.emptyList();
                 }
 
                 if(!parts.isEmpty()){
@@ -60,7 +65,7 @@ public class Chunk{
                         bw.write(line);
                         bw.newLine();
                     }
-
+                    parts = Collections.emptyList();
                 }
 
             }
@@ -137,5 +142,10 @@ public class Chunk{
 
     public File getChunkFile() {
         return chunkFile;
+    }
+
+    @Override
+    public void close() throws IOException {
+        chunkFileReader.close();
     }
 }

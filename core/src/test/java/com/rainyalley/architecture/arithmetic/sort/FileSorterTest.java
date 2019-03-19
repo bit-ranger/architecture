@@ -1,6 +1,7 @@
 package com.rainyalley.architecture.arithmetic.sort;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,12 @@ public class FileSorterTest {
         LOGGER.info("java.io.tmpdir: {}", System.getProperties().getProperty("java.io.tmpdir"));
 
         Random random = new Random();
-        int numbers = 20000000;
+        int numbers = 2000000;
         File file = new File("/var/sort/architecture_user.csv");
         File dest = new File("/var/sort/architecture_user.sorted.csv");
         if(dest.exists()){
             dest.delete();
         }
-        file.getParentFile().mkdirs();
 
         List<String> memoryList = new ArrayList<>(numbers);
 
@@ -36,7 +36,7 @@ public class FileSorterTest {
             for (int i = 0; i < numbers; i++) {
                 long id = random.nextLong();
                 String line = String.valueOf(id) + ",0.02,I";
-//                memoryList.add(line);
+                memoryList.add(line);
                 bw.write(line);
                 bw.newLine();
             }
@@ -49,16 +49,16 @@ public class FileSorterTest {
         long end = System.currentTimeMillis();
         LOGGER.info("elapsed time {}", end - start);
 
-//        List<String> diskList   = new ArrayList<>(numbers);
-//        try(BufferedReader br = new BufferedReader(new FileReader(dest))){
-//            String dLine = null;
-//            while ((dLine = br.readLine()) != null){
-//                diskList.add(dLine);
-//            }
-//        }
-//
-//        memoryList.sort(String::compareTo);
-//        Assert.assertEquals(memoryList, diskList);
+        List<String> diskList   = new ArrayList<>(memoryList.size());
+        try(BufferedReader br = new BufferedReader(new FileReader(dest))){
+            String dLine = null;
+            while ((dLine = br.readLine()) != null){
+                diskList.add(dLine);
+            }
+        }
+
+        memoryList.sort(String::compareTo);
+        Assert.assertEquals(memoryList, diskList);
     }
 
     @After

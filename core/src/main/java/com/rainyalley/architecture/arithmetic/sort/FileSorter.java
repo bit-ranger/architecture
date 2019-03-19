@@ -1,6 +1,7 @@
 package com.rainyalley.architecture.arithmetic.sort;
 
 import com.rainyalley.architecture.util.Assert;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,8 +96,10 @@ public class FileSorter {
     public void sort(File src, File dst) throws IOException {
         beforeSort(src, dst);
 
+        File workDir = workDir(dst);
+
         //切割
-        List<Chunk> splitChunkList = split(src, workDir(dst));
+        List<Chunk> splitChunkList = split(src, workDir);
 
         //块队列，将从此队列中不断取出块，合并后放入此队列
         Queue<Chunk> chunkQueue = new LinkedList<>(splitChunkList);
@@ -122,16 +125,13 @@ public class FileSorter {
                 }
             }
 
-            Future<Chunk> chunk = threadPoolExecutor.submit(() -> merge(pollChunks));
+            Future<Chunk> chunk = threadPoolExecutor.submit(() -> merge(pollChunks, workDir));
             mergeFutureList.add(chunk);
         }
 
         Chunk finalChunk = chunkQueue.poll();
-        boolean renamed = finalChunk.getChunkFile().renameTo(dst);
-        if (!renamed) {
-            throw new IllegalStateException(String.format("rename failure: %s >>> %s", finalChunk.getChunkFile().getPath(), dst.getPath()));
-        }
-
+        finalChunk.close();
+        FileUtils.moveFile(finalChunk.getChunkFile(), dst);
         afterSort(src, dst);
     }
 
@@ -144,15 +144,11 @@ public class FileSorter {
     }
 
     private void beforeSort(File src, File dst) throws IOException {
-        Assert.isTrue(src.exists(), String.format("original file not fond: %s", src.getPath()));
-        Assert.isTrue(!dst.exists(), String.format("dest file must not exist: %s", dst.getPath()));
+        Assert.isTrue(src.exists(), String.format("src file not fond: %s", src.getPath()));
+        Assert.isTrue(!dst.exists(), String.format("dst file must not exist: %s", dst.getPath()));
 
-        if (!dst.exists()) {
-            dst.mkdir();
-        } else {
-            dst.delete();
-            workDir(dst).delete();
-        }
+        dst.delete();
+        workDir(dst).delete();
     }
 
     private void afterSort(File src, File dst) throws IOException {
@@ -168,11 +164,14 @@ public class FileSorter {
      * @return
      * @throws IOException
      */
-    private Chunk merge(List<Chunk> chunks) throws IOException {
-
+    private Chunk merge(List<Chunk> chunks, File workDir) throws IOException {
         Chunk mergedChunk = new Chunk(chunks, comparator);
+        mergedChunk.store(workDir, ioBufferSize);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("merge {}, {}", chunks.size(), chunks);
+        }
+        for (Chunk chunk : chunks) {
+            chunk.close();
         }
         return mergedChunk;
     }
@@ -239,8 +238,9 @@ public class FileSorter {
                         Future<Chunk> sort = threadPoolExecutor.submit(() -> {
                             cr.sort(comparator);
                             Chunk chunk = new Chunk(INITIAL_CHUNK_LEVEL, rn, cr);
-                            Future<Chunk> store = threadPoolExecutor.submit(() -> chunk.store(workDir, ioBufferSize));
-                            storeFutureList.add(store);
+//                            Future<Chunk> store = threadPoolExecutor.submit(() -> chunk.store(workDir, ioBufferSize));
+//                            storeFutureList.add(store);
+                            chunk.store(workDir, ioBufferSize);
                             return chunk;
                         });
                         sortFutureList.add(sort);
@@ -252,7 +252,7 @@ public class FileSorter {
                 }
             }
             chunkList = sortFutureList.stream().map(this::get).collect(Collectors.toList());
-            storeFutureList.forEach(this::get);
+//            storeFutureList.forEach(this::get);
         }
         return chunkList;
     }
