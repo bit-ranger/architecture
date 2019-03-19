@@ -22,7 +22,7 @@ public class FileSorterTest {
         LOGGER.info("java.io.tmpdir: {}", System.getProperties().getProperty("java.io.tmpdir"));
 
         Random random = new Random();
-        int numbers = 100000000;
+        int numbers = 20000000;
         File file = new File("/var/sort/architecture_user.csv");
         File dest = new File("/var/sort/architecture_user.sorted.csv");
         if(dest.exists()){
@@ -43,7 +43,7 @@ public class FileSorterTest {
         }
 
         FileSorter sorter = new FileSorter(String::compareTo,
-                8, 5000000, 1024*1024*10, new File("/var/tmp/fileSorter"), true);
+                2, 500000, 1024*1024*2, false);
         long start = System.currentTimeMillis();
         sorter.sort(file, dest);
         long end = System.currentTimeMillis();
