@@ -55,7 +55,8 @@ public class Chunk implements Closeable{
 
                 if(!parts.isEmpty()){
                     while (true) {
-                        Chunk headMinChunk = peekMinRemoveEmpty(new ArrayList<>(parts));
+                        List<Chunk> chunkList =  new ArrayList<>(parts);
+                        Chunk headMinChunk = peekMinRemoveEmpty(chunkList);
                         //所有chunk都读完了
                         if (headMinChunk == null) {
                             break;

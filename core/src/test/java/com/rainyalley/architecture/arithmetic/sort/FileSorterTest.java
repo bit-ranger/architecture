@@ -10,6 +10,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class FileSorterTest {
 
@@ -23,7 +26,7 @@ public class FileSorterTest {
         LOGGER.info("java.io.tmpdir: {}", System.getProperties().getProperty("java.io.tmpdir"));
 
         Random random = new Random();
-        int numbers = 2000000;
+        int numbers = 500000;
         File file = new File("/var/sort/architecture_user.csv");
         File dest = new File("/var/sort/architecture_user.sorted.csv");
         if(dest.exists()){
@@ -42,7 +45,11 @@ public class FileSorterTest {
             }
         }
 
-        FileSorter sorter = new FileSorter(String::compareTo,
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(8, 8, 10L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(8),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+
+        FileSorter sorter = new FileSorter(String::compareTo, threadPoolExecutor,
                 2, 500000, 1024*1024*2, false);
         long start = System.currentTimeMillis();
         sorter.sort(file, dest);
