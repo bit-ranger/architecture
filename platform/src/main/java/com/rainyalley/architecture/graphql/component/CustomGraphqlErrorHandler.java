@@ -1,6 +1,6 @@
 package com.rainyalley.architecture.graphql.component;
 
-import com.huifu.devops.biz.exception.BizStatus;
+import com.rainyalley.architecture.exception.TaskStatus;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.servlet.GraphQLErrorHandler;
@@ -16,14 +16,14 @@ import static graphql.ErrorType.*;
 @Slf4j
 public class CustomGraphqlErrorHandler implements GraphQLErrorHandler {
 
-    private Map<ErrorType,BizStatus> errorTypeBizStatusHashMap = new HashMap<>();
+    private Map<ErrorType, TaskStatus> errorTypeBizStatusHashMap = new HashMap<>();
 
     public CustomGraphqlErrorHandler() {
-        this.errorTypeBizStatusHashMap.put(InvalidSyntax, BizStatus.BAD_REQUEST);
-        this.errorTypeBizStatusHashMap.put(ValidationError, BizStatus.BAD_REQUEST);
-        this.errorTypeBizStatusHashMap.put(DataFetchingException, BizStatus.INTERNAL_SERVER_ERROR);
-        this.errorTypeBizStatusHashMap.put(MutationNotSupported, BizStatus.NOT_IMPLEMENTED);
-        this.errorTypeBizStatusHashMap.put(ExecutionAborted, BizStatus.INTERNAL_SERVER_ERROR);
+        this.errorTypeBizStatusHashMap.put(InvalidSyntax, TaskStatus.BAD_REQUEST);
+        this.errorTypeBizStatusHashMap.put(ValidationError, TaskStatus.BAD_REQUEST);
+        this.errorTypeBizStatusHashMap.put(DataFetchingException, TaskStatus.INTERNAL_SERVER_ERROR);
+        this.errorTypeBizStatusHashMap.put(MutationNotSupported, TaskStatus.NOT_IMPLEMENTED);
+        this.errorTypeBizStatusHashMap.put(ExecutionAborted, TaskStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -32,8 +32,8 @@ public class CustomGraphqlErrorHandler implements GraphQLErrorHandler {
     }
 
     private CustomGraphqlError convert(GraphQLError error){
-        BizStatus bizStatus = errorTypeBizStatusHashMap.get(error.getErrorType());
-        bizStatus = bizStatus != null? bizStatus:BizStatus.INTERNAL_SERVER_ERROR;
+        TaskStatus bizStatus = errorTypeBizStatusHashMap.get(error.getErrorType());
+        bizStatus = bizStatus != null? bizStatus:TaskStatus.INTERNAL_SERVER_ERROR;
 
         return new CustomGraphqlError(
                 error.getErrorType(),

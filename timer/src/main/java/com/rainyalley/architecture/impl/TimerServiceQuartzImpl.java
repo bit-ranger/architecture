@@ -8,7 +8,7 @@ import org.quartz.impl.triggers.CronTriggerImpl;
 
 import java.util.Date;
 
-public class TimerServiceImpl implements TimerService {
+public class TimerServiceQuartzImpl implements TimerService {
 
 
     private Scheduler scheduler;

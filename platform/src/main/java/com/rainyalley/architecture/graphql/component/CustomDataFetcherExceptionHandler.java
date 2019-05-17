@@ -2,9 +2,9 @@ package com.rainyalley.architecture.graphql.component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.huifu.devops.biz.exception.BaseException;
-import com.huifu.devops.biz.exception.BizStatus;
-import com.huifu.devops.biz.exception.ClientException;
+import com.rainyalley.architecture.exception.BaseException;
+import com.rainyalley.architecture.exception.ClientException;
+import com.rainyalley.architecture.exception.TaskStatus;
 import graphql.ErrorType;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
@@ -21,6 +21,9 @@ import javax.validation.Path;
 import java.util.Collections;
 import java.util.Iterator;
 
+/**
+ * @author bin.zhang
+ */
 @Slf4j
 public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHandler {
 
@@ -40,7 +43,7 @@ public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHa
             SecurityContextHolder.getContext().setAuthentication(null);
             error = new CustomGraphqlError(
                     ErrorType.ValidationError,
-                    BizStatus.UNAUTHORIZED.value(),
+                    TaskStatus.UNAUTHORIZED.value(),
                     exception.getMessage(),
                     exception,
                     path.toList(),
@@ -50,7 +53,7 @@ public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHa
             SecurityContextHolder.getContext().setAuthentication(null);
             error = new CustomGraphqlError(
                     ErrorType.ValidationError,
-                    BizStatus.FORBIDDEN.value(),
+                    TaskStatus.FORBIDDEN.value(),
                     exception.getMessage(),
                     exception,
                     path.toList(),
@@ -59,7 +62,7 @@ public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHa
         else if(exception instanceof ConstraintViolationException){
             error = new CustomGraphqlError(
                     ErrorType.ValidationError,
-                    BizStatus.BAD_REQUEST.value(),
+                    TaskStatus.BAD_REQUEST.value(),
                     constraintViolationExceptionMessage((ConstraintViolationException)exception),
                     exception,
                     path.toList(),
@@ -67,7 +70,7 @@ public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHa
         } else if(exception instanceof ClientException){
             error = new CustomGraphqlError(
                     ErrorType.ValidationError,
-                    ((ClientException) exception).getBizStatus().value(),
+                    ((ClientException) exception).getTaskStatus().value(),
                     exception.getMessage(),
                     exception,
                     path.toList(),
@@ -75,7 +78,7 @@ public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHa
         }  else if (exception instanceof BaseException){
             error = new CustomGraphqlError(
                     ErrorType.DataFetchingException,
-                    ((BaseException) exception).getBizStatus().value(),
+                    ((BaseException) exception).getTaskStatus().value(),
                     exception.getMessage(),
                     exception,
                     path.toList(),
@@ -88,7 +91,7 @@ public class CustomDataFetcherExceptionHandler implements DataFetcherExceptionHa
         } else {
             error = new CustomGraphqlError(
                     ErrorType.DataFetchingException,
-                    BizStatus.INTERNAL_SERVER_ERROR.value(),
+                    TaskStatus.INTERNAL_SERVER_ERROR.value(),
                     exception.getMessage(),
                     exception,
                     path.toList(),

@@ -2,7 +2,7 @@ package com.rainyalley.architecture.config;
 
 import com.rainyalley.architecture.controller.CustomErrorViewResolver;
 import com.rainyalley.architecture.controller.CustomExceptionResolver;
-import com.rainyalley.architecture.impl.TimerServiceImpl;
+import com.rainyalley.architecture.impl.TimerServiceQuartzImpl;
 import com.spring4all.swagger.EnableSwagger2Doc;
 import com.spring4all.swagger.SwaggerProperties;
 import org.quartz.Scheduler;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -19,6 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -28,6 +30,7 @@ import java.util.List;
 
 @ControllerAdvice
 @EnableSwagger2Doc
+@EnableScheduling
 @Configuration
 public class TimerConfig implements WebMvcConfigurer, InitializingBean {
 
@@ -62,12 +65,17 @@ public class TimerConfig implements WebMvcConfigurer, InitializingBean {
     }
 
     @Bean
-    TimerServiceImpl timerService(Scheduler scheduler){
-        TimerServiceImpl timerService = new TimerServiceImpl();
+    TimerServiceQuartzImpl timerService(Scheduler scheduler){
+        TimerServiceQuartzImpl timerService = new TimerServiceQuartzImpl();
         timerService.setScheduler(scheduler);
         return timerService;
     }
 
+    @ConfigurationProperties(prefix = "timer")
+    @Bean
+    TimerProperties timerProperties(){
+        return new TimerProperties();
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
