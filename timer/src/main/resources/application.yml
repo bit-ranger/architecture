@@ -1,0 +1,7 @@
+spring:
+    application:
+        name: timer
+    cloud:
+        config:
+            uri: http://localhost:9088,http://localhost:9088
+

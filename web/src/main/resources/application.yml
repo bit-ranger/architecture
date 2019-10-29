@@ -1,5 +1,5 @@
 server:
-    port: 8080
+    port: 9080
     error:
         include-stacktrace: on_trace_param
 
@@ -7,7 +7,7 @@ spring:
     main:
         web-application-type: reactive
     application:
-        name: architecture
+        name: web
     cache:
         type: redis
         redis:
@@ -41,7 +41,7 @@ spring:
 
 management:
     server:
-        port: 8090
+        port: 9090
         ssl:
             enabled: false
     endpoints:
@@ -65,5 +65,11 @@ management:
             enabled: true
         loggers:
             enabled: true
+
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:9089/eureka/
 
 debug: true
