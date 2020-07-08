@@ -1,5 +1,5 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xmlns="https://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -44,7 +44,7 @@
         <repository>
             <id>oschina</id>
             <name>Maven Oschina Repository</name>
-            <url>http://maven.oschina.net/content/groups/public/</url>
+            <url>https://maven.oschina.net/content/groups/public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -52,14 +52,14 @@
         <repository>
             <id>offical</id>
             <name>Maven Official Repository</name>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>nlpcn</id>
-            <url>http://maven.nlpcn.org/</url>
+            <url>https://maven.nlpcn.org/</url>
         </repository>
         <repository>
             <id>mvnrepository</id>
@@ -72,7 +72,7 @@
         <pluginRepository>
             <id>oschina</id>
             <name>Maven Oschina Repository</name>
-            <url>http://maven.oschina.net/content/groups/public/</url>
+            <url>https://maven.oschina.net/content/groups/public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -88,7 +88,7 @@
         <pluginRepository>
             <id>offical</id>
             <name>Maven Official Repository</name>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
